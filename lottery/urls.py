@@ -4,7 +4,7 @@ from django.conf.urls import url
 urlpatterns = [
 
     #url(r'^$', views.index, name='index'),
-    #url(r'^faq/$', views.faq, name='faq'),
+    url(r'^faq/$', views.FAQListView.as_view(), name='faq'),
 
     url(r'^login/$', views.steam_login, name='steam_login'),
     url(r'^logout/$', views.steam_logout, name='steam_logout'),

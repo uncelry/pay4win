@@ -32,6 +32,10 @@ class FAQ(models.Model):
     def __str__(self):
         return self.question
 
+    class Meta:
+        verbose_name = 'FAQ'
+        verbose_name_plural = 'FAQs'
+
 
 # Пользователь
 class SteamUser(models.Model):
@@ -65,8 +69,10 @@ class SteamUser(models.Model):
     money_saved = models.IntegerField(default=0, verbose_name="Всего сэкономлено денег (в рублях)")
     lotteries_won_amount = models.IntegerField(default=0, verbose_name="Всего игр выиграно")
     lotteries_lost_amount = models.IntegerField(default=0, verbose_name="Всего игр проиграно")
-    lotteries_finished = models.ManyToManyField('LotteryGame', verbose_name="Игры, в которых участвовал пользователь")
-    lotteries_ongoing = models.ManyToManyField('LotteryGame', verbose_name="Игры, в которых участвует пользователь")
+    lotteries_finished = models.ManyToManyField('LotteryGame', verbose_name="Игры, в которых участвовал пользователь",
+                                                related_name="users_finished_lottery")
+    lotteries_ongoing = models.ManyToManyField('LotteryGame', verbose_name="Игры, в которых участвует пользователь",
+                                               related_name="users_ongoing_lottery")
 
     # def __str__(self):
     #     return '{0}, {1}, {2}'.format(self.persona_name, self.user, self.steam_id)
@@ -169,7 +175,7 @@ class LotteryGame(models.Model):
     game_price = models.IntegerField(verbose_name="Цена игры Steam в рублях")
     commission_num = models.IntegerField(verbose_name="Комиссия с розыгрыша в рублях")
     players_amount = models.IntegerField(default=0, verbose_name="Кол-во текущих игроков")
-    players = models.ManyToManyField(SteamUser, null=True, blank=True, verbose_name="Кол-во текущих игроков")
+    players = models.ManyToManyField(SteamUser, blank=True, verbose_name="Кол-во текущих игроков")
     lottery_genres = models.ManyToManyField(Genre, verbose_name="Жанры игры из стим")
     abstract_lottery = models.ForeignKey(AbstractLottery, on_delete=models.SET_NULL, null=True,
                                          verbose_name='Родительский розыгрыш')

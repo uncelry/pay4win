@@ -1,0 +1,133 @@
+body > nav.navbar > div.container{
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.slf-top-nav{
+    background-color: #60abe2;
+    padding: 0;
+    line-height: 70px;
+    margin-bottom: 160px;
+}
+
+.slf-top-nav a{
+    font-family: 'Open Sans', sans-serif;
+    padding: 0 20px!important;
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px){
+	.slf-top-nav a{
+        font-family: 'Open Sans', sans-serif;
+        padding: 0 10px!important;
+    }
+}
+
+.slf-steam-login-inv{
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 700;
+    line-height: 40px;
+    background-color: #6cb3d5;
+    border-left: 1px solid white;
+}
+
+.slf-top-nav .container .slf-active-menu-item, .slf-top-nav a:hover{
+    background-color: white;
+    color: black!important;
+}
+
+.slf-top-nav a.slf-steam-login-inv:hover{
+    background-color: #5c9ab7!important;
+    color: white!important;
+}
+
+.slf-brand-nav{
+    position: absolute;
+    top: 0;
+    padding: 20px 37px;
+    background-color: white;
+}
+
+.slf-navbar-nav{
+    margin-left: 200px;
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+	.slf-top-nav a{
+        font-family: 'Open Sans', sans-serif;
+        padding: 0 8px!important;
+    }
+
+    .slf-brand-nav{
+        padding: 5px 0;
+        background-color: white;
+        display: none;
+    }
+
+    .slf-brand-nav img{
+        height: 60px;
+    }
+
+    .slf-navbar-nav{
+        margin-left: 0px;
+    }
+
+    .slf-top-nav{
+        margin-bottom: 60px;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px){
+	.slf-top-nav{
+        line-height: 70px;
+        min-height: 70px;
+    }
+
+    .slf-brand-nav{
+        padding: initial;
+        position: relative;
+    }
+
+    .slf-brand-nav img{
+        height: 66px;
+    }
+
+    .slf-navbar-nav{
+        margin-left: auto;
+    }
+
+    .slf-steam-login-inv-wrapper{
+        margin-bottom: 10px;
+    }
+
+    .slf-top-nav{
+        margin-bottom: 20px;
+    }
+}
+
+@media screen and (max-width: 575px) {
+	.slf-top-nav{
+        line-height: 70px;
+        min-height: 70px;
+    }
+
+    .slf-brand-nav{
+        padding: initial;
+        position: relative;
+    }
+
+    .slf-brand-nav img{
+        height: 66px;
+    }
+
+    .slf-navbar-nav{
+        margin-left: auto;
+    }
+
+    .slf-steam-login-inv-wrapper{
+        margin-bottom: 10px;
+    }
+
+    .slf-top-nav{
+        margin-bottom: 20px;
+    }
+}

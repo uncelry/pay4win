@@ -1,0 +1,54 @@
+{% extends "base_generic.html" %}
+
+{% load static %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/faq_list.css' %}">
+    <script src="{% static 'js/faq_list.js' %}"></script>
+{% endblock %}
+
+
+{% block content %}
+
+    <main class="container">
+        {% if faq_list %}
+            <div class="accordion" id="accordionPanelsStayOpenFAQ">
+                {% for faq in faq_list %}
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="panelsStayOpen-heading{{ forloop.counter }}">
+                            {% if forloop.counter == 1 %}
+                                <button class="text-white fs-2 slf-faq-accordion-btn" onclick="faqArrowAnim(this)" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="panelsStayOpen-collapse{{ forloop.counter }}">
+                                <div class="slf-faq-arrow">
+                                    <img src="{% static 'img/faq-list-arrow.png' %}" alt="" class="slf-faq-arrow-starter">
+                                </div>
+                            {% else %}
+                                <button class="collapsed text-white fs-2 slf-faq-accordion-btn" onclick="faqArrowAnim(this)" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="panelsStayOpen-collapse{{ forloop.counter }}">
+                                <div class="slf-faq-arrow">
+                                    <img src="{% static 'img/faq-list-arrow.png' %}" alt="" class="slf-faq-arrow-starter-closed">
+                                </div>
+                            {% endif %}
+                                {{ faq.question }}
+                            </button>
+                        </h2>
+
+                        {% if forloop.counter == 1 %}
+                            <div id="panelsStayOpen-collapse{{ forloop.counter }}" class="accordion-collapse collapse show" aria-labelledby="panelsStayOpen-heading{{ forloop.counter }}">
+                        {% else %}
+                            <div id="panelsStayOpen-collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="panelsStayOpen-heading{{ forloop.counter }}">
+                        {% endif %}
+                            <div class="accordion-body">
+                                {{ faq.answer }}
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <p>Пока что ответов на часто задаваемые вопросы нет<</p>
+        {% endif %}
+    </main>
+
+{% endblock %}

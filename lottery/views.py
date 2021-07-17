@@ -5,6 +5,8 @@ from allauth.socialaccount.providers.steam.provider import SteamOpenIDProvider
 from django.views import View
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect
+from django.views import generic
+from .models import FAQ
 
 
 STEAM_OPENID_URL = "https://steamcommunity.com/openid"
@@ -36,3 +38,8 @@ steam_callback = SteamOpenIDCallbackView.as_view()
 def steam_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('index'))
+
+
+# FAQ view
+class FAQListView(generic.ListView):
+    model = FAQ
