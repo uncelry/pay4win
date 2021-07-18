@@ -23,7 +23,7 @@
     {% block title %}<title>Pay4Win - Видео-игровая лотерея</title>{% endblock %}
   </head>
 
-  <body>
+  <body {% block bg_img %} {% endblock %}>
     <!--  Menu bootstrap  -->
     <nav class="navbar navbar-expand-md navbar-dark slf-top-nav navbar-default navbar-fixed-top sticky-top">
       <div class="container">
@@ -37,8 +37,8 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav slf-navbar-nav">
-            <a class="nav-link slf-active-menu-item text-white fs-5" aria-current="page" href="#">Как играть</a>
-            <a class="nav-link text-white fs-5" href="#">FAQ</a>
+            <a class="nav-link text-white fs-5" aria-current="page" href="#">Как играть</a>
+            <a class="nav-link text-white fs-5 {% if request.resolver_match.url_name == "faq" %}slf-active-menu-item{% endif %}" href="{% url "faq" %}">FAQ</a>
             <a class="nav-link text-white fs-5" href="#">Розыгрыши</a>
             <a class="nav-link text-white fs-5" href="#">Контакты</a>
             <a class="nav-link text-white fs-5" href="#"><i class="bi bi-search"></i></a>
@@ -52,6 +52,48 @@
 
     <!--  Content  -->
     {% block content %}<p>В данный момент на этой странице нет никакого котента...</p>{% endblock %}
+
+    <!--  Footer  -->
+    <footer class="slf-footer-wrapper">
+      <div class="container slf-footer-container">
+        <div class="row slf-left-footer-row">
+          <div class="col-7 slf-left-footer-side">
+            <img class="slf-running-icon" src="{% static 'img/footer-person.png' %}" alt="">
+            <div class="slf-footer-left-wrapper">
+               <div class="navbar slf-footer-media-navbar">
+                <div class="navbar-nav flex-row">
+                  <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+                  <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+                  <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+                  <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+                  <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+                </div>
+              </div>
+              <h6 class="slf-footer-brief-header">Немного о нашем сайте</h6>
+              <p class="slf-footer-brief-text">
+                Pay4win — это большая рулетка игр, помогающая геймерам из многих стран мира покупать игры дешевле,
+                чем они стоят в Steam или на каких-либо других торговых площадках.
+                Все тороговые марки пренадлежат издателям.
+              </p>
+              <h1 class="slf-footer-bg-text">4WIN</h1>
+              <a class="slf-footer-contact-link" href="#">Написать нам</a>
+            </div>
+          </div>
+          <div class="col-5 slf-right-footer-side">
+            <p class="slf-pegi-eight">8+</p>
+            <p class="slf-copyright-text">
+              <b>Copyright © 2021</b><br>
+              Все права защищены законодательством РФ. Использование материалов сайта
+              возможно только с прямой ссылкой на источник.
+            </p>
+            <img class="slf-footer-img-character" src="{% static 'img/footer-character.png' %}" alt="">
+            <img class="slf-footer-img-flowers" src="{% static 'img/footer-flowers.png' %}" alt="">
+          </div>
+        </div>
+      </div>
+      <div class="slf-footer-blue-line"></div>
+      <div class="slf-footer-red-line"></div>
+    </footer>
 
     <!-- Bootstrap js -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

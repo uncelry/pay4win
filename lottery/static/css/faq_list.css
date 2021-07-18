@@ -1,6 +1,6 @@
 main{
     padding: 17px!important;
-    background-color: lime;
+    background-color: #FFFFFF;
 }
 
 #accordionPanelsStayOpenFAQ{
@@ -167,3 +167,23 @@ main{
 @-moz-keyframes spin-bwd { 100% { -moz-transform: rotate(0deg); } }
 @-webkit-keyframes spin-bwd { 100% { -webkit-transform: rotate(0deg); } }
 @keyframes spin-bwd { 100% { -webkit-transform: rotate(0deg); transform: rotate(0deg); } }
+
+
+
+@media screen and (min-width: 992px){
+	body{
+        background-size: 100%;
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-color: #2e2e2e;
+    }
+}
+
+@media screen and (max-width: 991px){
+	body{
+        background-image: none!important;
+    }
+    main{
+        background-color: white!important;
+    }
+}
