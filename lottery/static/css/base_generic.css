@@ -603,3 +603,97 @@ footer{
 .slf-top-nav .slf-steam-logged-inv{
     padding: 0 10px!important;
 }
+
+.slf-nav-steam-user-links a:hover{
+    background-color: #B9D6FDFF;
+    border-radius: 0;
+}
+
+.slf-nav-steam-user-links{
+    padding: 0;
+    overflow: hidden;
+    border-radius: 0;
+}
+
+.slf-nav-steam-user-links a{
+    line-height: 50px;
+}
+
+.slf-nav-steam-user-links p{
+    margin: 0;
+    line-height: 50px;
+    background-color: #ffea56;
+    font-weight: 700;
+}
+
+.slf-nav-steam-user-links p:hover{
+    background-color: #ffea56;
+}
+
+.slf-nav-steam-user-links p:active{
+    color: unset;
+}
+
+.slf-nav-steam-user-links p span{
+    font-size: 0.8rem;
+}
+
+.slf-nav-steam-user-links li hr{
+    margin: 0px auto 0 auto;
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1399px){
+    .slf-steam-logged-inv span{
+        max-width: 260px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+}
+
+
+@media screen and (min-width: 992px) and (max-width: 1199px){
+    .slf-steam-logged-inv span{
+        max-width: 195px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+}
+
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+    .slf-steam-logged-inv span{
+        max-width: 175px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+}
+
+
+@media screen and (min-width: 576px) and (max-width: 767px){
+    .slf-top-nav{
+        line-height: 55px;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .slf-steam-logged-inv span{
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    #navbarNavAltMarkup{
+        overflow: hidden;
+    }
+
+    .slf-top-nav{
+        line-height: 55px;
+    }
+}

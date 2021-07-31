@@ -72,6 +72,7 @@ class SteamUser(models.Model):
                                                 related_name="users_finished_lottery")
     lotteries_ongoing = models.ManyToManyField('LotteryGame', verbose_name="Игры, в которых участвует пользователь",
                                                related_name="users_ongoing_lottery")
+    money_current = models.IntegerField(default=0, verbose_name="Текущий баланс")
 
     # def __str__(self):
     #     return '{0}, {1}, {2}'.format(self.persona_name, self.user, self.steam_id)
