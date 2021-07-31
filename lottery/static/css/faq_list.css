@@ -187,3 +187,14 @@ main{
         background-color: white!important;
     }
 }
+
+@media screen and (max-width: 575px){
+    .slf-faq-accordion-btn{
+        text-align: center;
+        flex-direction: column;
+    }
+
+    .slf-faq-arrow{
+        margin-right: 0!important;
+    }
+}

@@ -48,7 +48,6 @@ class SteamUser(models.Model):
     community_visibility_state = models.CharField(max_length=10, verbose_name="Видимость профиля steam")
     profile_state = models.CharField(max_length=10, verbose_name="Имеется ли профиль сообщества steam")
     persona_name = models.CharField(max_length=200, verbose_name="Отображаемое имя пользователя steam")
-    comment_permission = models.CharField(max_length=10, verbose_name="Можно ли оставлять публичные комментарии")
     profile_url = models.CharField(max_length=200, verbose_name="Ссылка на профиль steam")
     avatar = models.CharField(max_length=400, verbose_name="Автар (маленький размер)")
     avatar_medium = models.CharField(max_length=400, verbose_name="Автар (средний размер)")
@@ -87,7 +86,6 @@ def update_user_info(user_to_update, allauth_user_instance):
     user_to_update.community_visibility_state = allauth_user_instance.extra_data['communityvisibilitystate']
     user_to_update.profile_state = allauth_user_instance.extra_data['profilestate']
     user_to_update.persona_name = allauth_user_instance.extra_data['personaname']
-    user_to_update.comment_permission = allauth_user_instance.extra_data['commentpermission']
     user_to_update.profile_url = allauth_user_instance.extra_data['profileurl']
     user_to_update.avatar = allauth_user_instance.extra_data['avatar']
     user_to_update.avatar_medium = allauth_user_instance.extra_data['avatarmedium']

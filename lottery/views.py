@@ -4,7 +4,7 @@ from allauth.socialaccount.providers.openid.views import OpenIDCallbackView, Ope
 from allauth.socialaccount.providers.steam.provider import SteamOpenIDProvider
 from django.views import View
 from django.contrib.auth import logout
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, request
 from django.views import generic
 from .models import FAQ
 
@@ -43,3 +43,9 @@ def steam_logout(request):
 # FAQ view
 class FAQListView(generic.ListView):
     model = FAQ
+
+    # def get_context_data(self, **kwargs):
+    #     context = super(FAQ, self).get_context_data(**kwargs)
+    #     current_user = request.user
+    #     context['steam_user'] = Picture.objects.filter(your_condition)
+    #     return context
