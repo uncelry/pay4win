@@ -40,7 +40,7 @@
             <a class="nav-link text-white fs-5" aria-current="page" href="#">Как играть</a>
             <a class="nav-link text-white fs-5 {% if request.resolver_match.url_name == "faq" %}slf-active-menu-item{% endif %}" href="{% url "faq" %}">FAQ</a>
             <a class="nav-link text-white fs-5" href="#">Розыгрыши</a>
-            <a class="nav-link text-white fs-5" href="#">Контакты</a>
+            <a class="nav-link text-white fs-5 {% if request.resolver_match.url_name == "contacts" %}slf-active-menu-item{% endif %}" href="{% url "contacts" %}">Контакты</a>
             <a class="nav-link text-white fs-5" href="#"><i class="bi bi-search"></i></a>
           </div>
           <ul class="navbar-nav ms-auto slf-steam-login-inv-wrapper">

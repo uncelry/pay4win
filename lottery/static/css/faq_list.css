@@ -1,6 +1,8 @@
 main{
     padding: 17px!important;
     background-color: #FFFFFF;
+    padding-bottom: 65px!important;
+    min-height: 100vh;
 }
 
 #accordionPanelsStayOpenFAQ{

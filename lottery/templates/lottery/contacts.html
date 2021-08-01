@@ -1,0 +1,36 @@
+{% extends "base_generic.html" %}
+
+{% load static %}
+
+{% block bg_img %}
+    style="background-image: url({% static 'img/faq_bg.png' %})"
+{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/contacts.css' %}">
+{% endblock %}
+
+{% block title %}<title>Pay4Win - Контакты</title>{% endblock %}
+
+{% block content %}
+
+    <main class="container">
+        <h1 class="fs-1 slf-contacts-h1">Контакты</h1>
+        <p class="slf-contacts-main-text">{{ main_text|linebreaks }}</p>
+        <p class="slf-contacts-hours">Часы работы техподдержки - <span>9:00 - 18:00</span></p>
+        <p class="slf-contacts-email">Email для связи: <a href="#">{{ contact_email }}</a></p>
+
+        <div class="navbar slf-contacts-media-navbar">
+            <div class="navbar-nav flex-row">
+                <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+                <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+                <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+                <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+                <a class="nav-link" href="#"><img src="{% static 'img/media-twitter.png' %}"></a>
+            </div>
+        </div>
+
+        <a class="btn btn-info btn-lg slf-contacts-write-btn" href="#" role="button">Написать</a>
+    </main>
+
+{% endblock %}

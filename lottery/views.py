@@ -44,8 +44,19 @@ def steam_logout(request):
 class FAQListView(generic.ListView):
     model = FAQ
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(FAQ, self).get_context_data(**kwargs)
-    #     current_user = request.user
-    #     context['steam_user'] = Picture.objects.filter(your_condition)
-    #     return context
+
+# Contacts view
+def contacts(request):
+
+    contact_email = 'info@pay4win.com'
+
+    main_text = """Если у вас появились какие-либо проблемы с получением выигрыша, либо с участием в розыгрышах, то напишите нам на почту - мы ответим в ближайшее время! По вопросам сотрудничества и/или рекламы просьба писать ответственному администратору нашего паблика ВКонтакте. Все ссылки и контакты указаны ниже. Заявки в техническую поддержку принимаются в любое время суток; рассматриватся - только в рабочее время (за исключением праздников и выходных дней).
+    Большая просьба не писать в техническую поддержку и/или ответственному администратору нашего паблика ВКонтакте сразу несколько писем, не дождавшись ответа на предыдущее. Если у нас будет много спама, то на ответ уйдет гораздо больше времени. 
+    Благодарим за понимание!"""
+
+    context = {
+        'main_text': main_text,
+        'contact_email': contact_email,
+    }
+
+    return render(request, 'lottery/contacts.html', context=context)
