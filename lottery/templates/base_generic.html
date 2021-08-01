@@ -37,9 +37,9 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
           <div class="navbar-nav slf-navbar-nav">
-            <a class="nav-link text-white fs-5" aria-current="page" href="#">Как играть</a>
+            <a class="nav-link text-white fs-5 {% if request.resolver_match.url_name == "manual" %}slf-active-menu-item{% endif %}" href="{% url "manual" %}" aria-current="page">Как играть</a>
             <a class="nav-link text-white fs-5 {% if request.resolver_match.url_name == "faq" %}slf-active-menu-item{% endif %}" href="{% url "faq" %}">FAQ</a>
-            <a class="nav-link text-white fs-5" href="#">Розыгрыши</a>
+            <a class="nav-link text-white fs-5 {% if request.resolver_match.url_name == "types" %}slf-active-menu-item{% endif %}" href="{% url "types" %}" href="#">Розыгрыши</a>
             <a class="nav-link text-white fs-5 {% if request.resolver_match.url_name == "contacts" %}slf-active-menu-item{% endif %}" href="{% url "contacts" %}">Контакты</a>
             <a class="nav-link text-white fs-5" href="#"><i class="bi bi-search"></i></a>
           </div>

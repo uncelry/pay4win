@@ -1,0 +1,109 @@
+main{
+    padding: 17px!important;
+    background-color: #FFFFFF;
+    padding-bottom: 65px!important;
+    overflow: hidden;
+    min-height: 100vh;
+}
+
+.slf-manual-h1{
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 800!important;
+    margin-bottom: 40px;
+}
+
+@media screen and (min-width: 992px){
+	body{
+        background-size: 100%;
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-color: #2e2e2e;
+    }
+}
+
+@media screen and (max-width: 991px){
+	body{
+        background-image: none!important;
+    }
+    main{
+        background-color: white!important;
+    }
+}
+
+ul.slf-manual-ul{
+    padding: 0;
+    margin: 0;
+}
+
+ul.slf-manual-ul li{
+    list-style-type: none;
+    text-align: center;
+    border-bottom-width: 4px;
+    border-bottom-style: dashed;
+    padding-bottom: 40px;
+    margin-bottom: 40px;
+}
+
+ul.slf-manual-ul li:nth-of-type(4n + 1){
+    border-bottom-color: #8ddf8c;
+}
+
+ul.slf-manual-ul li:nth-of-type(4n + 2){
+    border-bottom-color: #8bbfdf;
+}
+
+ul.slf-manual-ul li:nth-of-type(4n + 3){
+    border-bottom-color: #d28cdf;
+}
+
+ul.slf-manual-ul li:nth-of-type(4n + 4){
+    border-bottom-color: #be4b3c;
+}
+
+ul.slf-manual-ul li:last-of-type{
+    border-bottom: none;
+}
+
+ul.slf-manual-ul li h2{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 500;
+}
+
+ul.slf-manual-ul li h2 span{
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 800;
+    color: white;
+    font-size: 2.5rem;
+    padding: 0.2rem 1rem;
+    border-radius: 0.4rem;
+    margin-right: 10px;
+}
+
+ul.slf-manual-ul li:nth-of-type(4n + 1) h2 span{
+    background-color: #8ddf8c;
+}
+
+ul.slf-manual-ul li:nth-of-type(4n + 2) h2 span{
+    background-color: #8bbfdf;
+}
+
+ul.slf-manual-ul li:nth-of-type(4n + 3) h2 span{
+    background-color: #d28cdf;
+}
+
+ul.slf-manual-ul li:nth-of-type(4n + 4) h2 span{
+    background-color: #be4b3c;
+}
+
+ul.slf-manual-ul li p{
+    font-family: 'Open Sans', sans-serif!important;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+

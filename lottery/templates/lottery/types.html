@@ -1,0 +1,48 @@
+{% extends "base_generic.html" %}
+
+{% load static %}
+
+{% block bg_img %}
+    style="background-image: url({% static 'img/main_bg.png' %})"
+{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/types.css' %}">
+{% endblock %}
+
+{% block title %}<title>Pay4Win - Типы розыгрышей</title>{% endblock %}
+
+{% block content %}
+
+    <main class="container">
+        <ul class="slf-types-ul">
+            <li class="slf-types-li" id="typesSilver">
+                <img src="{% static 'img/types-silver.png' %}" alt="">
+                <div class="slf-types-ribbon" style='background-image: url("{% static 'img/types-ribbon.png' %}")'>
+                    <h2>SILVER</h2>
+                </div>
+                <p class="slf-types-cost">Цена от <span class="slf-types-cost-num">99<span class="slf-types-cost-rub">руб</span></span> до <span class="slf-types-cost-num">200<span class="slf-types-cost-rub">руб</span></span></p>
+                <div class="slf-types-first">
+                    <p>Разыгрываемые игры</p>
+                    <a href="#">посмотреть</a>
+                </div>
+                <div class="slf-types-second">
+                    <p>Шанс на победу</p>
+                    <p>от 4%</p>
+                </div>
+                <div class="slf-types-third">
+                    <p>Кол-во билетов</p>
+                    <p>25</p>
+                </div>
+                <p class="slf-types-desc-h">Описание</p>
+                <p class="slf-types-desc-text">
+                    В розыгрышах этого типа принимают участие от 1 до 25
+                    человек. Соотношение цены билета к шансу на победу
+                    наиболее оптимальное!
+                </p>
+                <a href="#" class="btn slf-types-go-btn">Участвовать</a>
+            </li>
+        </ul>
+    </main>
+
+{% endblock %}

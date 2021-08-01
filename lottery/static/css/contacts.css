@@ -64,7 +64,10 @@ main{
 
 .slf-contacts-write-btn:hover, .slf-contacts-write-btn:active{
     background-color: #1E819BFF;
+    border: 0;
+    box-shadow: none;
 }
+
 
 @media screen and (min-width: 992px){
 	body{

@@ -60,3 +60,15 @@ def contacts(request):
     }
 
     return render(request, 'lottery/contacts.html', context=context)
+
+
+# Manual view
+def manual(request):
+
+    return render(request, 'lottery/manual.html')
+
+
+# Types view
+def types(request):
+
+    return render(request, 'lottery/types.html')
