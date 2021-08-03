@@ -1,3 +1,5 @@
+import math
+
 from django.db import models
 from django.urls import reverse
 import uuid
@@ -6,6 +8,8 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from allauth.socialaccount.models import SocialAccount
 from django.utils.timezone import now
+import requests
+from bs4 import BeautifulSoup
 
 
 # Жанр
@@ -18,6 +22,10 @@ class Genre(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
 
 
 # Вопрос-ответ
@@ -80,6 +88,10 @@ class SteamUser(models.Model):
     # def get_absolute_url(self):
     #     return reverse('user_detail', args=[str(self.pk)])
 
+    class Meta:
+        verbose_name = 'Steam пользователь'
+        verbose_name_plural = 'Steam пользователи'
+
 
 # Функция обновления информации пользователя
 def update_user_info(user_to_update, allauth_user_instance):
@@ -131,6 +143,9 @@ class AbstractLottery(models.Model):
                                                                                                'Бронза - 20 билетов',
                                     verbose_name='Тип розыгрыша')
     lottery_game = models.CharField(max_length=300, verbose_name="Ссылка на игру")
+    lottery_game_img = models.CharField(max_length=500, default='', verbose_name="Ссылка на картинку игры (230x320)")
+    lottery_game_name = models.CharField(max_length=250, default='', verbose_name="Название игры steam")
+    lottery_game_desc = models.TextField(max_length=1000, default='', verbose_name="Описание игры")
     game_price = models.IntegerField(verbose_name="Цена игры Steam в рублях")
     tickets_amount = models.IntegerField(verbose_name="Кол-во билетов в розыгрыше")
     commission_num = models.IntegerField(verbose_name="Комиссия с розыгрыша в рублях")
@@ -140,11 +155,58 @@ class AbstractLottery(models.Model):
                                                    "удаления записи")
     lottery_genres = models.ManyToManyField(Genre, verbose_name="Жанры игры из стим")
 
+    class Meta:
+        verbose_name = 'Розыгрыш'
+        verbose_name_plural = 'Розыгрыши'
+
+
+# Функция создания розыгрышей
+def create_lottery_from_abstract(abstract):
+
+    # Получаем цену билета:
+    ticket_price = ((abstract.game_price + abstract.commission_num) / abstract.tickets_amount)
+    ticket_price = math.ceil(ticket_price)
+
+    # Создаем игру:
+    game = LotteryGame.objects.create(
+        lottery_type=abstract.lottery_type,
+        lottery_game=abstract.lottery_game,
+        lottery_game_img=abstract.lottery_game_img,
+        lottery_game_name=abstract.lottery_game_name,
+        lottery_game_desc=abstract.lottery_game_desc,
+        time_started=now(),
+        tickets_amount=abstract.tickets_amount,
+        ticket_price=ticket_price,
+        game_price=abstract.game_price,
+        commission_num=abstract.commission_num,
+        abstract_lottery=abstract,
+        lottery_state='o',
+        tickets_left=abstract.tickets_amount,
+    )
+
+    genres = abstract.lottery_genres.all()
+
+    print(genres)
+
+    game.lottery_genres.set(genres)
+
+
+@receiver(post_save, sender=AbstractLottery)
+def save_abstract_lottery(sender, instance, **kwargs):
+    if instance.lottery_active:
+
+        current_lotteries_amount = LotteryGame.objects.filter(abstract_lottery=instance).count()
+        current_inactive_lotteries_amount = LotteryGame.objects.filter(lottery_state='c').count()
+
+        if (current_lotteries_amount == 0) or (current_lotteries_amount == current_inactive_lotteries_amount):
+            for i in range(instance.lotteries_amount):
+                create_lottery_from_abstract(instance)
+
 
 # Розыгрыш (фактический - в котором могут участвовать люди)
 class LotteryGame(models.Model):
     """
-    Модель, отвечающая за фактический розыгрыш, в котором могут участваовать люди
+    Модель, отвечающая за фактический розыгрыш, в котором могут участвовать люди
     """
 
     LOTTERY_TYPE_LIST = (
@@ -166,7 +228,9 @@ class LotteryGame(models.Model):
                                                                                                'Бронза - 20 билетов',
                                     verbose_name='Тип розыгрыша')
     lottery_game = models.CharField(max_length=300, verbose_name="Ссылка на игру")
-    lottery_game_img = models.CharField(max_length=500, verbose_name="Ссылка на картинку игры steam")
+    lottery_game_img = models.CharField(max_length=500, default='', verbose_name="Ссылка на картинку игры (230x320)")
+    lottery_game_name = models.CharField(max_length=250, default='', verbose_name="Название игры steam")
+    lottery_game_desc = models.TextField(max_length=1000, default='', verbose_name="Описание игры")
     time_started = models.DateTimeField(default=now, verbose_name="Дата и время старта розыгрыша")
     time_finished = models.DateTimeField(null=True, blank=True, verbose_name="Дата и время окончания розыгрыша")
     tickets_amount = models.IntegerField(verbose_name="Кол-во билетов в розыгрыше")
@@ -174,7 +238,7 @@ class LotteryGame(models.Model):
     game_price = models.IntegerField(verbose_name="Цена игры Steam в рублях")
     commission_num = models.IntegerField(verbose_name="Комиссия с розыгрыша в рублях")
     players_amount = models.IntegerField(default=0, verbose_name="Кол-во текущих игроков")
-    players = models.ManyToManyField(SteamUser, blank=True, verbose_name="Кол-во текущих игроков")
+    players = models.ManyToManyField(SteamUser, blank=True, verbose_name="Текущие игроки")
     lottery_genres = models.ManyToManyField(Genre, verbose_name="Жанры игры из стим")
     abstract_lottery = models.ForeignKey(AbstractLottery, on_delete=models.SET_NULL, null=True,
                                          verbose_name='Родительский розыгрыш')
