@@ -185,9 +185,6 @@ def create_lottery_from_abstract(abstract):
     )
 
     genres = abstract.lottery_genres.all()
-
-    print(genres)
-
     game.lottery_genres.set(genres)
 
 
