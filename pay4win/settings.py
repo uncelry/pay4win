@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'lottery.apps.LotteryConfig',
 
+    # Sitemaps
+    'django.contrib.sitemaps',
+
     # All above goes for 'allauth'
     'django.contrib.sites',
     'allauth',
