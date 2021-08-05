@@ -1,0 +1,168 @@
+{% extends "base_generic.html" %}
+
+{% load static %}
+
+{% block bg_img %}
+    style="background-image: url({% static 'img/main_bg.png' %})"
+{% endblock %}
+
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/lotterygame_list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/libs/ion.rangeSlider.min.css' %}"/>
+    <script src="{% static 'js/libs/jquery.min.js' %}"></script>
+    <script src="{% static 'js/libs/ion.rangeSlider.min.js' %}"></script>
+    <script src="{% static 'js/lotterygame_list.js' %}"></script>
+{% endblock %}
+
+{% block title %}<title>Pay4Win - Поиск розыгрышей</title>{% endblock %}
+
+{% block content %}
+
+    {% if lotterygame_list %}
+        <main class="container">
+            <form class="input-group mb-3" action="" method="get">
+
+                <div class="slf-search-form-group-1">
+                    <div class="slf-search-form-group-1-inner">
+                        <input id="slf-search-game-input" type="text" class="form-control" aria-label="Search by game" placeholder="Поиск по названию игры" autocomplete="off">
+                        <label for="slf-search-game-input" class="input-group-text slf-search-game-input-loop"><i class="bi bi-search"></i></label>
+                    </div>
+
+                    <div class="slf-search-form-group-1-inner-bottom">
+                        <select class="form-select slf-search-sort-select" aria-label="Sort select">
+                            <option selected>Сортировать</option>
+                            <option value="new-to-old">Сначала новые</option>
+                            <option value="old-to-new">Сначала старые</option>
+                            <option value="exp-to-cheap">По убыванию цены билета</option>
+                            <option value="cheap-to-exp">По возрастанию цены билета</option>
+                            <option value="empty-to-full">Сначала больше оставшихся билетов</option>
+                            <option value="full-to-empty">Сначала больше купленных билетов</option>
+                        </select>
+
+                        <div class="slf-search-form-bot">
+                            <label class="form-check-label slf-search-form-check" for="flexCheckDefault">
+                                Скрывать пустые <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slf-search-selects-and-slider-wrapper">
+                    <div class="slf-search-selects-wrapper">
+                        <select class="form-select slf-search-genre-select" aria-label="Genre select">
+                            <option selected>По жанру</option>
+                            {% if genre_list %}
+                                {% for genre in genre_list %}
+                                    <option value="{{ genre.pk }}">{{ genre.name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+
+                        <select class="form-select slf-search-type-select" aria-label="Type select">
+                            <option selected>По типу</option>
+                            <option value="Gold">Золото</option>
+                            <option value="Silver">Серебро</option>
+                            <option value="Bronze">Бронза</option>
+                        </select>
+                    </div>
+
+                    <div class="slf-search-price-wrapper">
+                        <label for="slf-search-price-amount-min" class='slf-search-price-amounts-labels'>Цена от</label>
+                        <input id="slf-search-form-price-input-from" type="text" id="slf-search-price-amount-min" class="slf-search-price-amounts" value="{{ min_ticket_price }}" def-price="{{ min_ticket_price }}" autocomplete="off">
+                        <input type="text" id="rangePrimary" name="rangePrimary" value="">
+                        <label for="slf-search-price-amount-max" class='slf-search-price-amounts-labels'>до</label>
+                        <input id="slf-search-form-price-input-to" type="text" id="slf-search-price-amount-max" class="slf-search-price-amounts" value="{{ max_ticket_price }}" def-price="{{ max_ticket_price }}" autocomplete="off">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary slf-search-form-send" type="submit">Применить</button>
+            </form>
+
+
+            <div class="slf-card-holder">
+                {% for lottery in lotterygame_list %}
+                    <div class="slf-lottery-card slf-active-lottery-card">
+                        <img src="{{ lottery.lottery_game_img }}" alt="" class="slf-lottery-card-img">
+                        <div class="slf-lottery-card-inner">
+                            <div class="slf-lottery-card-info-wrapper">
+                                <div class="slf-lottery-card-info-name-wrapper">
+                                    <h2 class="slf-lottery-card-name">{{ lottery.lottery_game_name }}</h2>
+                                    <p class="slf-lottery-card-genres"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+<!--                {{ lottery.id }}-->
+            </div>
+        </main>
+    {% else %}
+        <main class="container">
+            <p>В данный момент розыгрышей нету<</p>
+        </main>
+    {% endif %}
+
+    <script>
+
+        var $range = $("#rangePrimary"),
+        $inputFrom = $("#slf-search-form-price-input-from"),
+        $inputTo = $("#slf-search-form-price-input-to"),
+        instance,
+        min = {{ min_ticket_price }},
+        max = {{ max_ticket_price }},
+        from = {{ min_ticket_price }},
+        to = {{ max_ticket_price }};
+
+        $range.ionRangeSlider({
+            type: "double",
+            min: min,
+            max: max,
+            from: {{ min_ticket_price }},
+            to: {{ max_ticket_price }},
+            onStart: updateInputs,
+            onChange: updateInputs
+        });
+
+        instance = $range.data("ionRangeSlider");
+
+        function updateInputs (data) {
+            from = data.from;
+            to = data.to;
+
+            $inputFrom.prop("value", from);
+            $inputTo.prop("value", to);
+        }
+
+        $inputFrom.on("input", function () {
+            var val = $(this).prop("value");
+
+            // validate
+            if (val < min) {
+                val = min;
+            } else if (val > to) {
+                val = to;
+            }
+
+            instance.update({
+                from: val
+            });
+        });
+
+        $inputTo.on("input", function () {
+            var val = $(this).prop("value");
+
+            // validate
+            if (val < from) {
+                val = from;
+            } else if (val > max) {
+                val = max;
+            }
+
+            instance.update({
+                to: val
+            });
+        });
+    </script>
+
+{% endblock %}

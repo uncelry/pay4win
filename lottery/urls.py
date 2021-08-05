@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^contacts/$', views.contacts, name='contacts'),
     url(r'^manual/$', views.manual, name='manual'),
     url(r'^types/$', views.types, name='types'),
+    url(r'^search/$', views.LotteryGameListView.as_view(), name='search'),
 
     url(r'^login/$', views.steam_login, name='steam_login'),
     url(r'^logout/$', views.steam_logout, name='steam_logout'),

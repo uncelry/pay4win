@@ -6,7 +6,7 @@ from django.views import View
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect, request
 from django.views import generic
-from .models import FAQ
+from .models import FAQ, LotteryGame, Genre
 
 
 STEAM_OPENID_URL = "https://steamcommunity.com/openid"
@@ -72,3 +72,22 @@ def manual(request):
 def types(request):
 
     return render(request, 'lottery/types.html')
+
+
+# Search view
+class LotteryGameListView(generic.ListView):
+    model = LotteryGame
+
+    def get_queryset(self):
+        return LotteryGame.objects.order_by('-time_started')[:10]
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get the context
+        context = super(LotteryGameListView, self).get_context_data(**kwargs)
+        # Create any data and add it to the context
+        context['genre_list'] = Genre.objects.all()
+
+        context['min_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('ticket_price')[0].ticket_price
+        context['max_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('-ticket_price')[0].ticket_price
+
+        return context

@@ -613,6 +613,7 @@ footer{
     padding: 0;
     overflow: hidden;
     border-radius: 0;
+    border: 1px solid #000000;
 }
 
 .slf-nav-steam-user-links a{
