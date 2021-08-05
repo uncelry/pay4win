@@ -143,7 +143,7 @@ class AbstractLottery(models.Model):
                                                                                                'Бронза - 20 билетов',
                                     verbose_name='Тип розыгрыша')
     lottery_game = models.CharField(max_length=300, verbose_name="Ссылка на игру")
-    lottery_game_img = models.CharField(max_length=500, default='', verbose_name="Ссылка на картинку игры (230x320)")
+    lottery_game_img = models.ImageField(verbose_name="Ссылка на картинку игры (230x320)")
     lottery_game_name = models.CharField(max_length=250, default='', verbose_name="Название игры steam")
     lottery_game_desc = models.TextField(max_length=1000, default='', verbose_name="Описание игры")
     game_price = models.IntegerField(verbose_name="Цена игры Steam в рублях")
@@ -171,7 +171,7 @@ def create_lottery_from_abstract(abstract):
     game = LotteryGame.objects.create(
         lottery_type=abstract.lottery_type,
         lottery_game=abstract.lottery_game,
-        lottery_game_img=abstract.lottery_game_img,
+        lottery_game_img=abstract.lottery_game_img.url,
         lottery_game_name=abstract.lottery_game_name,
         lottery_game_desc=abstract.lottery_game_desc,
         time_started=now(),
