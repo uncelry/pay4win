@@ -82,7 +82,7 @@
 
             <div class="slf-card-holder">
                 {% for lottery in lotterygame_list %}
-                    <div class="slf-lottery-card slf-active-lottery-card {% if lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
+                    <div class="slf-lottery-card slf-active-lottery-card  {% if not user.is_authenticated %}slf-lottery-card-user-not-logged-in-small{% endif %} {% if lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
                         <img src="{{ lottery.lottery_game_img }}" alt="" class="slf-lottery-card-img">
                         <div class="slf-lottery-card-inner">
                             <div class="slf-lottery-card-info-wrapper">
@@ -137,12 +137,14 @@
                             </p>
 
                             <p class="slf-lottery-card-ticket-price {% if user.is_authenticated %}slf-lottery-card-ticket-price-user-logged-in{% endif %}">
-                                Цена билета: {{ lottery.ticket_price }}&#8381;
+                                Цена билета: <strong>{{ lottery.ticket_price }}&#8381;</strong>
                             </p>
 
                         </div>
                     </div>
                 {% endfor %}
+
+                <a class="btn btn-primary slf-lottery-card-wrapper-load-more-btn" href="#">Подгрузить ещё</a>
             </div>
         </main>
     {% else %}

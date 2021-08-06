@@ -329,6 +329,10 @@ form{
     font-weight: 700;
     color: #000000;
     font-size: 1.6rem;
+    width: 217px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .slf-lottery-card-genres{
@@ -542,5 +546,206 @@ form{
     background-color: #BDAF34FF;
     color: #000000;
 }
+
+.slf-lottery-card-ticket-price strong{
+    text-decoration: underline;
+}
+
+.slf-lottery-card-wrapper-load-more-btn{
+    line-height: 65px;
+    background-color: #FFFFFF;
+    color: #595959FF;
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 300;
+    margin: 0 auto 20px auto;
+    border: 3px #a7d1e6 solid;
+    border-radius: 40px;
+    width: 350px;
+    font-size: 1.2rem;
+}
+
+.slf-lottery-card-wrapper-load-more-btn:active, .slf-lottery-card-wrapper-load-more-btn:hover, .slf-lottery-card-wrapper-load-more-btn:focus{
+    outline: none;
+    box-shadow: none;
+    border: 3px #a7d1e6 solid;
+    background-color: #D3D3D3FF;
+    color: #595959FF;
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+    .slf-lottery-card-info-wrapper{
+        flex-direction: column;
+    }
+
+    .slf-lottery-card-info-name-wrapper{
+        align-items: flex-start;
+        position: absolute;
+    }
+
+    .slf-lottery-card-lottery-info-wrapper{
+        align-items: flex-end;
+    }
+
+    .slf-lottery-card-participate{
+        margin-top: 20px;
+        width: unset;
+    }
+
+    .slf-lottery-card-game-desc{
+        display: none;
+    }
+
+    .slf-lottery-card-progress{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .slf-lottery-card-ticket-price-user-logged-in{
+        margin-top: 0;
+    }
+
+    .slf-lottery-card-user-not-logged-in-small .slf-lottery-card-participate{
+        margin-top: 5px;
+        line-height: 68px;
+    }
+
+    .slf-lottery-card-user-not-logged-in-small .slf-lottery-card-progress{
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .slf-lottery-card-user-not-logged-in-small .slf-lottery-card-not-logged-in-btn{
+        max-width: unset;
+    }
+
+    .slf-lottery-card-name{
+        margin-bottom: 0;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px){
+    .slf-lottery-card{
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+    }
+    .slf-lottery-card-info-wrapper{
+        flex-direction: column;
+    }
+
+    .slf-lottery-card-info-name-wrapper{
+        align-items: flex-start;
+        position: absolute;
+    }
+
+    .slf-lottery-card-lottery-info-wrapper{
+        align-items: flex-end;
+    }
+
+    .slf-lottery-card-participate{
+        margin-top: 20px;
+        width: unset;
+    }
+
+    .slf-lottery-card-game-desc{
+        display: none;
+    }
+
+    .slf-lottery-card-progress{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .slf-lottery-card-ticket-price-user-logged-in{
+        margin-top: 0;
+    }
+
+    .slf-lottery-card-user-not-logged-in-small .slf-lottery-card-participate{
+        margin-top: 5px;
+        line-height: 68px;
+    }
+
+    .slf-lottery-card-user-not-logged-in-small .slf-lottery-card-progress{
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .slf-lottery-card-user-not-logged-in-small .slf-lottery-card-not-logged-in-btn{
+        max-width: unset;
+    }
+
+    .slf-lottery-card-name{
+        margin-bottom: 0;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .slf-lottery-card{
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+    }
+    .slf-lottery-card-info-wrapper{
+        flex-direction: column;
+    }
+
+    .slf-lottery-card-info-name-wrapper{
+        align-items: center;
+    }
+
+    .slf-lottery-card-lottery-info-wrapper{
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .slf-lottery-card-participate{
+        margin-top: 20px;
+        width: unset;
+    }
+
+    .slf-lottery-card-game-desc{
+        display: none;
+    }
+
+    .slf-lottery-card-progress{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .slf-lottery-card-ticket-price-user-logged-in{
+        margin-top: 0;
+    }
+
+    .slf-lottery-card-user-not-logged-in-small .slf-lottery-card-participate{
+        margin-top: 5px;
+        line-height: 68px;
+    }
+
+    .slf-lottery-card-user-not-logged-in-small .slf-lottery-card-progress{
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    .slf-lottery-card-user-not-logged-in-small .slf-lottery-card-not-logged-in-btn{
+        max-width: unset;
+    }
+
+    .slf-lottery-card-name{
+        margin-bottom: 0;
+    }
+
+    .slf-lottery-card-not-logged-in-btn{
+        line-height: 20px;
+        min-height: 60px;
+    }
+
+    .slf-lottery-card-wrapper-load-more-btn{
+        width: auto;
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+}
+
 /* Карточка розыгрыша (конец) */
 
