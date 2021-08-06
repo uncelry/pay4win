@@ -118,11 +118,27 @@
                             </div>
 
                             <div class="slf-lottery-card-progress">
-                                <div class="progress-bar stripes animated slower" style="width: {{ lottery.percent_bought }}%"></div>
+                                <div class="progress-bar stripes animated slower" style="width: {{ lottery.lottery_progress }}%"></div>
                                 <p class="slf-lottery-card-progress-tickets">
                                     {{ lottery.tickets_bought }}/{{ lottery.tickets_amount }}<br><span>БИЛЕТОВ</span>
                                 </p>
                             </div>
+
+                            {% if not user.is_authenticated %}
+                                <a class="btn btn-primary slf-lottery-card-not-logged-in-btn" href="{% url "steam_login" %}"><img src="{% static 'img/lottery-card-steam-btn.png' %}" alt=""> Войти через STEAM, чтобы играть!</a>
+                            {% endif %}
+
+                            <p class="slf-lottery-card-game-desc {% if user.is_authenticated %}slf-lottery-card-game-desc-user-logged-in{% endif %}">
+                                {% if user.is_authenticated %}
+                                    {{ lottery.lottery_game_desc|truncatechars:480 }}
+                                {% else %}
+                                    {{ lottery.lottery_game_desc|truncatechars:200 }}
+                                {% endif %}
+                            </p>
+
+                            <p class="slf-lottery-card-ticket-price {% if user.is_authenticated %}slf-lottery-card-ticket-price-user-logged-in{% endif %}">
+                                Цена билета: {{ lottery.ticket_price }}&#8381;
+                            </p>
 
                         </div>
                     </div>
@@ -153,7 +169,8 @@
             from: {{ min_ticket_price }},
             to: {{ max_ticket_price }},
             onStart: updateInputs,
-            onChange: updateInputs
+            onChange: updateInputs,
+            postfix: "₽"
         });
 
         instance = $range.data("ionRangeSlider");

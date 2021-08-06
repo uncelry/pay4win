@@ -291,8 +291,8 @@ form{
     display: flex;
     background-color: #f2f2ef;
     width: 100%;
-    height: auto;
     margin-bottom: 45px;
+    height: 320px;
 }
 
 .slf-lottery-card-img{
@@ -425,6 +425,7 @@ form{
     justify-content: stretch;
     flex-direction: column;
     margin-top: 10px;
+    margin-bottom: 15px;
 }
 
 .slf-lottery-card-progress-tickets{
@@ -495,6 +496,51 @@ form{
 
 .stripes.animated.slower {
   animation-duration: 1.5s;
+}
+
+.slf-lottery-card-game-desc{
+    margin-top: 10px;
+    font-weight: 300;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.slf-lottery-card-game-desc-user-logged-in{
+    -webkit-line-clamp: 4;
+}
+
+.slf-lottery-card-ticket-price{
+    font-weight: 300;
+    font-size: 0.9rem;
+    color: #272727;
+    margin-top: 4px;
+}
+
+.slf-lottery-card-ticket-price-user-logged-in{
+    margin-top: 10px;
+}
+
+.slf-lottery-card-not-logged-in-btn{
+    color: #000000;
+    background-color: #f6e444;
+    outline: none;
+    box-shadow: none;
+    border: none;
+    max-width: 360px;
+    line-height: 45px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.slf-lottery-card-not-logged-in-btn:active, .slf-lottery-card-not-logged-in-btn:hover, .slf-lottery-card-not-logged-in-btn:focus{
+    outline: none;
+    box-shadow: none;
+    border: none;
+    background-color: #BDAF34FF;
+    color: #000000;
 }
 /* Карточка розыгрыша (конец) */
 

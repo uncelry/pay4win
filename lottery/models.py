@@ -244,6 +244,7 @@ class LotteryGame(models.Model):
                                      help_text='Идет/Выбор победителя/Окончена')
     tickets_bought = models.IntegerField(default=0, verbose_name="Куплено билетов")
     tickets_left = models.IntegerField(verbose_name="Билетов осталось")
+    lottery_progress = models.IntegerField(default=0, verbose_name="Процент купленных билетов")
 
 
 # Билет (привязан к игроку и розыгрышу)
