@@ -747,5 +747,9 @@ form{
     }
 }
 
+.slf-lottery-card-hidden{
+    display: none;
+}
+
 /* Карточка розыгрыша (конец) */
 

@@ -79,7 +79,7 @@ class LotteryGameListView(generic.ListView):
     model = LotteryGame
 
     def get_queryset(self):
-        return LotteryGame.objects.order_by('-time_started')[:10]
+        return LotteryGame.objects.order_by('-time_started')
 
     def get_context_data(self, **kwargs):
         # Call the base implementation first to get the context
