@@ -48,7 +48,7 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-white fw-bold fs-5 slf-steam-login-inv slf-steam-logged-inv" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false" href=""><span>{{ user.steamuser.persona_name }}</span> <img class="slf-steam-logged-img" src="{{ user.steamuser.avatar }}" alt=""></a>
                 <ul class="dropdown-menu slf-nav-steam-user-links dropdown-menu-lg-end" aria-labelledby="navbarDropdownMenuLink">
-                  <li><a class="dropdown-item" href="#">Профиль</a></li>
+                  <li><a class="dropdown-item" href="{% url 'user' user.steamuser.pk %}">Профиль</a></li>
                   <li><a class="dropdown-item" href="#">Пополнить</a></li>
                   <li><a class="dropdown-item" href="{% url "steam_logout" %}">Выйти</a></li>
                   <li><hr class="dropdown-divider"></li>
@@ -64,7 +64,7 @@
     </nav>
 
     <!--  Content  -->
-    {% block content %}<p>В данный момент на этой странице нет никакого котента...</p>{% endblock %}
+    {% block content %}<p>В данный момент на этой странице нет никакого контента...</p>{% endblock %}
 
     <!--  Footer  -->
     <footer class="slf-footer-wrapper">
