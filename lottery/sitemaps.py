@@ -9,7 +9,8 @@ class StaticViewSitemap(Sitemap):
             'faq',
             'contacts',
             'manual',
-            'types'
+            'types',
+            'search',
         ]
 
     def location(self, item):
