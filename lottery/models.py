@@ -9,7 +9,6 @@ from django.db.models.signals import post_save
 from allauth.socialaccount.models import SocialAccount
 from django.utils.timezone import now
 import requests
-from bs4 import BeautifulSoup
 
 
 # Жанр
