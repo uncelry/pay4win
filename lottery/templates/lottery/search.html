@@ -19,7 +19,7 @@
 
 {% block content %}
 
-    {% if lotterygame_list %}
+    {% if check_for_games > 0 %}
         <main class="container">
             <form class="input-group mb-3" action="" method="get">
 
@@ -78,7 +78,7 @@
                 <button class="btn btn-primary slf-search-form-send" type="submit">Применить</button>
             </form>
 
-
+            {% if lotterygame_list %}
             <div id="slfSearchCardHolder" class="slf-card-holder">
                 {% for lottery in lotterygame_list %}
                     <div class="slf-lottery-card slf-active-lottery-card  {% if not user.is_authenticated %}slf-lottery-card-user-not-logged-in-small{% endif %} {% if lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
@@ -145,6 +145,9 @@
 
                 <a id="slfSearchShowMoreBtn" class="btn btn-primary slf-lottery-card-wrapper-load-more-btn" href="#" onclick="showMore(event, this);">Подгрузить ещё</a>
             </div>
+            {% else %}
+                <p style="text-align: center">По вашему запросу ничего на найдено. Попробуйте применить другие настройки фильтра или <a href="{% url "search" %}">сбросить фильтр</a></p>
+            {% endif %}
         </main>
     {% else %}
         <main class="container">

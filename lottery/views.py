@@ -81,8 +81,12 @@ def search(request):
 
     context['genre_list'] = Genre.objects.all()
 
-    context['min_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('ticket_price')[0].ticket_price
-    context['max_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('-ticket_price')[0].ticket_price
+    if LotteryGame.objects.count() > 0:
+        context['min_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('ticket_price')[0].ticket_price
+        context['max_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('-ticket_price')[0].ticket_price
+    else:
+        context['min_ticket_price'] = 0
+        context['max_ticket_price'] = 0
 
     lotterygame_list = list()
 
@@ -181,5 +185,7 @@ def search(request):
     else:
         # Если GET пустой (без фильтра)
         context['lotterygame_list'] = LotteryGame.objects.order_by('-time_started')
+
+    context['check_for_games'] = LotteryGame.objects.count()
 
     return render(request, 'lottery/search.html', context=context)
