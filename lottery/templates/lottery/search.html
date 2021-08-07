@@ -8,11 +8,11 @@
 
 
 {% block links %}
-    <link rel="stylesheet" href="{% static 'css/lotterygame_list.css' %}">
+    <link rel="stylesheet" href="{% static 'css/search.css' %}">
     <link rel="stylesheet" href="{% static 'css/libs/ion.rangeSlider.min.css' %}"/>
     <script src="{% static 'js/libs/jquery.min.js' %}"></script>
     <script src="{% static 'js/libs/ion.rangeSlider.min.js' %}"></script>
-    <script src="{% static 'js/lotterygame_list.js' %}"></script>
+    <script src="{% static 'js/search.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Поиск розыгрышей</title>{% endblock %}
@@ -25,24 +25,23 @@
 
                 <div class="slf-search-form-group-1">
                     <div class="slf-search-form-group-1-inner">
-                        <input id="slf-search-game-input" type="text" class="form-control" aria-label="Search by game" placeholder="Поиск по названию игры" autocomplete="off">
+                        <input id="slf-search-game-input" type="text" class="form-control" aria-label="Search by game" placeholder="Поиск по названию игры" autocomplete="off" name="search_game_name" value="{% if request.GET.search_game_name %}{{ request.GET.search_game_name }}{% endif %}">
                         <label for="slf-search-game-input" class="input-group-text slf-search-game-input-loop"><i class="bi bi-search"></i></label>
                     </div>
 
                     <div class="slf-search-form-group-1-inner-bottom">
-                        <select class="form-select slf-search-sort-select" aria-label="Sort select">
-                            <option selected>Сортировать</option>
-                            <option value="new-to-old">Сначала новые</option>
-                            <option value="old-to-new">Сначала старые</option>
-                            <option value="exp-to-cheap">По убыванию цены билета</option>
-                            <option value="cheap-to-exp">По возрастанию цены билета</option>
-                            <option value="empty-to-full">Сначала больше оставшихся билетов</option>
-                            <option value="full-to-empty">Сначала больше купленных билетов</option>
+                        <select class="form-select slf-search-sort-select" aria-label="Sort select" name="search_sort_by">
+                            <option value="new-to-old" {% if current_sort %}{% if current_sort == "new-to-old" %}selected{% endif %}{% endif %} {% if not current_sort %}selected{% endif %}>Сначала новые</option>
+                            <option value="old-to-new" {% if current_sort %}{% if current_sort == "old-to-new" %}selected{% endif %}{% endif %}>Сначала старые</option>
+                            <option value="exp-to-cheap" {% if current_sort %}{% if current_sort == "exp-to-cheap" %}selected{% endif %}{% endif %}>По убыванию цены билета</option>
+                            <option value="cheap-to-exp" {% if current_sort %}{% if current_sort == "cheap-to-exp" %}selected{% endif %}{% endif %}>По возрастанию цены билета</option>
+                            <option value="empty-to-full" {% if current_sort %}{% if current_sort == "empty-to-full" %}selected{% endif %}{% endif %}>Сначала начинающиеся игры</option>
+                            <option value="full-to-empty" {% if current_sort %}{% if current_sort == "full-to-empty" %}selected{% endif %}{% endif %}>Сначала подходящие к концу игры</option>
                         </select>
 
                         <div class="slf-search-form-bot">
                             <label class="form-check-label slf-search-form-check" for="flexCheckDefault">
-                                Скрывать пустые <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+                                Скрывать пустые <input class="form-check-input" type="checkbox" value="hide-empty-games" id="flexCheckDefault" name="search_hide_empty" {% if request.GET.search_hide_empty %}checked{% endif %}>
                             </label>
                         </div>
                     </div>
@@ -50,20 +49,20 @@
 
                 <div class="slf-search-selects-and-slider-wrapper">
                     <div class="slf-search-selects-wrapper">
-                        <select class="form-select slf-search-genre-select" aria-label="Genre select">
-                            <option selected>По жанру</option>
+                        <select class="form-select slf-search-genre-select" aria-label="Genre select" name="search_genre">
+                            <option value="" {% if not current_genre %}selected{% endif %}>Любой жанр</option>
                             {% if genre_list %}
                                 {% for genre in genre_list %}
-                                    <option value="{{ genre.pk }}">{{ genre.name }}</option>
+                                    <option value="{{ genre.pk }}" {% if current_genre %}{% if current_genre == genre %}selected{% endif %}{% endif %}>{{ genre.name }}</option>
                                 {% endfor %}
                             {% endif %}
                         </select>
 
-                        <select class="form-select slf-search-type-select" aria-label="Type select">
-                            <option selected>По типу</option>
-                            <option value="Gold">Золото</option>
-                            <option value="Silver">Серебро</option>
-                            <option value="Bronze">Бронза</option>
+                        <select class="form-select slf-search-type-select" aria-label="Type select" name="search_type">
+                            <option value="" {% if not current_type %}selected{% endif %}>Любой тип</option>
+                            <option value="Gold" {% if current_type %}{% if current_type == "g" %}selected{% endif %}{% endif %}>Золото</option>
+                            <option value="Silver" {% if current_type %}{% if current_type == "s" %}selected{% endif %}{% endif %}>Серебро</option>
+                            <option value="Bronze" {% if current_type %}{% if current_type == "b" %}selected{% endif %}{% endif %}>Бронза</option>
                         </select>
                     </div>
 
@@ -149,7 +148,7 @@
         </main>
     {% else %}
         <main class="container">
-            <p>В данный момент розыгрышей нету<</p>
+            <p>В данный момент розыгрышей нету</p>
         </main>
     {% endif %}
 
@@ -161,15 +160,15 @@
         instance,
         min = {{ min_ticket_price }},
         max = {{ max_ticket_price }},
-        from = {{ min_ticket_price }},
-        to = {{ max_ticket_price }};
+        from = {% if price_range_min %}{{ price_range_min }} {% else %} {{ min_ticket_price }} {% endif %},
+        to = {% if price_range_max %}{{ price_range_max }} {% else %} {{ max_ticket_price }} {% endif %};
 
         $range.ionRangeSlider({
             type: "double",
             min: min,
             max: max,
-            from: {{ min_ticket_price }},
-            to: {{ max_ticket_price }},
+            from: {% if price_range_min %}{{ price_range_min }} {% else %} {{ min_ticket_price }} {% endif %},
+            to: {% if price_range_max %}{{ price_range_max }} {% else %} {{ max_ticket_price }} {% endif %},
             onStart: updateInputs,
             onChange: updateInputs,
             postfix: "₽"

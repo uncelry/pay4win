@@ -75,19 +75,111 @@ def types(request):
 
 
 # Search view
-class LotteryGameListView(generic.ListView):
-    model = LotteryGame
+def search(request):
 
-    def get_queryset(self):
-        return LotteryGame.objects.order_by('-time_started')
+    context = dict()
 
-    def get_context_data(self, **kwargs):
-        # Call the base implementation first to get the context
-        context = super(LotteryGameListView, self).get_context_data(**kwargs)
-        # Create any data and add it to the context
-        context['genre_list'] = Genre.objects.all()
+    context['genre_list'] = Genre.objects.all()
 
-        context['min_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('ticket_price')[0].ticket_price
-        context['max_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('-ticket_price')[0].ticket_price
+    context['min_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('ticket_price')[0].ticket_price
+    context['max_ticket_price'] = LotteryGame.objects.filter(lottery_state='o').order_by('-ticket_price')[0].ticket_price
 
-        return context
+    lotterygame_list = list()
+
+    if request.GET:
+        # Если GET не пустой (с фильтром)
+
+        lotterygame_list = LotteryGame.objects.filter(lottery_state='o')
+
+
+        # Фильтр по названию игры
+        if 'search_game_name' in request.GET:
+            if request.GET['search_game_name']:
+                lotterygame_list = lotterygame_list.filter(lottery_state='o').filter(lottery_game_name__contains=request.GET['search_game_name'])
+
+
+
+
+        # Фильтр по жанру
+        if 'search_genre' in request.GET:
+            if request.GET['search_genre']:
+                filtred_genre = Genre.objects.filter(pk=request.GET['search_genre'])[0]
+                lotterygame_list = lotterygame_list.filter(lottery_genres=filtred_genre)
+
+                context['current_genre'] = filtred_genre
+
+
+        # Фильтр по типу
+        if 'search_type' in request.GET:
+            if request.GET['search_type']:
+
+                game_type = None
+                if request.GET['search_type'] == 'Gold':
+                    game_type = 'g'
+                elif request.GET['search_type'] == 'Silver':
+                    game_type = 's'
+                else:
+                    game_type = 'b'
+
+                lotterygame_list = lotterygame_list.filter(lottery_type=game_type)
+
+                context['current_type'] = game_type
+
+
+        # Фильтр по скрытию пустых
+        if 'search_hide_empty' in request.GET:
+            lotterygame_list = lotterygame_list.filter(tickets_bought__gt=0)
+
+
+        # Фильтр по цене
+        if 'rangePrimary' in request.GET:
+            if request.GET['rangePrimary']:
+                min_max_price_range = request.GET['rangePrimary'].split(';')
+
+                lotterygame_list = lotterygame_list.filter(ticket_price__gte=min_max_price_range[0])
+                lotterygame_list = lotterygame_list.filter(ticket_price__lte=min_max_price_range[1])
+
+                context['price_range_min'] = min_max_price_range[0]
+                context['price_range_max'] = min_max_price_range[1]
+
+
+        # Сортировка
+        context['current_sort'] = 'new-to-old'
+        if 'search_sort_by' in request.GET:
+            if request.GET['search_sort_by']:
+
+                sort_type = request.GET['search_sort_by']
+
+                if sort_type == 'new-to-old':
+                    lotterygame_list = lotterygame_list.order_by('-time_started')
+                    context['current_sort'] = 'new-to-old'
+                elif sort_type == 'old-to-new':
+                    lotterygame_list = lotterygame_list.order_by('time_started')
+                    context['current_sort'] = 'old-to-new'
+                elif sort_type == 'exp-to-cheap':
+                    lotterygame_list = lotterygame_list.order_by('-ticket_price')
+                    context['current_sort'] = 'exp-to-cheap'
+                elif sort_type == 'cheap-to-exp':
+                    lotterygame_list = lotterygame_list.order_by('ticket_price')
+                    context['current_sort'] = 'cheap-to-exp'
+                elif sort_type == 'empty-to-full':
+                    lotterygame_list = lotterygame_list.order_by('lottery_progress')
+                    context['current_sort'] = 'empty-to-full'
+                elif sort_type == 'full-to-empty':
+                    lotterygame_list = lotterygame_list.order_by('-lottery_progress')
+                    context['current_sort'] = 'full-to-empty'
+
+            else:
+                lotterygame_list = lotterygame_list.order_by('-time_started')
+        else:
+            lotterygame_list = lotterygame_list.order_by('-time_started')
+
+
+        context['lotterygame_list'] = lotterygame_list
+
+
+    else:
+        # Если GET пустой (без фильтра)
+        context['lotterygame_list'] = LotteryGame.objects.order_by('-time_started')
+
+    return render(request, 'lottery/search.html', context=context)

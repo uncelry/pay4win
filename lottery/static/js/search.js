@@ -8,6 +8,14 @@ let shown_now;
 document.addEventListener('DOMContentLoaded', function(){
     cards_arr = document.querySelectorAll('#slfSearchCardHolder > .slf-lottery-card');
 
+    if (cards_arr.length <= AMOUNT_FOR_ONE_TIME){
+        let btn_to_hide = document.querySelectorAll('#slfSearchShowMoreBtn')[0];
+        btn_to_hide.classList.add('slf-lottery-card-hidden');
+        btn_to_hide.setAttribute('onclick', '');
+
+        return 0;
+    }
+
     for(i = AMOUNT_FOR_ONE_TIME; i < cards_arr.length; i++){
         cards_arr[i].classList.add('slf-lottery-card-hidden');
     }
