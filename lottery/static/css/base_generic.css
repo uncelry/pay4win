@@ -1,3 +1,9 @@
+body{
+    background-position: top center;
+    background-repeat: no-repeat;
+    background-color: #2e2e2e;
+}
+
 body > nav.navbar > div.container{
     padding-left: 0;
     padding-right: 0;
@@ -135,6 +141,10 @@ body > nav.navbar > div.container{
 
     .slf-top-nav{
         margin-bottom: 20px;
+    }
+
+    body{
+        background-color: unset;
     }
 }
 
