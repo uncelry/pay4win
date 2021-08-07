@@ -6,7 +6,7 @@ from django.views import View
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect, request
 from django.views import generic
-from .models import FAQ, LotteryGame, Genre
+from .models import FAQ, LotteryGame, Genre, SteamUser
 
 
 STEAM_OPENID_URL = "https://steamcommunity.com/openid"
@@ -189,3 +189,9 @@ def search(request):
     context['check_for_games'] = LotteryGame.objects.count()
 
     return render(request, 'lottery/search.html', context=context)
+
+
+class UserDetailView(generic.DetailView):
+    model = SteamUser
+
+    template_name = 'lottery/user.html'
