@@ -8,8 +8,8 @@
 
 {% block links %}
     <link rel="stylesheet" href="{% static 'css/user.css' %}">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.0/dist/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <script src="{% static 'js/libs/chart.min.js' %}"></script>
+    <script src="{% static 'js/libs/chartjs-plugin-datalabels@2.0.0' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Пользователь {{ steamuser.persona_name }}</title>{% endblock %}
@@ -21,9 +21,10 @@
             <div class="slf-user-img-and-privacy">
                 <img class="slf-user-large-avatar" src="{{ steamuser.avatar_full }}" alt="">
                 {% if user.steamuser.pk == steamuser.pk %}
-                <form class="slf-user-form">
+                <form class="slf-user-form" method="post" action="">
+                    {% csrf_token %}
                     <div class="form-check form-switch slf-user-owner-switch">
-                        <input class="form-check-input slf-user-form-check-box" type="checkbox" id="flexSwitchCheckChecked">
+                        {{ form.is_private }}
                         <label class="form-check-label" for="flexSwitchCheckChecked">Сделать профиль приватным</label>
                     </div>
                     <button type="submit" class="btn btn-primary mb-3 slf-user-form-save">Применить</button>
@@ -31,44 +32,44 @@
                 {% endif %}
             </div>
             <div class="slf-user-all-info-wrapper">
-                <div class="slf-user-main-info-wrapper">
-                    <div class="slf-user-closest-info-wrapper">
-                        <h2 class="slf-user-name">{{ steamuser.persona_name }}</h2>
-                        <p class="slf-user-rate" title="Чем ниже рейтинг, тем больше сэкономил пользователь, по сравнению со всеми остальными игроками сервиса">Рейтинг:
-                            <span>
-                                {% for steamuser_in_set in steamusers_set %}
-                                    {% if steamuser_in_set.pk == steamuser.pk %}
-                                        {{ forloop.counter }}
-                                    {% endif %}
-                                {% endfor %}
-                                <i class="bi bi-star-fill"></i>
-                            </span>
-                        </p>
-                    </div>
-                    <div class="slf-user-secondary-info-wrapper">
-                        <p title="Общее кол-во игр, в которых участвовал пользователь">Количество игр: <span>{{ steamuser.lotteries_total_amount }}</span></p>
-                        <p title="Общее кол-во средств, сэкономленных пользователем">Сэкономлено: <span>{{ steamuser.money_saved }} рублей</span></p>
-                    </div>
-                </div>
-
-                <div class="slf-user-info-graphs-wrapper">
-                    {% if steamuser.lotteries_total_amount > 0 %}
-                        <div class="slf-user-info-graph-win-rate">
-                            <canvas id="winRateChart"></canvas>
+                    {% if user.steamuser.pk != steamuser.pk and steamuser.profile_is_private %}
+                        <h2 class="slf-user-name slf-user-name-private-restricted">{{ steamuser.persona_name }}</h2>
+                        <p class="slf-user-name-private-restricted-text">Данный пользователь сделал свою страницу приватной</p>
+                    {% elif user.steamuser.pk == steamuser.pk or not steamuser.profile_is_private %}
+                        <div class="slf-user-main-info-wrapper">
+                            <div class="slf-user-closest-info-wrapper">
+                                <h2 class="slf-user-name">{{ steamuser.persona_name }}</h2>
+                                <p class="slf-user-rate" title="Чем ниже рейтинг, тем больше сэкономил пользователь, по сравнению со всеми остальными игроками сервиса">Рейтинг:
+                                    <span>
+                                        {% for steamuser_in_set in steamusers_set %}
+                                            {% if steamuser_in_set.pk == steamuser.pk %}
+                                                {{ forloop.counter }}
+                                            {% endif %}
+                                        {% endfor %}
+                                        <i class="bi bi-star-fill"></i>
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="slf-user-secondary-info-wrapper">
+                                <p title="Общее кол-во игр, в которых участвовал пользователь">Количество игр: <span>{{ steamuser.lotteries_total_amount }}</span></p>
+                                <p title="Общее кол-во средств, сэкономленных пользователем">Сэкономлено: <span>{{ steamuser.money_saved }} рублей</span></p>
+                            </div>
                         </div>
 
-                        <div class="slf-user-info-graph-type-lotteries">
-                            <canvas id="typeLotteriesChart"></canvas>
-                        </div>
-                    {% else %}
-                        <p class="slf-user-no-games-yet">Чтобы посмотреть статистику, необходимо принять участие хотя бы в одном розыгрыше</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </main>
+                        <div class="slf-user-info-graphs-wrapper">
+                            {% if steamuser.lotteries_total_amount > 0 %}
+                                <div class="slf-user-info-graph-win-rate">
+                                    <canvas id="winRateChart"></canvas>
+                                </div>
 
-<script>
+                                <div class="slf-user-info-graph-type-lotteries">
+                                    <canvas id="typeLotteriesChart"></canvas>
+                                </div>
+                            {% else %}
+                                <p class="slf-user-no-games-yet">Чтобы посмотреть статистику, необходимо принять участие хотя бы в одном розыгрыше</p>
+                            {% endif %}
+                        </div>
+                        <script>
     Chart.register(ChartDataLabels);
 
     const data = {
@@ -128,77 +129,90 @@
 
     });
 </script>
+                        <script>
+                            function beforePrintHandler () {
+                                for (var id in Chart.instances) {
+                                    if (document.querySelectorAll('main')[0].clientWidth === 960){
+                                        Chart.instances[id].options.plugins.datalabels.font.size = 22;
+                                    } else {
+                                        Chart.instances[id].options.plugins.datalabels.font.size = 26;
+                                    }
 
-<script>
-    function beforePrintHandler () {
-        for (var id in Chart.instances) {
-            if (document.querySelectorAll('main')[0].clientWidth < 1320){
-                Chart.instances[id].options.plugins.legend.labels.color = 'red';
-            }
-            Chart.instances[id].resize();
-        }
-    }
+                                    if (document.querySelectorAll('main')[0].clientWidth === 540){
+                                        Chart.instances[id].options.plugins.datalabels.font.size = 22;
+                                    } else {
+                                        Chart.instances[id].options.plugins.datalabels.font.size = 26;
+                                    }
+                                    Chart.instances[id].resize();
+                                }
+                            }
 
-    Chart.register(ChartDataLabels);
+                            Chart.register(ChartDataLabels);
 
-    const data_1 = {
-        labels: [
-            'Золотые',
-            'Серебряные',
-            'Бронзовые'
-        ],
-        datasets: [{
-            label: 'Types',
-            data: [{{steamuser.lotteries_gold_amount}}, {{steamuser.lotteries_silver_amount}}, {{steamuser.lotteries_bronze_amount}}],
-            backgroundColor: [
-                'rgb(235, 193, 72)',
-                'rgb(190, 190, 190)',
-                'rgb(205, 127, 50)'
+                            const data_1 = {
+                                labels: [
+                                    'Золотые',
+                                    'Серебряные',
+                                    'Бронзовые'
+                                ],
+                                datasets: [{
+                                    label: 'Types',
+                                    data: [{{steamuser.lotteries_gold_amount}}, {{steamuser.lotteries_silver_amount}}, {{steamuser.lotteries_bronze_amount}}],
+                                    backgroundColor: [
+                                        'rgb(235, 193, 72)',
+                                        'rgb(190, 190, 190)',
+                                        'rgb(205, 127, 50)'
 
-            ],
-            hoverOffset: 2,
-        }]
-    };
+                                    ],
+                                    hoverOffset: 2,
+                                }]
+                            };
 
-    // === include 'setup' then 'config' above ===
-    let ctx_1 = document.getElementById('typeLotteriesChart');
+                            // === include 'setup' then 'config' above ===
+                            let ctx_1 = document.getElementById('typeLotteriesChart');
 
-    var newLegendClickHandler = function (e, legendItem, legend) {
-        return false;
-    };
+                            var newLegendClickHandler = function (e, legendItem, legend) {
+                                return false;
+                            };
 
-    let chart_1 = new Chart(ctx_1, {
-        type: 'pie',
-        data: data_1,
-        options: {
-            maintainAspectRatio: false,
-            onResize: beforePrintHandler,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    onClick: newLegendClickHandler,
-                    labels: {
-                        // This more specific font property overrides the global property
-                        font: {
-                            size: 16,
-                            family: "'Open Sans', sans-serif"
-                        }
-                    }
-                },
-                datalabels: {
-                    formatter: function(value, context) {
-                      return Math.round((value / {{ steamuser.lotteries_total_amount }}) * 100) + '%';
-                    },
-                    color: '#FFFFFF',
-                    font: {
-                        size: 26,
-                        weight: 'bold'
-                    }
-                }
-            },
+                            let chart_1 = new Chart(ctx_1, {
+                                type: 'pie',
+                                data: data_1,
+                                options: {
+                                    maintainAspectRatio: false,
+                                    onResize: beforePrintHandler,
+                                    plugins: {
+                                        legend: {
+                                            position: 'right',
+                                            onClick: newLegendClickHandler,
+                                            labels: {
+                                                // This more specific font property overrides the global property
+                                                font: {
+                                                    size: 16,
+                                                    family: "'Open Sans', sans-serif"
+                                                }
+                                            }
+                                        },
+                                        datalabels: {
+                                            formatter: function(value, context) {
+                                              return Math.round((value / {{ steamuser.lotteries_total_amount }}) * 100) + '%';
+                                            },
+                                            color: '#FFFFFF',
+                                            font: {
+                                                size: 26,
+                                                weight: 'bold'
+                                            }
+                                        }
+                                    },
 
-        },
+                                },
 
-    });
-</script>
+                            });
+                        </script>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+
 {% endblock %}

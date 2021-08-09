@@ -2,11 +2,12 @@ from django.shortcuts import render
 from django.urls import reverse
 from allauth.socialaccount.providers.openid.views import OpenIDCallbackView, OpenIDLoginView
 from allauth.socialaccount.providers.steam.provider import SteamOpenIDProvider
-from django.views import View
 from django.contrib.auth import logout
-from django.http import HttpResponseRedirect, request
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views import generic
 from .models import FAQ, LotteryGame, Genre, SteamUser
+from .forms import UserPrivacyForm
+from django.shortcuts import get_object_or_404
 
 
 STEAM_OPENID_URL = "https://steamcommunity.com/openid"
@@ -194,14 +195,23 @@ def search(request):
 # User card view
 class UserDetailView(generic.DetailView):
     model = SteamUser
-
     template_name = 'lottery/user.html'
 
     def get_context_data(self, **kwargs):
-        # Call the base implementation first to get the context
         context = super(UserDetailView, self).get_context_data(**kwargs)
-        # Create any data and add it to the context
-
+        context['form'] = UserPrivacyForm(initial={'is_private': context['steamuser'].profile_is_private},
+                                          use_required_attribute=False)
         context['steamusers_set'] = SteamUser.objects.order_by('-money_saved')
 
         return context
+
+    def post(self, request, *args, **kwargs):
+        current_user = get_object_or_404(SteamUser, pk=self.kwargs['pk'])
+
+        form = UserPrivacyForm(self.request.POST)
+
+        if form.is_valid():
+            current_user.profile_is_private = form.cleaned_data['is_private']
+            current_user.save()
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

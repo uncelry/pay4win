@@ -162,3 +162,97 @@ main{
     outline: none !important;
     box-shadow: none !important;
 }
+
+.slf-user-name-private-restricted{
+    margin-left: 25px;
+}
+
+.slf-user-name-private-restricted-text{
+    text-align: center;
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1399px){
+    .slf-user-info-graph-type-lotteries, .slf-user-info-graph-win-rate{
+        width: 45%;
+        height: 300px;
+    }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px){
+    .slf-user-info-graph-type-lotteries, .slf-user-info-graph-win-rate{
+        width: 47%;
+        height: 200px;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+    .slf-user-info-graphs-wrapper{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .slf-user-info-graph-type-lotteries, .slf-user-info-graph-win-rate{
+        width: 80%;
+        height: 300px;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px){
+    .slf-user-info-graphs-wrapper{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .slf-user-info-graph-type-lotteries, .slf-user-info-graph-win-rate{
+        width: 80%;
+        height: 200px;
+    }
+
+    .slf-user-name{
+        margin-bottom: 5px;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .slf-user-no-games-yet{
+                text-align: center;
+    }
+
+    .slf-user-name-private-restricted{
+        text-align: center;
+    }
+
+    .slf-user-wrapper{
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .slf-user-info-graphs-wrapper{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .slf-user-main-info-wrapper{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .slf-user-closest-info-wrapper h2, .slf-user-closest-info-wrapper p{
+        text-align: center;
+    }
+
+    .slf-user-secondary-info-wrapper p{
+        text-align: center;
+    }
+
+    .slf-user-info-graph-win-rate, .slf-user-info-graph-type-lotteries{
+        min-width: unset;
+        width: 100%;
+        height: 200px;
+    }
+
+    .slf-user-info-graph-win-rate{
+        margin-bottom: 15px;
+    }
+
+}
