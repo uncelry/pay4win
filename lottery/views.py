@@ -191,7 +191,17 @@ def search(request):
     return render(request, 'lottery/search.html', context=context)
 
 
+# User card view
 class UserDetailView(generic.DetailView):
     model = SteamUser
 
     template_name = 'lottery/user.html'
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get the context
+        context = super(UserDetailView, self).get_context_data(**kwargs)
+        # Create any data and add it to the context
+
+        context['steamusers_set'] = SteamUser.objects.order_by('-money_saved')
+
+        return context

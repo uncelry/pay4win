@@ -1,0 +1,164 @@
+main{
+    padding: 17px!important;
+    background-color: #FFFFFF;
+    padding-bottom: 65px!important;
+    overflow: hidden;
+    min-height: 100vh;
+    font-family: 'Open Sans', sans-serif!important;
+}
+
+@media screen and (min-width: 992px){
+	body{
+        background-size: 100%;
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-color: #2e2e2e;
+    }
+}
+
+@media screen and (max-width: 575px) {
+	body{
+        background-image: none!important;
+    }
+    main{
+        background-color: white!important;
+    }
+}
+
+.slf-user-wrapper{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.slf-user-large-avatar{
+    pointer-events: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.slf-user-name{
+    font-family: 'Open Sans', sans-serif!important;
+    color: #000000;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.slf-user-main-info-wrapper{
+    display: flex;
+    width: 100%;
+}
+
+.slf-user-closest-info-wrapper{
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    margin-left: 25px;
+}
+
+.slf-user-rate{
+    font-size: 1rem;
+    font-family: 'Open Sans', sans-serif!important;
+    color: #000000;
+    font-weight: 300;
+}
+
+.slf-user-rate span{
+    display: inline-block;
+    color: #FFFFFF;
+    background-color: #e7c963;
+    padding: 2px 10px;
+    font-size: 1rem;
+    font-family: 'Open Sans', sans-serif!important;
+    border-radius: 2px;
+}
+
+.slf-user-secondary-info-wrapper{
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+}
+
+.slf-user-secondary-info-wrapper p{
+    font-size: 1.2rem;
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 700;
+    color: #bebebe;
+    margin-bottom: 4px;
+}
+
+.slf-user-secondary-info-wrapper p span{
+    color: #29abcd;
+    font-weight: 400;
+}
+
+.slf-user-all-info-wrapper{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+}
+
+.slf-user-info-graphs-wrapper{
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+}
+
+.slf-user-info-graph-win-rate{
+    display: flex;
+    width: 40%;
+    min-width: 320px;
+}
+
+.slf-user-info-graph-type-lotteries{
+    display: flex;
+    width: 40%;
+    min-width: 320px;
+}
+
+.slf-user-no-games-yet{
+    margin-bottom: 0;
+}
+
+.slf-user-img-and-privacy{
+    display: flex;
+    flex-direction: column;
+    max-width: 184px;
+}
+
+.slf-user-owner-switch{
+    font-family: 'Open Sans', sans-serif!important;
+}
+
+.slf-user-form{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.slf-user-form-save{
+    margin-top: 10px;
+    background-color: #61abe2;
+    font-family: 'Open Sans', sans-serif!important;
+    border-color: #63B5F1FF;
+}
+
+.slf-user-form-save:active, .slf-user-form-save:hover, .slf-user-form-save:focus{
+    outline: none !important;
+    box-shadow: none !important;
+    border-color: #63B5F1FF;
+    background-color: #447BA4FF;
+}
+
+.slf-user-form-check-box:checked{
+    background-color: #61abe2;
+    border-color: #63B5F1FF;
+}
+
+.slf-user-form-check-box, .slf-user-form-check-box:active, .slf-user-form-check-box:hover, .slf-user-form-check-box:focus{
+    outline: none !important;
+    box-shadow: none !important;
+}

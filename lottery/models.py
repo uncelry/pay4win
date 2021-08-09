@@ -76,10 +76,11 @@ class SteamUser(models.Model):
     lotteries_won_amount = models.IntegerField(default=0, verbose_name="Всего игр выиграно")
     lotteries_lost_amount = models.IntegerField(default=0, verbose_name="Всего игр проиграно")
     lotteries_finished = models.ManyToManyField('LotteryGame', verbose_name="Игры, в которых участвовал пользователь",
-                                                related_name="users_finished_lottery")
+                                                related_name="users_finished_lottery", blank=True)
     lotteries_ongoing = models.ManyToManyField('LotteryGame', verbose_name="Игры, в которых участвует пользователь",
-                                               related_name="users_ongoing_lottery")
+                                               related_name="users_ongoing_lottery", blank=True)
     money_current = models.IntegerField(default=0, verbose_name="Текущий баланс")
+    profile_is_private = models.BooleanField(default=False, verbose_name="Приватен ли профиль на сервисе?")
 
     # def __str__(self):
     #     return '{0}, {1}, {2}'.format(self.persona_name, self.user, self.steam_id)
