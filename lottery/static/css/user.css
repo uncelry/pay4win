@@ -1,5 +1,5 @@
 main{
-    padding: 17px!important;
+    padding: 0 !important;
     background-color: #FFFFFF;
     padding-bottom: 65px!important;
     overflow: hidden;
@@ -30,6 +30,7 @@ main{
     width: 100%;
     justify-content: space-between;
     align-items: flex-start;
+    padding: 17px;
 }
 
 .slf-user-large-avatar{
@@ -215,7 +216,7 @@ main{
 
 @media screen and (max-width: 575px) {
     .slf-user-no-games-yet{
-                text-align: center;
+        text-align: center;
     }
 
     .slf-user-name-private-restricted{
@@ -262,10 +263,17 @@ main{
     display: flex;
     justify-content: center;
     margin-top: 20px;
+    flex-direction: column;
 }
 
 .slf-user-opened-games-empty{
     text-align: center;
+}
+
+.slf-user-ongoing-games-title{
+    text-align: center;
+    font-weight: 700;
+    margin-bottom: 0;
 }
 
 /* Карточка розыгрыша (начало) */
@@ -274,6 +282,7 @@ main{
     display: flex;
     flex-direction: column;
     margin-top: 50px;
+    width: 100%;
 }
 
 .slf-lottery-card{
@@ -756,3 +765,7 @@ main{
     color: #545454;
 }
 /* Карточка розыгрыша (конец) */
+
+#slfSearchCardHolder{
+    margin-top: 20px;
+}

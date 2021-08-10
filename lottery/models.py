@@ -246,6 +246,9 @@ class LotteryGame(models.Model):
     tickets_left = models.IntegerField(verbose_name="Билетов осталось")
     lottery_progress = models.IntegerField(default=0, verbose_name="Процент купленных билетов")
 
+    def calculate_ticks_for_user(self, participant):
+        return participant.ticket_set.filter(lottery=self).count()
+
 
 # Билет (привязан к игроку и розыгрышу)
 class Ticket(models.Model):
