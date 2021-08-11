@@ -258,7 +258,7 @@ main{
 
 }
 
-.slf-user-opened-games{
+.slf-user-opened-games, .slf-user-closed-games{
     width: 100%;
     display: flex;
     justify-content: center;
@@ -266,11 +266,11 @@ main{
     flex-direction: column;
 }
 
-.slf-user-opened-games-empty{
+.slf-user-opened-games-empty, .slf-user-closed-games-empty{
     text-align: center;
 }
 
-.slf-user-ongoing-games-title{
+.slf-user-ongoing-games-title, .slf-user-closed-games-title{
     text-align: center;
     font-weight: 700;
     margin-bottom: 0;

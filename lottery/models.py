@@ -245,9 +245,14 @@ class LotteryGame(models.Model):
     tickets_bought = models.IntegerField(default=0, verbose_name="Куплено билетов")
     tickets_left = models.IntegerField(verbose_name="Билетов осталось")
     lottery_progress = models.IntegerField(default=0, verbose_name="Процент купленных билетов")
+    lottery_winner = models.ForeignKey(SteamUser, on_delete=models.SET_NULL, null=True, verbose_name='Победитель',
+                                       related_name='user_lottery_winner')
 
     def calculate_ticks_for_user(self, participant):
         return participant.ticket_set.filter(lottery=self).count()
+
+    def calculate_win_chance_for_user(self, participant):
+        return round(round(participant.ticket_set.filter(lottery=self).count() / self.tickets_amount, 2) * 100)
 
 
 # Билет (привязан к игроку и розыгрышу)
