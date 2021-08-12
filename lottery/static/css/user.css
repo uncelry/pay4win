@@ -989,3 +989,16 @@ main{
     }
 }
 /* Карточка розыгрыша - закрытые (конец) */
+
+.slf-user-add-balance{
+    margin-top: 0;
+}
+
+.slf-user-page-balance{
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.slf-closed-lottery-current-winner{
+    background-color: #e5f6ff;
+}

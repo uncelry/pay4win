@@ -17,6 +17,8 @@
 
 {% block title %}<title>Pay4Win - Поиск розыгрышей</title>{% endblock %}
 
+{% load lotteries_extras %}
+
 {% block content %}
 
     {% if check_for_games > 0 %}
@@ -81,7 +83,7 @@
             {% if lotterygame_list %}
             <div id="slfSearchCardHolder" class="slf-card-holder">
                 {% for lottery in lotterygame_list %}
-                    <div class="slf-lottery-card slf-active-lottery-card  {% if not user.is_authenticated %}slf-lottery-card-user-not-logged-in-small{% endif %} {% if lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
+                    <div class="slf-lottery-card slf-active-lottery-card {% if lottery in user.steamuser.lotteries_ongoing.all %}slf-active-lottery-card-ongoing{% endif %} {% if not user.is_authenticated %}slf-lottery-card-user-not-logged-in-small{% endif %} {% if lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
                         <img src="{{ lottery.lottery_game_img }}" alt="" class="slf-lottery-card-img">
                         <div class="slf-lottery-card-inner">
                             <div class="slf-lottery-card-info-wrapper">
@@ -113,7 +115,7 @@
                                     </p>
                                 </div>
 
-                                <a class="btn btn-primary slf-lottery-card-participate" href="#">Участвовать</a>
+                                <a class="btn btn-primary slf-lottery-card-participate" href="#">{% if lottery in user.steamuser.lotteries_ongoing.all %}Перейти{% else %}Участвовать{% endif %}</a>
                             </div>
 
                             <div class="slf-lottery-card-progress">
@@ -137,6 +139,10 @@
 
                             <p class="slf-lottery-card-ticket-price {% if user.is_authenticated %}slf-lottery-card-ticket-price-user-logged-in{% endif %}">
                                 Цена билета: <strong>{{ lottery.ticket_price }}&#8381;</strong>
+                                {% if lottery in user.steamuser.lotteries_ongoing.all %}
+                                    (приобретено <strong>x{% get_ongoing_ticks_amount_of_participant lottery user.steamuser %}</strong>)
+                                    Шанс на победу: <strong>{% get_ongoing_win_chance_of_participant lottery user.steamuser %}%</strong>
+                                {% endif %}
                             </p>
 
                         </div>

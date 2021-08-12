@@ -751,5 +751,21 @@ form{
     display: none;
 }
 
+
+.slf-active-lottery-card-ongoing.slf-lottery-card-gold{
+    background-color: #efdea5;
+}
+
+.slf-active-lottery-card-ongoing.slf-lottery-card-silver{
+    background-color: #d5d5d5;
+}
+
+.slf-active-lottery-card-ongoing.slf-lottery-card-bronze{
+    background-color: #f9d7b4;
+}
+
+.slf-active-lottery-card-ongoing .slf-lottery-card-lottery-type{
+    color: #545454;
+}
 /* Карточка розыгрыша (конец) */
 
