@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="{% static 'css/user.css' %}">
     <script src="{% static 'js/libs/chart.min.js' %}"></script>
     <script src="{% static 'js/libs/chartjs-plugin-datalabels@2.0.0' %}"></script>
+    <script src="{% static 'js/libs/jquery.min.js' %}"></script>
+    <script src="{% static 'js/user-finished-game-slider.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Пользователь {{ steamuser.persona_name }}</title>{% endblock %}
@@ -327,11 +329,40 @@
                                     </div>
 
                                     <!-- Вставить карусель участников -->
-                                    {% for lottery_player in closed_lottery.players.all %}
-                                        {{ lottery_player.persona_name }}
-                                        {{ lottery_player.avatar_full }}
-                                        {% get_ongoing_win_chance_of_participant closed_lottery lottery_player %}
-                                    {% endfor %}
+                                    <div class="slf-user-closed-games-card-slider-wrapper">
+                                        <i class="bi bi-caret-left-fill slf-user-closed-games-card-slider-left-btn slf-btn-slider-inactive slf-slider-btn"></i>
+                                        <div class="slf-user-closed-games-card-slider-left-btn-under"></div>
+                                        <div class="slf-user-closed-games-slider-body">
+                                            {% for lottery_player in closed_lottery.players.all %}
+                                                <a class="slf-user-closed-games-slider-element" style="background-image: url({{ lottery_player.avatar_full }})" title="{{ lottery_player.persona_name }}" href="{% url 'user' lottery_player.pk %}">
+                                                    <p class="slf-user-closed-games-slider-element-win-chance">{% get_ongoing_win_chance_of_participant closed_lottery lottery_player %}%</p>
+                                                </a>
+                                            {% endfor %}
+                                                <a class="slf-user-closed-games-slider-element" style="background-image: url(&quot;https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/ae/aecac90f2b16f5efa8302fc6c4e774fc50137d04_full.jpg&quot;);" title="Dana Scully" href="/user/17/">
+                                                    <p class="slf-user-closed-games-slider-element-win-chance">60%</p>
+                                                </a>
+                                            <a class="slf-user-closed-games-slider-element" style="background-image: url(&quot;https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/ae/aecac90f2b16f5efa8302fc6c4e774fc50137d04_full.jpg&quot;);" title="Dana Scully" href="/user/17/">
+                                                    <p class="slf-user-closed-games-slider-element-win-chance">60%</p>
+                                                </a>
+                                            <a class="slf-user-closed-games-slider-element" style="background-image: url(&quot;https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/ae/aecac90f2b16f5efa8302fc6c4e774fc50137d04_full.jpg&quot;);" title="Dana Scully" href="/user/17/">
+                                                    <p class="slf-user-closed-games-slider-element-win-chance">60%</p>
+                                                </a>
+                                            <a class="slf-user-closed-games-slider-element" style="background-image: url(&quot;https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/ae/aecac90f2b16f5efa8302fc6c4e774fc50137d04_full.jpg&quot;);" title="Dana Scully" href="/user/17/">
+                                                    <p class="slf-user-closed-games-slider-element-win-chance">60%</p>
+                                                </a>
+                                            <a class="slf-user-closed-games-slider-element" style="background-image: url(&quot;https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/ae/aecac90f2b16f5efa8302fc6c4e774fc50137d04_full.jpg&quot;);" title="Dana Scully" href="/user/17/">
+                                                    <p class="slf-user-closed-games-slider-element-win-chance">60%</p>
+                                                </a>
+                                            <a class="slf-user-closed-games-slider-element" style="background-image: url(&quot;https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/ae/aecac90f2b16f5efa8302fc6c4e774fc50137d04_full.jpg&quot;);" title="Dana Scully" href="/user/17/">
+                                                    <p class="slf-user-closed-games-slider-element-win-chance">60%</p>
+                                                </a>
+                                            <a class="slf-user-closed-games-slider-element" style="background-image: url(&quot;https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/ae/aecac90f2b16f5efa8302fc6c4e774fc50137d04_full.jpg&quot;);" title="Dana Scully" href="/user/17/">
+                                                    <p class="slf-user-closed-games-slider-element-win-chance">60%</p>
+                                                </a>
+                                        </div>
+                                        <div class="slf-user-closed-games-card-slider-right-btn-under"></div>
+                                        <i class="bi bi-caret-right-fill slf-user-closed-games-card-slider-right-btn slf-btn-slider-inactive slf-slider-btn"></i>
+                                    </div>
                                     <!-- Конец карусельки -->
 
                                     <p class="slf-lottery-card-game-desc">

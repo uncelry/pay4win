@@ -769,3 +769,171 @@ main{
 #slfSearchCardHolder{
     margin-top: 20px;
 }
+
+#slfClosedCardHolder .slf-lottery-card-info-wrapper {
+    display: flex;
+    justify-content: flex-start;
+}
+
+#slfClosedCardHolder .slf-lottery-card-lottery-info-wrapper{
+    margin-left: 25%;
+}
+
+#slfClosedCardHolder .slf-lottery-card-lottery-num-number, .slf-lottery-card-lottery-type{
+    max-width: 10rem;
+}
+
+#slfClosedCardHolder .slf-lottery-card-gold .slf-lottery-card-img{
+    border-bottom: 10px solid #e7c963;
+}
+
+#slfClosedCardHolder .slf-lottery-card-silver .slf-lottery-card-img{
+    border-bottom: 10px solid #bdbdbd;
+}
+
+#slfClosedCardHolder .slf-lottery-card-bronze .slf-lottery-card-img{
+    border-bottom: 10px solid #ba7e3b;
+}
+
+#slfClosedCardHolder .slf-user-closed-games-card-slider-wrapper{
+    display: flex;
+    height: 115px;
+    width: 100%;
+    overflow: hidden;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 15px;
+    position: relative;
+}
+
+#slfClosedCardHolder .slf-user-closed-games-card-slider-left-btn{
+    width: 34px;
+    display: flex;
+    height: 70%;
+    justify-content: center;
+    align-items: center;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    color: #FFFFFF;
+    font-size: 1.3rem;
+    z-index: 10;
+}
+
+#slfClosedCardHolder .slf-lottery-card-gold .slf-btn-slider-active{
+    background-color: #e7c963;
+}
+
+#slfClosedCardHolder .slf-lottery-card-silver .slf-btn-slider-active{
+    background-color: #bdbdbd;
+}
+
+#slfClosedCardHolder .slf-lottery-card-bronze .slf-btn-slider-active{
+    background-color: #ba7e3b;
+}
+
+#slfClosedCardHolder .slf-lottery-card-gold .slf-btn-slider-active:hover{
+    background-color: #b49c4c;
+    cursor: pointer;
+}
+
+#slfClosedCardHolder .slf-lottery-card-silver .slf-btn-slider-active:hover{
+    background-color: #8c8c8c;
+    cursor: pointer;
+}
+
+#slfClosedCardHolder .slf-lottery-card-bronze .slf-btn-slider-active:hover{
+    background-color: #94642e;
+    cursor: pointer;
+}
+
+#slfClosedCardHolder .slf-lottery-card-gold .slf-btn-slider-inactive{
+    background-color: #b9a14f;
+    opacity: 0.7;
+}
+
+#slfClosedCardHolder .slf-lottery-card-silver .slf-btn-slider-inactive{
+    background-color: #7a7a7a;
+    opacity: 0.7;
+}
+
+#slfClosedCardHolder .slf-lottery-card-bronze .slf-btn-slider-inactive{
+    background-color: #815728;
+    opacity: 0.7;
+}
+
+.slf-user-closed-games-card-slider-right-btn{
+    width: 34px;
+    display: flex;
+    height: 70%;
+    justify-content: center;
+    align-items: center;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    color: #FFFFFF;
+    font-size: 1.3rem;
+    z-index: 10;
+}
+
+#slfClosedCardHolder .slf-user-closed-games-slider-body{
+    display: inline-block;
+    overflow: hidden;
+    width: 900px;
+    height: 100%;
+    background-color: #e0e0e0;
+    white-space: nowrap;
+    font-size: 0;
+}
+
+.slf-user-closed-games-slider-element{
+    width: 115px;
+    height: 100%;
+    background-size: contain;
+    display: inline-block;
+    margin-left: 10px;
+    position: relative;
+}
+
+#slfClosedCardHolder .slf-user-closed-games-slider-body .slf-user-closed-games-slider-element:first-of-type{
+    margin-left: 0;
+}
+
+#slfClosedCardHolder .slf-user-closed-games-slider-element-win-chance{
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'Open Sans', sans-serif!important;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+#slfClosedCardHolder .slf-lottery-card-gold .slf-user-closed-games-slider-element-win-chance{
+    background-color: rgba(231, 201, 99, 0.8);
+}
+
+#slfClosedCardHolder .slf-lottery-card-silver .slf-user-closed-games-slider-element-win-chance{
+    background-color: rgba(189, 189, 189, 0.8);
+}
+
+#slfClosedCardHolder .slf-lottery-card-bronze .slf-user-closed-games-slider-element-win-chance{
+    background-color: rgba(186, 126, 59, 0.8);
+}
+
+#slfClosedCardHolder .slf-user-closed-games-card-slider-left-btn-under{
+    position: absolute;
+    height: 100%;
+    width: 24px;
+    left: 0;
+    background-color: #838486;
+    pointer-events: none;
+}
+
+#slfClosedCardHolder .slf-user-closed-games-card-slider-right-btn-under{
+    position: absolute;
+    height: 100%;
+    width: 24px;
+    right: 0;
+    background-color: #838486;
+    pointer-events: none;
+}
