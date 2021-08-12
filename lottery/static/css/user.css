@@ -766,6 +766,8 @@ main{
 }
 /* Карточка розыгрыша (конец) */
 
+/* Карточка розыгрыша - закрытые (начало) */
+
 #slfSearchCardHolder{
     margin-top: 20px;
 }
@@ -937,3 +939,53 @@ main{
     background-color: #838486;
     pointer-events: none;
 }
+
+@media screen and (min-width: 1200px) and (max-width: 1399px){
+    #slfClosedCardHolder .slf-user-closed-games-slider-body{
+        width: 740px;
+    }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px){
+    #slfClosedCardHolder .slf-user-closed-games-slider-body{
+        width: 615px;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+    #slfClosedCardHolder .slf-user-closed-games-slider-body{
+        width: 365px;
+    }
+
+    #slfClosedCardHolder .slf-user-closed-games-card-slider-wrapper{
+        margin-top: 50px;
+        margin-bottom: 40px;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px){
+    #slfClosedCardHolder .slf-user-closed-games-slider-body{
+        width: 365px;
+    }
+
+    #slfClosedCardHolder .slf-user-closed-games-card-slider-wrapper{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    #slfClosedCardHolder .slf-user-closed-games-slider-body{
+        width: 115px;
+    }
+
+    #slfClosedCardHolder .slf-user-closed-games-card-slider-wrapper{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    #slfClosedCardHolder .slf-lottery-card-lottery-info-wrapper{
+        margin-left: unset;
+    }
+}
+/* Карточка розыгрыша - закрытые (конец) */

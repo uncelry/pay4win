@@ -12,6 +12,7 @@
     <script src="{% static 'js/libs/chartjs-plugin-datalabels@2.0.0' %}"></script>
     <script src="{% static 'js/libs/jquery.min.js' %}"></script>
     <script src="{% static 'js/user-finished-game-slider.js' %}"></script>
+    <script src="{% static 'js/user-finished-games-show-button.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Пользователь {{ steamuser.persona_name }}</title>{% endblock %}
@@ -334,7 +335,7 @@
                                         <div class="slf-user-closed-games-card-slider-left-btn-under"></div>
                                         <div class="slf-user-closed-games-slider-body">
                                             {% for lottery_player in closed_lottery.players.all %}
-                                                <a class="slf-user-closed-games-slider-element" style="background-image: url({{ lottery_player.avatar_full }})" title="{{ lottery_player.persona_name }}" href="{% url 'user' lottery_player.pk %}">
+                                                <a class="slf-user-closed-games-slider-element" style="background-image: url({{ lottery_player.avatar_full }})" title="{{ lottery_player.persona_name }}" href="{% url 'user' lottery_player.pk %}" target="_blank">
                                                     <p class="slf-user-closed-games-slider-element-win-chance">{% get_ongoing_win_chance_of_participant closed_lottery lottery_player %}%</p>
                                                 </a>
                                             {% endfor %}
@@ -379,6 +380,7 @@
                                 </div>
                             </div>
                         {% endfor %}
+                        <a id="slfSearchShowMoreBtn" class="btn btn-primary slf-lottery-card-wrapper-load-more-btn" href="#" onclick="showMore(event, this);">Подгрузить ещё</a>
                     </div>
                 {% else %}
                     <p class="slf-user-closed-games-empty">История завершенных игр пуста</p>

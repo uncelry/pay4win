@@ -1,0 +1,51 @@
+// Функционал кнопки подгрузки розыгрышей
+
+let cards_arr;
+let i;
+const AMOUNT_FOR_ONE_TIME = 5;
+let shown_now;
+
+document.addEventListener('DOMContentLoaded', function(){
+    cards_arr = document.querySelectorAll('#slfClosedCardHolder > .slf-lottery-card');
+
+    if (cards_arr.length <= AMOUNT_FOR_ONE_TIME){
+        let btn_to_hide = document.querySelectorAll('#slfSearchShowMoreBtn')[0];
+        btn_to_hide.classList.add('slf-lottery-card-hidden');
+        btn_to_hide.setAttribute('onclick', '');
+
+        return 0;
+    }
+
+    for(i = AMOUNT_FOR_ONE_TIME; i < cards_arr.length; i++){
+        cards_arr[i].classList.add('slf-lottery-card-hidden');
+    }
+
+    shown_now = AMOUNT_FOR_ONE_TIME;
+});
+
+
+function showMore(e, btn){
+    e.preventDefault();
+
+    if ((cards_arr.length - shown_now) >= AMOUNT_FOR_ONE_TIME){
+        for(i = shown_now; i < shown_now + AMOUNT_FOR_ONE_TIME; i++){
+            cards_arr[i].classList.remove('slf-lottery-card-hidden');
+        }
+
+        shown_now += AMOUNT_FOR_ONE_TIME;
+    } else {
+        for(i = shown_now; i < cards_arr.length; i++){
+            cards_arr[i].classList.remove('slf-lottery-card-hidden');
+        }
+
+        shown_now = cards_arr.length;
+    }
+
+
+    if (shown_now === cards_arr.length){
+        btn.setAttribute('onclick', '');
+        btn.classList.add('slf-lottery-card-hidden');
+    }
+
+    btn.blur();
+}

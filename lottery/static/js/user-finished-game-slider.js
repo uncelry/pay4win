@@ -59,6 +59,8 @@ function buttonsHandler(e){
 
         $(first_el).promise().done(function (){
 
+            $(e.target).blur();
+
             // Проверяем надо ли блокировать кнопку
             let first_el_margin = -Number($(first_el).css("marginLeft").substr(0, $(first_el).css("marginLeft").length - 2));
             if( (els_width_no_first_margin - first_el_margin) <= carousel_width ){
@@ -82,6 +84,8 @@ function buttonsHandler(e){
         }, 500);
 
         $(first_el).promise().done(function (){
+
+            $(e.target).blur();
 
            // Проверяем надо ли блокировать кнопку
             let first_el_margin = -Number($(first_el).css("marginLeft").substr(0, $(first_el).css("marginLeft").length - 2));
