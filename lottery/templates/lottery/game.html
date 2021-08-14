@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+
+{% load static %}
+
+{% block bg_img %}
+    style="background-image: url({% static 'img/main_bg.png' %})"
+{% endblock %}
+
+{% block links %}
+    <link rel="stylesheet" href="{% static 'css/game.css' %}">
+{% endblock %}
+
+{% block title %}<title>Pay4Win - Розыгрыш {{ lotterygame.lottery_game_name }}</title>{% endblock %}
+
+{% block content %}
+
+    <main class="container">
+
+    </main>
+
+{% endblock %}

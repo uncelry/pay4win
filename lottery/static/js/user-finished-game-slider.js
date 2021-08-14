@@ -2,7 +2,7 @@ const SET_MARGIN_LEFT = 10;
 const SET_PIC_WIDTH = 115;
 
 function setCarouselButtons(){
-    let carousels = $("#slfClosedCardHolder .slf-closed-lottery-card .slf-user-closed-games-card-slider-wrapper");
+    let carousels = $(".slf-closed-card-holder .slf-closed-lottery-card .slf-user-closed-games-card-slider-wrapper");
     for (let i = 0; i < carousels.length; i++){
 
         let els = $(carousels[i]).find('.slf-user-closed-games-slider-element');
@@ -105,7 +105,7 @@ function buttonsHandler(e){
 }
 
 function resetAllSliderElements(){
-    let carousels_first_els = $("#slfClosedCardHolder .slf-closed-lottery-card .slf-user-closed-games-slider-body .slf-user-closed-games-slider-element:first-of-type");
+    let carousels_first_els = $(".slf-closed-card-holder .slf-closed-lottery-card .slf-user-closed-games-slider-body .slf-user-closed-games-slider-element:first-of-type");
 
     for (let i = 0; i < carousels_first_els.length; i++) {
         $(carousels_first_els[i]).stop().css('marginLeft', '0');
@@ -114,12 +114,12 @@ function resetAllSliderElements(){
 }
 
 function setEventListenersToButtons(){
-    let listen_buttons_all = $("#slfClosedCardHolder .slf-closed-lottery-card .slf-user-closed-games-card-slider-wrapper .slf-slider-btn");
+    let listen_buttons_all = $(".slf-closed-card-holder .slf-closed-lottery-card .slf-user-closed-games-card-slider-wrapper .slf-slider-btn");
     for (let i = 0; i < listen_buttons_all.length; i++){
         $(listen_buttons_all[i]).unbind('click');
     }
 
-    let listen_buttons = $("#slfClosedCardHolder .slf-closed-lottery-card .slf-user-closed-games-card-slider-wrapper .slf-btn-slider-active");
+    let listen_buttons = $(".slf-closed-card-holder .slf-closed-lottery-card .slf-user-closed-games-card-slider-wrapper .slf-btn-slider-active");
     for (let i = 0; i < listen_buttons.length; i++){
         $(listen_buttons[i]).bind('click', buttonsHandler);
     }

@@ -1,5 +1,7 @@
 from . import views
 from django.conf.urls import url
+from django.urls import path
+
 
 urlpatterns = [
 
@@ -10,6 +12,7 @@ urlpatterns = [
     url(r'^types/$', views.types, name='types'),
     url(r'^search/$', views.search, name='search'),
     url(r'^user/(?P<pk>\d+)/$', views.UserDetailView.as_view(), name='user'),
+    path('game/<pk>/', views.LotteryDetailView.as_view(), name='game'),
 
     url(r'^login/$', views.steam_login, name='steam_login'),
     url(r'^logout/$', views.steam_logout, name='steam_logout'),

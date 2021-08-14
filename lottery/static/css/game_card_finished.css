@@ -1,0 +1,220 @@
+#slfSearchCardHolder{
+    margin-top: 20px;
+}
+
+.slf-closed-card-holder .slf-lottery-card-info-wrapper {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.slf-closed-card-holder .slf-lottery-card-lottery-info-wrapper{
+    margin-left: 25%;
+}
+
+.slf-closed-card-holder .slf-lottery-card-lottery-num-number, .slf-lottery-card-lottery-type{
+    max-width: 10rem;
+}
+
+.slf-closed-card-holder .slf-lottery-card-gold .slf-lottery-card-img{
+    border-bottom: 10px solid #e7c963;
+}
+
+.slf-closed-card-holder .slf-lottery-card-silver .slf-lottery-card-img{
+    border-bottom: 10px solid #bdbdbd;
+}
+
+.slf-closed-card-holder .slf-lottery-card-bronze .slf-lottery-card-img{
+    border-bottom: 10px solid #ba7e3b;
+}
+
+.slf-closed-card-holder .slf-user-closed-games-card-slider-wrapper{
+    display: flex;
+    height: 115px;
+    width: 100%;
+    overflow: hidden;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 15px;
+    position: relative;
+}
+
+.slf-closed-card-holder .slf-user-closed-games-card-slider-left-btn{
+    width: 34px;
+    display: flex;
+    height: 70%;
+    justify-content: center;
+    align-items: center;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+    color: #FFFFFF;
+    font-size: 1.3rem;
+    z-index: 10;
+}
+
+.slf-closed-card-holder .slf-lottery-card-gold .slf-btn-slider-active{
+    background-color: #e7c963;
+}
+
+.slf-closed-card-holder .slf-lottery-card-silver .slf-btn-slider-active{
+    background-color: #bdbdbd;
+}
+
+.slf-closed-card-holder .slf-lottery-card-bronze .slf-btn-slider-active{
+    background-color: #ba7e3b;
+}
+
+.slf-closed-card-holder .slf-lottery-card-gold .slf-btn-slider-active:hover{
+    background-color: #b49c4c;
+    cursor: pointer;
+}
+
+.slf-closed-card-holder .slf-lottery-card-silver .slf-btn-slider-active:hover{
+    background-color: #8c8c8c;
+    cursor: pointer;
+}
+
+.slf-closed-card-holder .slf-lottery-card-bronze .slf-btn-slider-active:hover{
+    background-color: #94642e;
+    cursor: pointer;
+}
+
+.slf-closed-card-holder .slf-lottery-card-gold .slf-btn-slider-inactive{
+    background-color: #b9a14f;
+    opacity: 0.7;
+}
+
+.slf-closed-card-holder .slf-lottery-card-silver .slf-btn-slider-inactive{
+    background-color: #7a7a7a;
+    opacity: 0.7;
+}
+
+.slf-closed-card-holder .slf-lottery-card-bronze .slf-btn-slider-inactive{
+    background-color: #815728;
+    opacity: 0.7;
+}
+
+.slf-user-closed-games-card-slider-right-btn{
+    width: 34px;
+    display: flex;
+    height: 70%;
+    justify-content: center;
+    align-items: center;
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    color: #FFFFFF;
+    font-size: 1.3rem;
+    z-index: 10;
+}
+
+.slf-closed-card-holder .slf-user-closed-games-slider-body{
+    display: inline-block;
+    overflow: hidden;
+    width: 900px;
+    height: 100%;
+    background-color: #e0e0e0;
+    white-space: nowrap;
+    font-size: 0;
+}
+
+.slf-user-closed-games-slider-element{
+    width: 115px;
+    height: 100%;
+    background-size: contain;
+    display: inline-block;
+    margin-left: 10px;
+    position: relative;
+}
+
+.slf-closed-card-holder .slf-user-closed-games-slider-body .slf-user-closed-games-slider-element:first-of-type{
+    margin-left: 0;
+}
+
+.slf-closed-card-holder .slf-user-closed-games-slider-element-win-chance{
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'Open Sans', sans-serif!important;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.slf-closed-card-holder .slf-lottery-card-gold .slf-user-closed-games-slider-element-win-chance{
+    background-color: rgba(231, 201, 99, 0.8);
+}
+
+.slf-closed-card-holder .slf-lottery-card-silver .slf-user-closed-games-slider-element-win-chance{
+    background-color: rgba(189, 189, 189, 0.8);
+}
+
+.slf-closed-card-holder .slf-lottery-card-bronze .slf-user-closed-games-slider-element-win-chance{
+    background-color: rgba(186, 126, 59, 0.8);
+}
+
+.slf-closed-card-holder .slf-user-closed-games-card-slider-left-btn-under{
+    position: absolute;
+    height: 100%;
+    width: 24px;
+    left: 0;
+    background-color: #838486;
+    pointer-events: none;
+}
+
+.slf-closed-card-holder .slf-user-closed-games-card-slider-right-btn-under{
+    position: absolute;
+    height: 100%;
+    width: 24px;
+    right: 0;
+    background-color: #838486;
+    pointer-events: none;
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1399px){
+    .slf-closed-card-holder .slf-user-closed-games-slider-body{
+        width: 740px;
+    }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px){
+    .slf-closed-card-holder .slf-user-closed-games-slider-body{
+        width: 615px;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+    .slf-closed-card-holder .slf-user-closed-games-slider-body{
+        width: 365px;
+    }
+
+    .slf-closed-card-holder .slf-user-closed-games-card-slider-wrapper{
+        margin-top: 50px;
+        margin-bottom: 40px;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px){
+    .slf-closed-card-holder .slf-user-closed-games-slider-body{
+        width: 365px;
+    }
+
+    .slf-closed-card-holder .slf-user-closed-games-card-slider-wrapper{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .slf-closed-card-holder .slf-user-closed-games-slider-body{
+        width: 115px;
+    }
+
+    .slf-closed-card-holder .slf-user-closed-games-card-slider-wrapper{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .slf-closed-card-holder .slf-lottery-card-lottery-info-wrapper{
+        margin-left: unset;
+    }
+}

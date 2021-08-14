@@ -9,6 +9,7 @@
 
 {% block links %}
     <link rel="stylesheet" href="{% static 'css/search.css' %}">
+    <link rel="stylesheet" href="{% static 'css/game_card_open.css' %}">
     <link rel="stylesheet" href="{% static 'css/libs/ion.rangeSlider.min.css' %}"/>
     <script src="{% static 'js/libs/jquery.min.js' %}"></script>
     <script src="{% static 'js/libs/ion.rangeSlider.min.js' %}"></script>
@@ -83,70 +84,7 @@
             {% if lotterygame_list %}
             <div id="slfSearchCardHolder" class="slf-card-holder">
                 {% for lottery in lotterygame_list %}
-                    <div class="slf-lottery-card slf-active-lottery-card {% if lottery in user.steamuser.lotteries_ongoing.all %}slf-active-lottery-card-ongoing{% endif %} {% if not user.is_authenticated %}slf-lottery-card-user-not-logged-in-small{% endif %} {% if lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
-                        <img src="{{ lottery.lottery_game_img }}" alt="" class="slf-lottery-card-img">
-                        <div class="slf-lottery-card-inner">
-                            <div class="slf-lottery-card-info-wrapper">
-
-                                <div class="slf-lottery-card-info-name-wrapper">
-                                    <h2 class="slf-lottery-card-name" title="{{ lottery.lottery_game_name }}">{{ lottery.lottery_game_name }}</h2>
-                                    <p class="slf-lottery-card-genres">
-                                        {% for lottery_genre in lottery.lottery_genres.all %}
-                                            {{ lottery_genre }}{% if not forloop.last %}, {% endif %}
-                                        {% endfor %}
-                                    </p>
-                                </div>
-
-                                <div class="slf-lottery-card-lottery-info-wrapper">
-                                    <p class="slf-lottery-card-lottery-num">
-                                        Игра: <span class="slf-lottery-card-lottery-num-number" title="{{ lottery.id }}">{{ lottery.id }}</span>
-                                    </p>
-                                    <p class="slf-lottery-card-lottery-type-wrapper">
-                                        Тип:
-                                        <span class="slf-lottery-card-lottery-type">
-                                            {% if lottery.lottery_type == "g" %}
-                                                <img class="slf-lottery-card-lottery-type-pic" alt="" src="{% static 'img/lottery-type-gold.png' %}"> Золото
-                                            {% elif lottery.lottery_type == "s" %}
-                                                <img class="slf-lottery-card-lottery-type-pic" alt="" src="{% static 'img/lottery-type-silver.png' %}"> Серебро
-                                            {% elif lottery.lottery_type == "b" %}
-                                                <img class="slf-lottery-card-lottery-type-pic" alt="" src="{% static 'img/lottery-type-bronze.png' %}"> Бронза
-                                            {% endif %}
-                                        </span>
-                                    </p>
-                                </div>
-
-                                <a class="btn btn-primary slf-lottery-card-participate" href="#">{% if lottery in user.steamuser.lotteries_ongoing.all %}Перейти{% else %}Участвовать{% endif %}</a>
-                            </div>
-
-                            <div class="slf-lottery-card-progress">
-                                <div class="progress-bar stripes animated slower" style="width: {{ lottery.lottery_progress }}%"></div>
-                                <p class="slf-lottery-card-progress-tickets">
-                                    {{ lottery.tickets_bought }}/{{ lottery.tickets_amount }}<br><span>БИЛЕТОВ</span>
-                                </p>
-                            </div>
-
-                            {% if not user.is_authenticated %}
-                                <a class="btn btn-primary slf-lottery-card-not-logged-in-btn" href="{% url "steam_login" %}"><img src="{% static 'img/lottery-card-steam-btn.png' %}" alt=""> Войти через STEAM, чтобы играть!</a>
-                            {% endif %}
-
-                            <p class="slf-lottery-card-game-desc {% if user.is_authenticated %}slf-lottery-card-game-desc-user-logged-in{% endif %}">
-                                {% if user.is_authenticated %}
-                                    {{ lottery.lottery_game_desc|truncatechars:480 }}
-                                {% else %}
-                                    {{ lottery.lottery_game_desc|truncatechars:200 }}
-                                {% endif %}
-                            </p>
-
-                            <p class="slf-lottery-card-ticket-price {% if user.is_authenticated %}slf-lottery-card-ticket-price-user-logged-in{% endif %}">
-                                Цена билета: <strong>{{ lottery.ticket_price }}&#8381;</strong>
-                                {% if lottery in user.steamuser.lotteries_ongoing.all %}
-                                    (приобретено <strong>x{% get_ongoing_ticks_amount_of_participant lottery user.steamuser %}</strong>)
-                                    Шанс на победу: <strong>{% get_ongoing_win_chance_of_participant lottery user.steamuser %}%</strong>
-                                {% endif %}
-                            </p>
-
-                        </div>
-                    </div>
+                    {% include "lottery/game_card_open.html" with lottery=lottery %}
                 {% endfor %}
 
                 <a id="slfSearchShowMoreBtn" class="btn btn-primary slf-lottery-card-wrapper-load-more-btn" href="#" onclick="showMore(event, this);">Подгрузить ещё</a>

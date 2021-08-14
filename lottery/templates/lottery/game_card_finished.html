@@ -1,0 +1,59 @@
+{% load lotteries_extras %}
+
+<div class="slf-lottery-card slf-closed-lottery-card {% if closed_lottery.lottery_winner == user.steamuser %}slf-closed-lottery-current-winner{% endif %} {% if closed_lottery in user.steamuser.lotteries_finished.all %}slf-closed-lottery-card-participated{% endif %} {% if closed_lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif closed_lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif closed_lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
+    <img src="{{ closed_lottery.lottery_game_img }}" alt="" class="slf-lottery-card-img">
+    <div class="slf-lottery-card-inner">
+        <div class="slf-lottery-card-info-wrapper">
+
+            <div class="slf-lottery-card-info-name-wrapper">
+                <h2 class="slf-lottery-card-name" title="{{ closed_lottery.lottery_game_name }}">{{ closed_lottery.lottery_game_name }}</h2>
+                <p class="slf-lottery-card-genres">
+                    {% for lottery_genre in closed_lottery.lottery_genres.all %}
+                        {{ lottery_genre }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+
+            <div class="slf-lottery-card-lottery-info-wrapper">
+                <p class="slf-lottery-card-lottery-num">
+                    Игра: <span class="slf-lottery-card-lottery-num-number" title="{{ closed_lottery.id }}">{{ closed_lottery.id }}</span>
+                </p>
+                <p class="slf-lottery-card-lottery-type-wrapper">
+                    Победитель:
+                    <span class="slf-lottery-card-lottery-num-number" title="{{ closed_lottery.lottery_winner.persona_name }}">
+                        {{ closed_lottery.lottery_winner.persona_name }}
+                    </span>
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Вставить карусель участников -->
+        <div class="slf-user-closed-games-card-slider-wrapper">
+            <i class="bi bi-caret-left-fill slf-user-closed-games-card-slider-left-btn slf-btn-slider-inactive slf-slider-btn"></i>
+            <div class="slf-user-closed-games-card-slider-left-btn-under"></div>
+            <div class="slf-user-closed-games-slider-body">
+                {% for lottery_player in closed_lottery.players.all %}
+                    <a class="slf-user-closed-games-slider-element" style="background-image: url({{ lottery_player.avatar_full }})" title="{{ lottery_player.persona_name }}" href="{% url 'user' lottery_player.pk %}" target="_blank">
+                        <p class="slf-user-closed-games-slider-element-win-chance">{% get_ongoing_win_chance_of_participant closed_lottery lottery_player %}%</p>
+                    </a>
+                {% endfor %}
+            </div>
+            <div class="slf-user-closed-games-card-slider-right-btn-under"></div>
+            <i class="bi bi-caret-right-fill slf-user-closed-games-card-slider-right-btn slf-btn-slider-inactive slf-slider-btn"></i>
+        </div>
+        <!-- Конец карусельки -->
+
+        <p class="slf-lottery-card-game-desc">
+            {{ closed_lottery.lottery_game_desc|truncatechars:200 }}
+        </p>
+
+        <p class="slf-lottery-card-ticket-price {% if user.is_authenticated %}slf-lottery-card-ticket-price-user-logged-in{% endif %}">
+            Цена билета: <strong>{{ closed_lottery.ticket_price }}&#8381;</strong>
+            {% if closed_lottery in user.steamuser.lotteries_finished.all %}
+                (<strong>x{% get_ongoing_ticks_amount_of_participant closed_lottery user.steamuser %}</strong>)
+            {% endif %}
+        </p>
+
+    </div>
+</div>

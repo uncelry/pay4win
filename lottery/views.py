@@ -215,3 +215,8 @@ class UserDetailView(generic.DetailView):
             current_user.save()
 
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class LotteryDetailView(generic.DetailView):
+    model = LotteryGame
+    template_name = 'lottery/game.html'

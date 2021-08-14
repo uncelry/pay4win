@@ -6,7 +6,7 @@ const AMOUNT_FOR_ONE_TIME = 5;
 let shown_now;
 
 document.addEventListener('DOMContentLoaded', function(){
-    cards_arr = document.querySelectorAll('#slfClosedCardHolder > .slf-lottery-card');
+    cards_arr = document.querySelectorAll('.slf-closed-card-holder > .slf-lottery-card');
 
     if (cards_arr.length <= AMOUNT_FOR_ONE_TIME){
         let btn_to_hide = document.querySelectorAll('#slfSearchShowMoreBtn')[0];
