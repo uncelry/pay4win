@@ -220,3 +220,8 @@ class UserDetailView(generic.DetailView):
 class LotteryDetailView(generic.DetailView):
     model = LotteryGame
     template_name = 'lottery/game.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(LotteryDetailView, self).get_context_data(**kwargs)
+        context['lotterygame_economy'] = context['lotterygame'].game_price - context['lotterygame'].ticket_price
+        return context

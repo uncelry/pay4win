@@ -24,3 +24,228 @@ main{
         background-color: white!important;
     }
 }
+
+.slf-game-info-wrapper{
+    display: flex;
+    width: 100%;
+    height: 320px;
+}
+
+.slf-game-info-secondary-wrapper{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    padding: 15px 15px 0 15px;
+}
+
+.slf-game-info-secondary-div{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.slf-game-info-name-and-economy{
+    display: flex;
+    flex-direction: column;
+}
+
+.slf-game-name{
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 700;
+    margin-bottom: 3px;
+    max-width: 20rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.slf-game-economy{
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 300;
+    margin-bottom: 0;
+    padding-top: 2px;
+}
+
+.slf-game-economy span{
+    display: inline-block;
+    background-color: #e7c963;
+    color: #FFFFFF;
+    padding-left: 10px;
+    padding-right: 10px;
+    line-height: 30px;
+    border-radius: 3px;
+}
+
+.slf-lottery-card-lottery-info-wrapper{
+    display: flex;
+    flex-direction: column;
+}
+
+.slf-lottery-card-lottery-num, .slf-lottery-card-lottery-type-wrapper{
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 700;
+    color: #bebebe;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0;
+    padding-top: 6px;
+}
+
+.slf-lottery-card-lottery-num-number, .slf-lottery-card-lottery-type{
+    font-weight: 300;
+    max-width: 5rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.slf-lottery-card-lottery-type-wrapper{
+    margin-bottom: 0;
+}
+
+.slf-lottery-card-lottery-type{
+    max-width: none;
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+}
+
+.slf-lottery-card-lottery-num-number{
+    margin-left: 5px;
+    color: #29abcd;
+}
+
+.slf-lottery-card-lottery-type-wrapper{
+    align-items: center;
+    padding-top: 0;
+}
+
+.slf-lottery-card-lottery-type-pic{
+    margin-right: 5px;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
+}
+
+.slf-game-card-gold .slf-lottery-card-lottery-type{
+    color: #ebc148;
+}
+
+.slf-game-card-silver .slf-lottery-card-lottery-type{
+    color: #bebebe;
+}
+
+.slf-game-card-bronze .slf-lottery-card-lottery-type{
+    color: #cd7f32;
+}
+
+.slf-game-additional-info{
+    display: flex;
+    flex-direction: column;
+}
+
+.slf-game-card-genres{
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 300;
+    color: #000000;
+    font-size: 0.9rem;
+}
+
+.slf-game-steam-price{
+    font-family: 'Open Sans', sans-serif!important;
+    font-weight: 300;
+    margin-bottom: 0;
+    padding-top: 7px;
+}
+
+.slf-game-info-img{
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
+}
+
+.slf-game-card-participate{
+    width: 250px;
+    height: auto;
+    line-height: 67px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background-color: #e6c862;
+    font-family: 'Open Sans', sans-serif!important;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.slf-game-card-participate:active, .slf-game-card-participate:hover, .slf-game-card-participate:focus, .slf-game-card-participate:target, .slf-game-card-participate:link{
+    outline: none;
+    box-shadow: none;
+    border: none;
+    background-color: #B0994AFF;
+}
+
+.slf-game-media-and-desc{
+    display: flex;
+    width: 100%;
+}
+
+/* Img - 227px height; слайды справа сбоку */
+
+.slf-game-slider{
+    display: flex;
+}
+
+.slf-slider-main{
+    height: 227px;
+    width: 404px;
+}
+
+.slf-slider-minis{
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+    height: 227px;
+    margin-left: 1px;
+}
+
+/* Img mini - 116x65 */
+
+.slf-slider-pic-mini{
+    width: 116px;
+    height: 65px;
+    margin-top: 1px;
+    background-size: cover;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+.slf-slider-pic-mini:first-of-type{
+    margin-top: 0;
+}
+
+.slf-slider-pic-mini:hover{
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.slf-slider-pic-mini-video-marker{
+    width: 32px;
+    height: 32px;
+    left: 42px;
+}
+
+.slf-game-description{
+    margin: 0 0 0 15px;
+    padding: 0;
+    font-family: 'Open Sans', sans-serif!important;
+    font-size: 1rem;
+    line-height: 1.45rem;
+}

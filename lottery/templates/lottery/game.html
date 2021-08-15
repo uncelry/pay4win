@@ -15,7 +15,81 @@
 {% block content %}
 
     <main class="container">
+        <div class="slf-game-info-wrapper {% if lotterygame.lottery_type == "g" %}slf-game-card-gold{% elif lotterygame.lottery_type == "s" %}slf-game-card-silver{% elif lotterygame.lottery_type == "b" %}slf-game-card-bronze{% endif %}">
+            <img class="slf-game-info-img" src="{{ lotterygame.lottery_game_img }}" alt="">
+            <div class="slf-game-info-secondary-wrapper">
+                <div class="slf-game-info-secondary-div">
+                    <div class="slf-game-info-name-and-economy">
 
+                        <h2 class="slf-game-name" title="{{ lotterygame.lottery_game_name }}">{{ lotterygame.lottery_game_name }}</h2>
+                        <p class="slf-game-card-genres">
+                            {% for lottery_genre in lotterygame.lottery_genres.all %}
+                                {{ lottery_genre }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </p>
+
+                    </div>
+                    <div class="slf-lottery-card-lottery-info-wrapper">
+
+                        <p class="slf-lottery-card-lottery-num">
+                            Игра: <span class="slf-lottery-card-lottery-num-number" title="{{ lotterygame.id }}">{{ lotterygame.id }}</span>
+                        </p>
+                        <p class="slf-lottery-card-lottery-type-wrapper">
+                            Тип:
+                            <span class="slf-lottery-card-lottery-type">
+                                {% if lotterygame.lottery_type == "g" %}
+                                    <img class="slf-lottery-card-lottery-type-pic" alt="" src="{% static 'img/lottery-type-gold.png' %}"> Золото
+                                {% elif lotterygame.lottery_type == "s" %}
+                                    <img class="slf-lottery-card-lottery-type-pic" alt="" src="{% static 'img/lottery-type-silver.png' %}"> Серебро
+                                {% elif lotterygame.lottery_type == "b" %}
+                                    <img class="slf-lottery-card-lottery-type-pic" alt="" src="{% static 'img/lottery-type-bronze.png' %}"> Бронза
+                                {% endif %}
+                            </span>
+                        </p>
+
+                    </div>
+
+                    {% if user.is_authenticated %}
+                        <div class="slf-game-additional-info">
+                            <p class="slf-game-steam-price">Цена в <a href="{{ lotterygame.lottery_game }}" target="_blank">Steam</a>: <strong>{{ lotterygame.game_price }}р.</strong></p>
+                            <p class="slf-game-economy">Экономия до: <span>{{ lotterygame_economy }}р.</span></p>
+                        </div>
+                    {% else %}
+                        <a class="btn btn-primary slf-game-card-participate" href="{% url 'steam_login' %}">Войти</a>
+                    {% endif %}
+                </div>
+
+                <div class="slf-game-media-and-desc">
+                    <div class="slf-game-slider">
+                        <img class="slf-slider-main" src="https://cdn.cloudflare.steamstatic.com/steam/apps/381210/ss_659500624438a4aa77bfdf304cba3ecebcd92ed9.600x338.jpg?t=1627497412" alt="">
+<!--                        <video class="slf-slider-main" controls="controls">-->
+<!--                            <source src="https://cdn.cloudflare.steamstatic.com/steam/apps/256838909/movie480_vp9.webm?t=1623777751">-->
+<!--                        </video>-->
+                        <div class="slf-slider-minis">
+                            <div class="slf-slider-pic-mini" style='background-image: url("https://cdn.cloudflare.steamstatic.com/steam/apps/381210/ss_659500624438a4aa77bfdf304cba3ecebcd92ed9.600x338.jpg?t=1627497412")'>
+                                <div class="slf-slider-pic-mini-video-marker" style='background-image: url("https://store.cloudflare.steamstatic.com/public/images/v5/ico_game_highlight_video.png")'></div>
+                            </div>
+                            <div class="slf-slider-pic-mini" style='background-image: url("https://cdn.cloudflare.steamstatic.com/steam/apps/381210/ss_659500624438a4aa77bfdf304cba3ecebcd92ed9.600x338.jpg?t=1627497412")'>
+                                <div class="slf-slider-pic-mini-video-marker"></div>
+                            </div>
+                            <div class="slf-slider-pic-mini" style='background-image: url("https://cdn.cloudflare.steamstatic.com/steam/apps/381210/ss_659500624438a4aa77bfdf304cba3ecebcd92ed9.600x338.jpg?t=1627497412")'>
+                                <div class="slf-slider-pic-mini-video-marker"></div>
+                            </div>
+                            <div class="slf-slider-pic-mini" style='background-image: url("https://cdn.cloudflare.steamstatic.com/steam/apps/381210/ss_659500624438a4aa77bfdf304cba3ecebcd92ed9.600x338.jpg?t=1627497412")'>
+                                <div class="slf-slider-pic-mini-video-marker"></div>
+                            </div>
+                            <div class="slf-slider-pic-mini" style='background-image: url("https://cdn.cloudflare.steamstatic.com/steam/apps/381210/ss_659500624438a4aa77bfdf304cba3ecebcd92ed9.600x338.jpg?t=1627497412")'>
+                                <div class="slf-slider-pic-mini-video-marker"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="slf-game-description">
+                        {{ lotterygame.lottery_game_desc }}
+                    </p>
+                </div>
+            </div>
+        </div>
     </main>
 
 {% endblock %}
