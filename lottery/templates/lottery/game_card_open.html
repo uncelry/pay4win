@@ -2,15 +2,15 @@
 
 {% load lotteries_extras %}
 
-<div class="slf-lottery-card slf-active-lottery-card {% if lottery in user.steamuser.lotteries_ongoing.all %}slf-active-lottery-card-ongoing{% endif %} {% if not user.is_authenticated %}slf-lottery-card-user-not-logged-in-small{% endif %} {% if lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
-    <img src="{{ lottery.lottery_game_img }}" alt="" class="slf-lottery-card-img">
+<div class="slf-lottery-card slf-active-lottery-card {% if lottery in user.steamuser.lotteries_ongoing.all %}slf-active-lottery-card-ongoing{% endif %} {% if not user.is_authenticated %}slf-lottery-card-user-not-logged-in-small{% endif %} {% if lottery.abstract_lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lottery.abstract_lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lottery.abstract_lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
+    <img src="{{ lottery.abstract_lottery.game.img.url }}" alt="" class="slf-lottery-card-img">
     <div class="slf-lottery-card-inner">
         <div class="slf-lottery-card-info-wrapper">
 
             <div class="slf-lottery-card-info-name-wrapper">
-                <h2 class="slf-lottery-card-name" title="{{ lottery.lottery_game_name }}">{{ lottery.lottery_game_name }}</h2>
+                <h2 class="slf-lottery-card-name" title="{{ lottery.abstract_lottery.game.name }}">{{ lottery.abstract_lottery.game.name }}</h2>
                 <p class="slf-lottery-card-genres">
-                    {% for lottery_genre in lottery.lottery_genres.all %}
+                    {% for lottery_genre in lottery.abstract_lottery.game.genres.all %}
                         {{ lottery_genre }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </p>
@@ -23,11 +23,11 @@
                 <p class="slf-lottery-card-lottery-type-wrapper">
                     Тип:
                     <span class="slf-lottery-card-lottery-type">
-                        {% if lottery.lottery_type == "g" %}
+                        {% if lottery.abstract_lottery.lottery_type == "g" %}
                             <img class="slf-lottery-card-lottery-type-pic" alt="" src="{% static 'img/lottery-type-gold.png' %}"> Золото
-                        {% elif lottery.lottery_type == "s" %}
+                        {% elif lottery.abstract_lottery.lottery_type == "s" %}
                             <img class="slf-lottery-card-lottery-type-pic" alt="" src="{% static 'img/lottery-type-silver.png' %}"> Серебро
-                        {% elif lottery.lottery_type == "b" %}
+                        {% elif lottery.abstract_lottery.lottery_type == "b" %}
                             <img class="slf-lottery-card-lottery-type-pic" alt="" src="{% static 'img/lottery-type-bronze.png' %}"> Бронза
                         {% endif %}
                     </span>
@@ -40,7 +40,7 @@
         <div class="slf-lottery-card-progress">
             <div class="progress-bar stripes animated slower" style="width: {{ lottery.lottery_progress }}%"></div>
             <p class="slf-lottery-card-progress-tickets">
-                {{ lottery.tickets_bought }}/{{ lottery.tickets_amount }}<br><span>БИЛЕТОВ</span>
+                {{ lottery.tickets_bought }}/{{ lottery.abstract_lottery.tickets_amount }}<br><span>БИЛЕТОВ</span>
             </p>
         </div>
 
@@ -50,9 +50,9 @@
 
         <p class="slf-lottery-card-game-desc {% if user.is_authenticated %}slf-lottery-card-game-desc-user-logged-in{% endif %}">
             {% if user.is_authenticated %}
-                {{ lottery.lottery_game_desc|truncatechars:480 }}
+                {{ lottery.abstract_lottery.game.desc|truncatechars:480 }}
             {% else %}
-                {{ lottery.lottery_game_desc|truncatechars:200 }}
+                {{ lottery.abstract_lottery.game.desc|truncatechars:200 }}
             {% endif %}
         </p>
 

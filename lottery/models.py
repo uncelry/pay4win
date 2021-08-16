@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from allauth.socialaccount.models import SocialAccount
 from django.utils.timezone import now
+from bs4 import BeautifulSoup
 import requests
 
 
@@ -20,7 +21,7 @@ class Genre(models.Model):
     name = models.CharField(max_length=200, help_text='Введите название жанра (Например: Экшн, Шутер, Хоррор и т.п.)')
 
     def __str__(self):
-        return self.name
+        return '{0}'.format(self.name)
 
     class Meta:
         verbose_name = 'Жанр'
@@ -37,7 +38,7 @@ class FAQ(models.Model):
     answer = models.TextField(max_length=3000, help_text='Введите краткий и понятный ответ на вопрос')
 
     def __str__(self):
-        return self.question
+        return '{0}, {1}'.format(self.question, self.pk)
 
     class Meta:
         verbose_name = 'FAQ'
@@ -47,7 +48,7 @@ class FAQ(models.Model):
 # Пользователь
 class SteamUser(models.Model):
     """
-    Модель, отвечающая за Пользователя (в структурированом виде)
+    Модель, отвечающая за Пользователя (в структурированном виде)
     """
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True, verbose_name='Пользователь')
@@ -82,11 +83,11 @@ class SteamUser(models.Model):
     money_current = models.IntegerField(default=0, verbose_name="Текущий баланс")
     profile_is_private = models.BooleanField(default=False, verbose_name="Приватен ли профиль на сервисе?")
 
-    # def __str__(self):
-    #     return '{0}, {1}, {2}'.format(self.persona_name, self.user, self.steam_id)
+    def __str__(self):
+        return '{0}) {1}'.format(self.pk, self.persona_name)
 
-    # def get_absolute_url(self):
-    #     return reverse('user_detail', args=[str(self.pk)])
+    def get_absolute_url(self):
+        return reverse('user', args=[str(self.pk)])
 
     class Meta:
         verbose_name = 'Steam пользователь'
@@ -125,6 +126,107 @@ def create_user_profile(sender, instance, created, **kwargs):
         update_user_info(updatable_user, instance)
 
 
+# Игра из Steam и вся информация о ней
+class Game(models.Model):
+    """
+    Модель, отвечающая за всю информацию об игре Steam
+    """
+
+    link = models.CharField(max_length=300, unique=True, verbose_name="Ссылка на игру")
+    name = models.CharField(max_length=250, unique=True, verbose_name="Название игры steam")
+    desc = models.TextField(max_length=550, verbose_name="Описание игры")
+    img = models.ImageField(verbose_name="Картинка игры (230x320)")
+    genres = models.ManyToManyField(Genre, verbose_name="Жанры игры из стим")
+    price = models.IntegerField(verbose_name="Цена игры Steam в рублях")
+
+    class Meta:
+        verbose_name = 'Игра'
+        verbose_name_plural = 'Игры'
+
+    def __str__(self):
+        return '{0}'.format(self.name)
+
+
+# Фото для слайдера игр
+class GameSliderPicture(models.Model):
+    """
+    Модель, отвечающая за фото из Steam для слайдера игр
+    """
+
+    game = models.ForeignKey(Game, null=True, on_delete=models.CASCADE, verbose_name='Игра, к которой относятся фото')
+    pic_small = models.CharField(max_length=500, verbose_name="Ссылка на маленькую картинку игры")
+    pic_medium = models.CharField(max_length=500, verbose_name="Ссылка на среднюю картинку игры")
+    pic_large = models.CharField(max_length=500, verbose_name="Ссылка на большую картинку игры")
+
+    class Meta:
+        verbose_name = 'Картинка слайдера игр'
+        verbose_name_plural = 'Картинки слайдера игр'
+
+    def __str__(self):
+        return '{0}'.format(self.game)
+
+
+# Видео для слайдера игр
+class GameSliderVideo(models.Model):
+    """
+    Модель, отвечающая за видео из Steam для слайдера игр
+    """
+
+    game = models.ForeignKey(Game, null=True, on_delete=models.CASCADE, verbose_name='Игра, к которой относится видео')
+    preview = models.CharField(max_length=500, verbose_name="Ссылка на превью для видео игры")
+    video = models.CharField(max_length=500, verbose_name="Ссылка на видео игры")
+
+    class Meta:
+        verbose_name = 'Видео слайдера игр'
+        verbose_name_plural = 'Видео слайдера игр'
+
+    def __str__(self):
+        return '{0}'.format(self.game)
+
+
+# Создание новой игры
+@receiver(post_save, sender=Game)
+def create_game(sender, instance, created, **kwargs):
+    # Если мы именно создали новую игру (не просто сохранили)
+    if created:
+        resp = requests.get(instance.link)
+        soup = BeautifulSoup(resp.text, 'lxml')
+
+        # Сначала ищем ссылка на превью для видео
+        img_list = soup.select("#highlight_strip .highlight_strip_movie img")
+        video_posters_links_list = list(map(lambda x: x['src'], img_list))
+
+        # Теперь ищем ссылки на сами видео
+        video_list = soup.select("#highlight_player_area .highlight_movie")
+        video_links_list = list(map(lambda x: x['data-webm-source'], video_list))
+
+        # Создаем новые объекты - видео и прикрепляем их к этой игре
+        for i in range(len(video_posters_links_list)):
+            GameSliderVideo.objects.create(
+                game=instance,
+                preview=video_posters_links_list[i],
+                video=video_links_list[i]
+            )
+
+        # Теперь ищем ссылки на миниатюры картинок
+        img_list = soup.select("#highlight_strip .highlight_strip_screenshot img")
+        img_mini_links_list = list(map(lambda x: x['src'], img_list))
+
+        # Теперь получаем ссылки на средние картинки
+        img_medium_links_list = list(map(lambda x: x.replace('116x65', '600x338'), img_mini_links_list))
+
+        # Теперь получаем ссылки на большие картинки
+        img_large_links_list = list(map(lambda x: x.replace('116x65', '1920x1080'), img_mini_links_list))
+
+        for i in range(len(img_mini_links_list)):
+            GameSliderPicture.objects.create(
+                game=instance,
+                pic_small=img_mini_links_list[i],
+                pic_medium=img_medium_links_list[i],
+                pic_large=img_large_links_list[i]
+            )
+
+
 # Абстрактный розыгрыш (интерфейсная модель)
 class AbstractLottery(models.Model):
     """
@@ -142,50 +244,37 @@ class AbstractLottery(models.Model):
                                                                                                'Серебро - 10 билетов\n'
                                                                                                'Бронза - 20 билетов',
                                     verbose_name='Тип розыгрыша')
-    lottery_game = models.CharField(max_length=300, verbose_name="Ссылка на игру")
-    lottery_game_img = models.ImageField(verbose_name="Ссылка на картинку игры (230x320)")
-    lottery_game_name = models.CharField(max_length=250, default='', verbose_name="Название игры steam")
-    lottery_game_desc = models.TextField(max_length=550, default='', verbose_name="Описание игры")
-    game_price = models.IntegerField(verbose_name="Цена игры Steam в рублях")
+    game = models.ForeignKey(Game, null=True, on_delete=models.PROTECT, default='', verbose_name='Разыгрываемая игра')
     tickets_amount = models.IntegerField(verbose_name="Кол-во билетов в розыгрыше")
     commission_num = models.IntegerField(verbose_name="Комиссия с розыгрыша в рублях")
     lotteries_amount = models.IntegerField(verbose_name="Кол-во розыгрышей такого вида")
     lottery_active = models.BooleanField(default=True, verbose_name="Активен ли такой вид розыгрышей?",
                                          help_text="Если хотите выключить такие розыгрыши, снимите галочку, вместо"
                                                    "удаления записи")
-    lottery_genres = models.ManyToManyField(Genre, verbose_name="Жанры игры из стим")
 
     class Meta:
         verbose_name = 'Розыгрыш'
         verbose_name_plural = 'Розыгрыши'
+
+    def __str__(self):
+        return '{0}'.format(self.game)
 
 
 # Функция создания розыгрышей
 def create_lottery_from_abstract(abstract):
 
     # Получаем цену билета:
-    ticket_price = ((abstract.game_price + abstract.commission_num) / abstract.tickets_amount)
+    ticket_price = ((abstract.game.price + abstract.commission_num) / abstract.tickets_amount)
     ticket_price = math.ceil(ticket_price)
 
     # Создаем игру:
-    game = LotteryGame.objects.create(
-        lottery_type=abstract.lottery_type,
-        lottery_game=abstract.lottery_game,
-        lottery_game_img=abstract.lottery_game_img.url,
-        lottery_game_name=abstract.lottery_game_name,
-        lottery_game_desc=abstract.lottery_game_desc,
+    LotteryGame.objects.create(
         time_started=now(),
-        tickets_amount=abstract.tickets_amount,
         ticket_price=ticket_price,
-        game_price=abstract.game_price,
-        commission_num=abstract.commission_num,
         abstract_lottery=abstract,
         lottery_state='o',
         tickets_left=abstract.tickets_amount,
     )
-
-    genres = abstract.lottery_genres.all()
-    game.lottery_genres.set(genres)
 
 
 @receiver(post_save, sender=AbstractLottery)
@@ -206,53 +295,45 @@ class LotteryGame(models.Model):
     Модель, отвечающая за фактический розыгрыш, в котором могут участвовать люди
     """
 
-    LOTTERY_TYPE_LIST = (
-        ('g', 'Золото'),
-        ('s', 'Серебро'),
-        ('b', 'Бронза'),
-    )
     LOTTERY_STATE_LIST = (
         ('o', 'Идет'),
-        ('p', 'Выбор победителя'),
         ('c', 'Окончена'),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4,
                           help_text='Уникальный ID этого розыгрыша', verbose_name="UUID розыгрыша")
-    lottery_type = models.CharField(max_length=1, choices=LOTTERY_TYPE_LIST, default='g', help_text='Тип розыгрыша:\n'
-                                                                                               'Золото - 5 билетов\n'
-                                                                                               'Серебро - 10 билетов\n'
-                                                                                               'Бронза - 20 билетов',
-                                    verbose_name='Тип розыгрыша')
-    lottery_game = models.CharField(max_length=300, verbose_name="Ссылка на игру")
-    lottery_game_img = models.CharField(max_length=500, default='', verbose_name="Ссылка на картинку игры (230x320)")
-    lottery_game_name = models.CharField(max_length=250, default='', verbose_name="Название игры steam")
-    lottery_game_desc = models.TextField(max_length=550, default='', verbose_name="Описание игры")
-    time_started = models.DateTimeField(default=now, verbose_name="Дата и время старта розыгрыша")
-    time_finished = models.DateTimeField(null=True, blank=True, verbose_name="Дата и время окончания розыгрыша")
-    tickets_amount = models.IntegerField(verbose_name="Кол-во билетов в розыгрыше")
     ticket_price = models.IntegerField(verbose_name="Цена билета в розыгрыше")
-    game_price = models.IntegerField(verbose_name="Цена игры Steam в рублях")
-    commission_num = models.IntegerField(verbose_name="Комиссия с розыгрыша в рублях")
-    players_amount = models.IntegerField(default=0, verbose_name="Кол-во текущих игроков")
-    players = models.ManyToManyField(SteamUser, blank=True, verbose_name="Текущие игроки")
-    lottery_genres = models.ManyToManyField(Genre, verbose_name="Жанры игры из стим")
-    abstract_lottery = models.ForeignKey(AbstractLottery, on_delete=models.SET_NULL, null=True,
-                                         verbose_name='Родительский розыгрыш')
-    lottery_state = models.CharField(max_length=1, choices=LOTTERY_STATE_LIST, default='o',
-                                     verbose_name='Текущее состояние лотереи',
-                                     help_text='Идет/Выбор победителя/Окончена')
     tickets_bought = models.IntegerField(default=0, verbose_name="Куплено билетов")
     tickets_left = models.IntegerField(verbose_name="Билетов осталось")
     lottery_progress = models.IntegerField(default=0, verbose_name="Процент купленных билетов")
-    lottery_winner = models.ForeignKey(SteamUser, on_delete=models.SET_NULL, null=True, verbose_name='Победитель',
+    players = models.ManyToManyField(SteamUser, blank=True, verbose_name="Текущие игроки")
+    players_amount = models.IntegerField(default=0, verbose_name="Кол-во текущих игроков")
+    lottery_state = models.CharField(max_length=1, choices=LOTTERY_STATE_LIST, default='o',
+                                     verbose_name='Текущее состояние лотереи',
+                                     help_text='Идет/Окончена')
+    lottery_winner = models.ForeignKey(SteamUser, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Победитель',
                                        related_name='user_lottery_winner')
+
+    abstract_lottery = models.ForeignKey(AbstractLottery, on_delete=models.PROTECT, null=True,
+                                         verbose_name='Родительский розыгрыш')
+    time_started = models.DateTimeField(default=now, verbose_name="Дата и время старта розыгрыша")
+    time_finished = models.DateTimeField(null=True, blank=True, verbose_name="Дата и время окончания розыгрыша")
 
     def calculate_ticks_for_user(self, participant):
         return participant.ticket_set.filter(lottery=self).count()
 
     def calculate_win_chance_for_user(self, participant):
-        return round(round(participant.ticket_set.filter(lottery=self).count() / self.tickets_amount, 2) * 100)
+        return round(round(participant.ticket_set.filter(lottery=self).count() / self.abstract_lottery.tickets_amount, 2) * 100)
+
+    class Meta:
+        verbose_name = 'Розыгрыш (фактический - не менять)'
+        verbose_name_plural = 'Розыгрыши (фактические - не менять)'
+
+    def __str__(self):
+        return '{0}'.format(self.pk)
+
+    def get_absolute_url(self):
+        return reverse('game', args=[str(self.pk)])
 
 
 # Билет (привязан к игроку и розыгрышу)
@@ -264,3 +345,10 @@ class Ticket(models.Model):
     owner = models.ForeignKey(SteamUser, on_delete=models.SET_NULL, null=True, verbose_name='Владелец билета')
     lottery = models.ForeignKey(LotteryGame, on_delete=models.CASCADE, null=True,
                                 verbose_name='Розыгрыш, которому принадлежит билет')
+
+    class Meta:
+        verbose_name = 'Билет'
+        verbose_name_plural = 'Билеты'
+
+    def __str__(self):
+        return '{0}, {1}'.format(self.owner, self.lottery)

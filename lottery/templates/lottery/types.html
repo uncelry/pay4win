@@ -40,7 +40,7 @@
                     человек. Соотношение цены билета к шансу на победу
                     наиболее оптимальное!
                 </p>
-                <a href="#" class="btn slf-types-go-btn">Участвовать</a>
+                <a href="{% url 'search' %}?search_type=Silver" class="btn slf-types-go-btn">Участвовать</a>
             </li>
             <li class="slf-types-li" id="typesGold">
                 <img src="{% static 'img/types-gold.png' %}" alt="">
@@ -66,7 +66,7 @@
                     человек. Соотношение цены билета к шансу на победу
                     наиболее оптимальное!
                 </p>
-                <a href="#" class="btn slf-types-go-btn">Участвовать</a>
+                <a href="{% url 'search' %}?search_type=Gold" class="btn slf-types-go-btn">Участвовать</a>
             </li>
             <li class="slf-types-li" id="typesBronze">
                 <img src="{% static 'img/types-bronze.png' %}" alt="">
@@ -92,7 +92,7 @@
                     человек. Соотношение цены билета к шансу на победу
                     наиболее оптимальное!
                 </p>
-                <a href="#" class="btn slf-types-go-btn">Участвовать</a>
+                <a href="{% url 'search' %}?search_type=Bronze" class="btn slf-types-go-btn">Участвовать</a>
             </li>
         </ul>
         <div class="row slf-types-sub-div">

@@ -205,19 +205,30 @@ main{
 .slf-slider-main{
     height: 227px;
     width: 404px;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.slf-slider-main:target, .slf-slider-main:active, .slf-slider-main:focus{
+    outline: none;
+    box-shadow: none;
+
 }
 
 .slf-slider-minis{
-    display: flex;
+    display: grid;
     flex-direction: column;
     overflow-y: scroll;
+    overflow-x: hidden;
     height: 227px;
     margin-left: 1px;
 }
 
 /* Img mini - 116x65 */
 
-.slf-slider-pic-mini{
+.slf-slider-poster-mini, .slf-slider-pic-mini{
     width: 116px;
     height: 65px;
     margin-top: 1px;
@@ -227,11 +238,19 @@ main{
     align-items: center;
 }
 
-.slf-slider-pic-mini:first-of-type{
+.slf-slider-pic-mini{
+    display: inline-block;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.slf-slider-mini-pic-el:first-of-type{
     margin-top: 0;
 }
 
-.slf-slider-pic-mini:hover{
+.slf-slider-poster-mini:hover, .slf-slider-pic-mini:hover{
     opacity: 0.8;
     cursor: pointer;
 }
@@ -240,6 +259,7 @@ main{
     width: 32px;
     height: 32px;
     left: 42px;
+    pointer-events: none;
 }
 
 .slf-game-description{
@@ -248,4 +268,315 @@ main{
     font-family: 'Open Sans', sans-serif!important;
     font-size: 1rem;
     line-height: 1.45rem;
+}
+
+.slf-slider-minis{
+    scrollbar-width: thin;
+    scrollbar-color: #67707e #d7d7d7;
+}
+
+/* для Chrome/Edge/Safari */
+.slf-slider-minis::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.slf-slider-minis::-webkit-scrollbar-track {
+    background: #d7d7d7;
+}
+
+.slf-slider-minis::-webkit-scrollbar-thumb {
+    width: 2px;
+    background-color: #67707e;
+    z-index: 12;
+    background-clip: padding-box;
+    transition: background-color .32s ease-in-out;
+    margin: 4px;
+    min-height: 32px;
+    min-width: 32px;
+}
+
+.slf-slider-minis::-webkit-scrollbar-thumb:hover, .slf-slider-minis::-webkit-scrollbar-thumb:active{
+    background-color: #454b54;
+}
+
+img.slf-slider-main:hover, img.slf-slider-main:active, img.slf-slider-main:focus{
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+.slf-modal-game-slider-window{
+    position: fixed;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.6);
+    top: 0;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.slf-modal-inner-body{
+    width: 70vw;
+    position: relative;
+}
+
+.slf-modal-close-btn{
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #FFFFFF;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.slf-modal-close-btn:hover, .slf-modal-close-btn:active, .slf-modal-close-btn:focus{
+    cursor: pointer;
+    background-color: #d5d5d5;
+}
+
+.slf-modal-img{
+    width: 100%;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+    pointer-events: none;
+}
+
+.slf-modal-closed{
+    display: none;
+}
+
+@media screen and (min-width: 1200px) and (max-width: 1399px){
+    .slf-game-slider{
+        flex-direction: column;
+    }
+
+    .slf-slider-minis{
+        display: grid;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        height: 75px;
+        width: 404px;
+        flex-wrap: wrap;
+        flex-direction: row;
+        margin-left: 0;
+        margin-top: 1px;
+        grid-auto-flow: column;
+    }
+
+    .slf-slider-mini-pic-el{
+        margin-top: 0;
+        margin-left: 1px;
+    }
+
+    .slf-slider-mini-pic-el:first-of-type{
+        margin-left: 0;
+    }
+
+    .slf-game-description{
+        font-family: 'Open Sans', sans-serif!important;
+        font-size: 1.1rem;
+        line-height: 1.55rem;
+    }
+}
+
+@media screen and (min-width: 992px) and (max-width: 1199px){
+    .slf-game-info-secondary-div{
+        display: flex;
+        width: 700px;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .slf-game-slider{
+        flex-direction: column;
+    }
+
+    .slf-slider-minis{
+        display: grid;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        height: 75px;
+        width: 404px;
+        flex-wrap: wrap;
+        flex-direction: row;
+        margin-left: 0;
+        margin-top: 1px;
+        grid-auto-flow: column;
+    }
+
+    .slf-slider-mini-pic-el{
+        margin-top: 0;
+        margin-left: 1px;
+    }
+
+    .slf-slider-mini-pic-el:first-of-type{
+        margin-left: 0;
+    }
+
+    .slf-game-description{
+        font-size: 0.9rem;
+        line-height: 1.15rem;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+    .slf-game-info-secondary-wrapper{
+        width: 490px;
+        flex-direction: column-reverse;
+        padding: 0 15px 0 15px;
+    }
+
+    .slf-game-info-name-and-economy, .slf-game-additional-info{
+        align-items: center;
+    }
+
+    .slf-game-slider{
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+    .slf-slider-minis{
+        display: grid;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        height: 75px;
+        width: 434px;
+        flex-wrap: wrap;
+        flex-direction: row;
+        margin-left: 0;
+        margin-top: 1px;
+        grid-auto-flow: column;
+    }
+
+    .slf-slider-mini-pic-el{
+        margin-top: 0;
+        margin-left: 1px;
+    }
+
+    .slf-slider-mini-pic-el:first-of-type{
+        margin-left: 0;
+    }
+
+    .slf-game-info-wrapper{
+        height: auto;
+        align-items: flex-start;
+    }
+
+    .slf-game-media-and-desc{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .slf-lottery-card-lottery-info-wrapper{
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 13px;
+    }
+
+    .slf-game-additional-info{
+        margin-bottom: 15px;
+    }
+
+    .slf-game-description{
+        margin: 0;
+        width: 434px;
+    }
+
+    .slf-game-info-secondary-div{
+        flex-direction: column;
+        position: absolute;
+        left: 5px;
+        top: 335px;
+        max-width: 225px;
+        align-items: center;
+    }
+
+    .slf-game-name{
+        max-width: 100%;
+        font-size: 1.4rem;
+    }
+
+    .slf-game-info-secondary-div > div{
+        max-width: 100%;
+    }
+
+    .slf-slider-main{
+        height: 244px;
+        width: 434px;
+    }
+
+    .slf-game-card-genres{
+        text-align: center;
+    }
+
+    main{
+        position: relative;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px){
+    .slf-game-info-secondary-div{
+        display: flex;
+        width: 280px;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-direction: column;
+        min-height: 305px;
+    }
+
+    .slf-game-info-name-and-economy {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 100%;
+    }
+
+    .slf-game-name{
+        max-width: 100%;
+    }
+
+    .slf-game-card-genres{
+        text-align: center;
+    }
+
+    .slf-game-additional-info, .slf-lottery-card-lottery-info-wrapper{
+        align-items: center;
+    }
+
+    .slf-lottery-card-lottery-info-wrapper{
+        margin-bottom: 15px;
+    }
+
+    .slf-game-media-and-desc{
+        width: 531px;
+        flex-direction: column;
+        margin-top: 10px;
+        margin-left: -240px;
+    }
+
+    .slf-game-info-wrapper {
+        display: flex;
+        width: 100%;
+        height: auto;
+        min-height: 320px;
+        align-items: flex-start;
+    }
+
+    .slf-game-description{
+        margin-top: 10px;
+        padding: 0 5px;
+        font-family: 'Open Sans', sans-serif!important;
+        font-size: 1rem;
+        line-height: 1.45rem;
+        text-align: center;
+    }
 }

@@ -100,7 +100,7 @@ def search(request):
         # Фильтр по названию игры
         if 'search_game_name' in request.GET:
             if request.GET['search_game_name']:
-                lotterygame_list = lotterygame_list.filter(lottery_state='o').filter(lottery_game_name__contains=request.GET['search_game_name'])
+                lotterygame_list = lotterygame_list.filter(lottery_state='o').filter(abstract_lottery__game__name__contains=request.GET['search_game_name'])
 
 
 
@@ -109,7 +109,7 @@ def search(request):
         if 'search_genre' in request.GET:
             if request.GET['search_genre']:
                 filtred_genre = Genre.objects.filter(pk=request.GET['search_genre'])[0]
-                lotterygame_list = lotterygame_list.filter(lottery_genres=filtred_genre)
+                lotterygame_list = lotterygame_list.filter(abstract_lottery__game__genres=filtred_genre)
 
                 context['current_genre'] = filtred_genre
 
@@ -126,7 +126,7 @@ def search(request):
                 else:
                     game_type = 'b'
 
-                lotterygame_list = lotterygame_list.filter(lottery_type=game_type)
+                lotterygame_list = lotterygame_list.filter(abstract_lottery__lottery_type=game_type)
 
                 context['current_type'] = game_type
 
@@ -223,5 +223,5 @@ class LotteryDetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(LotteryDetailView, self).get_context_data(**kwargs)
-        context['lotterygame_economy'] = context['lotterygame'].game_price - context['lotterygame'].ticket_price
+        context['lotterygame_economy'] = context['lotterygame'].abstract_lottery.game.price - context['lotterygame'].ticket_price
         return context
