@@ -707,4 +707,8 @@ footer{
     .slf-top-nav{
         line-height: 55px;
     }
+
+    .slf-top-nav button.navbar-toggler{
+        margin-right: 5px;
+    }
 }

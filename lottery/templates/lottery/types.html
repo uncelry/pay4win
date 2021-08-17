@@ -8,6 +8,8 @@
 
 {% block links %}
     <link rel="stylesheet" href="{% static 'css/types.css' %}">
+    <script src="{% static 'js/libs/jquery.min.js' %}"></script>
+    <script src="{% static 'js/type-show-more-btn.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Типы розыгрышей</title>{% endblock %}
@@ -24,7 +26,7 @@
                 <p class="slf-types-cost">Цена от <span class="slf-types-cost-num">99<span class="slf-types-cost-rub">руб</span></span> до <span class="slf-types-cost-num">200<span class="slf-types-cost-rub">руб</span></span></p>
                 <div class="slf-types-first">
                     <p>Разыгрываемые игры</p>
-                    <a href="#">посмотреть</a>
+                    <a class="slf-type-modal-link-opener" type-open="silver" data-bs-toggle="modal" data-bs-target="#modalTypeShowMoreGames" href="#">посмотреть</a>
                 </div>
                 <div class="slf-types-second">
                     <p>Шанс на победу</p>
@@ -50,7 +52,7 @@
                 <p class="slf-types-cost">Цена от <span class="slf-types-cost-num">99<span class="slf-types-cost-rub">руб</span></span> до <span class="slf-types-cost-num">200<span class="slf-types-cost-rub">руб</span></span></p>
                 <div class="slf-types-first">
                     <p>Разыгрываемые игры</p>
-                    <a href="#">посмотреть</a>
+                    <a class="slf-type-modal-link-opener" type-open="gold" data-bs-toggle="modal" data-bs-target="#modalTypeShowMoreGames" href="#">посмотреть</a>
                 </div>
                 <div class="slf-types-second">
                     <p>Шанс на победу</p>
@@ -76,7 +78,7 @@
                 <p class="slf-types-cost">Цена от <span class="slf-types-cost-num">99<span class="slf-types-cost-rub">руб</span></span> до <span class="slf-types-cost-num">200<span class="slf-types-cost-rub">руб</span></span></p>
                 <div class="slf-types-first">
                     <p>Разыгрываемые игры</p>
-                    <a href="#">посмотреть</a>
+                    <a class="slf-type-modal-link-opener" type-open="bronze" data-bs-toggle="modal" data-bs-target="#modalTypeShowMoreGames" href="#">посмотреть</a>
                 </div>
                 <div class="slf-types-second">
                     <p>Шанс на победу</p>
@@ -108,6 +110,50 @@
                 </p>
             </div>
         </div>
+
+        <div class="modal fade" id="modalTypeShowMoreGames">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Игры</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="slf-types-modal-content-silver" style="display: none;">
+                            {% if silver_games %}
+                                {% for type_game in silver_games %}
+                                    <a class="slf-type-modal-link" href="{% url 'search' %}?search_game_name={{ type_game.name }}&search_type=Silver">{{ type_game.name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                В данный момент игр данной категории нету
+                            {% endif %}
+                        </p>
+                        <p class="slf-types-modal-content-gold" style="display: none;">
+                            {% if gold_games %}
+                                {% for type_game in gold_games %}
+                                    <a class="slf-type-modal-link" href="{% url 'search' %}?search_game_name={{ type_game.name }}&search_type=Gold">{{ type_game.name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                В данный момент игр данной категории нету
+                            {% endif %}
+                        </p>
+                        <p class="slf-types-modal-content-bronze" style="display: none;">
+                            {% if bronze_games %}
+                                {% for type_game in bronze_games %}
+                                    <a class="slf-type-modal-link" href="{% url 'search' %}?search_game_name={{ type_game.name }}&search_type=Bronze">{{ type_game.name }}</a>{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                В данный момент игр данной категории нету
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </main>
 
 {% endblock %}

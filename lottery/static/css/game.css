@@ -184,7 +184,7 @@ main{
     font-weight: 800;
 }
 
-.slf-game-card-participate:active, .slf-game-card-participate:hover, .slf-game-card-participate:focus, .slf-game-card-participate:target, .slf-game-card-participate:link{
+.slf-game-card-participate:active, .slf-game-card-participate:hover, .slf-game-card-participate:focus, .slf-game-card-participate:target{
     outline: none;
     box-shadow: none;
     border: none;
@@ -425,6 +425,10 @@ img.slf-slider-main:hover, img.slf-slider-main:active, img.slf-slider-main:focus
         font-size: 0.9rem;
         line-height: 1.15rem;
     }
+
+    .slf-game-card-participate{
+        width: 200px;
+    }
 }
 
 @media screen and (min-width: 768px) and (max-width: 991px){
@@ -521,6 +525,10 @@ img.slf-slider-main:hover, img.slf-slider-main:active, img.slf-slider-main:focus
     main{
         position: relative;
     }
+
+    .slf-game-card-participate{
+        width: 100%;
+    }
 }
 
 @media screen and (min-width: 576px) and (max-width: 767px){
@@ -542,6 +550,7 @@ img.slf-slider-main:hover, img.slf-slider-main:active, img.slf-slider-main:focus
 
     .slf-game-name{
         max-width: 100%;
+        text-align: center;
     }
 
     .slf-game-card-genres{
@@ -579,4 +588,90 @@ img.slf-slider-main:hover, img.slf-slider-main:active, img.slf-slider-main:focus
         line-height: 1.45rem;
         text-align: center;
     }
+
+    .slf-game-card-participate{
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .slf-game-info-wrapper{
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: auto;
+        min-height: 320px;
+    }
+
+    .slf-game-info-secondary-div{
+        display: flex;
+        width: 280px;
+        justify-content: space-evenly;
+        align-items: center;
+        flex-direction: column;
+        min-height: 305px;
+    }
+
+    .slf-game-name{
+        max-width: 18rem;
+        text-align: center;
+    }
+
+    .slf-game-card-genres{
+        text-align: center;
+    }
+
+    .slf-game-additional-info, .slf-lottery-card-lottery-info-wrapper{
+        align-items: center;
+    }
+
+    .slf-game-info-secondary-wrapper{
+        align-items: center;
+    }
+
+    .slf-game-media-and-desc{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .slf-slider-main{
+        height: 170px;
+        width: 300px;
+    }
+
+    .slf-game-slider{
+        flex-direction: column;
+    }
+
+    .slf-slider-minis{
+        display: grid;
+        overflow-x: scroll;
+        overflow-y: hidden;
+        height: 75px;
+        width: 300px;
+        flex-wrap: wrap;
+        flex-direction: row;
+        margin-left: 0;
+        margin-top: 1px;
+        grid-auto-flow: column;
+    }
+
+    .slf-slider-mini-pic-el{
+        margin-top: 0;
+        margin-left: 1px;
+    }
+
+    .slf-slider-mini-pic-el:first-of-type{
+        margin-left: 0;
+    }
+
+    .slf-game-description{
+        margin: 20px 0 0 0;
+        text-align: center;
+    }
+
+    .slf-game-card-participate{
+        width: 100%;
+    }
+
 }

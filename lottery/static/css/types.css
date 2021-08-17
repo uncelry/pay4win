@@ -413,3 +413,7 @@ main{
         background-image: unset!important;
     }
 }
+
+.slf-type-modal-link{
+    display: inline-block;
+}

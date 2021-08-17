@@ -5,9 +5,10 @@ from allauth.socialaccount.providers.steam.provider import SteamOpenIDProvider
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import generic
-from .models import FAQ, LotteryGame, Genre, SteamUser
+from .models import FAQ, LotteryGame, Genre, SteamUser, Game
 from .forms import UserPrivacyForm
 from django.shortcuts import get_object_or_404
+from itertools import groupby
 
 
 STEAM_OPENID_URL = "https://steamcommunity.com/openid"
@@ -72,7 +73,21 @@ def manual(request):
 # Types view
 def types(request):
 
-    return render(request, 'lottery/types.html')
+    gold_games = Game.objects.filter(abstractlottery__lottery_type='g').filter(abstractlottery__lotterygame__lottery_state='o')
+    silver_games = Game.objects.filter(abstractlottery__lottery_type='s').filter(abstractlottery__lotterygame__lottery_state='o')
+    bronze_games = Game.objects.filter(abstractlottery__lottery_type='b').filter(abstractlottery__lotterygame__lottery_state='o')
+
+    gold_games = [el for el, _ in groupby(gold_games)]
+    silver_games = [el for el, _ in groupby(silver_games)]
+    bronze_games = [el for el, _ in groupby(bronze_games)]
+
+    context = {
+        'gold_games': gold_games,
+        'silver_games': silver_games,
+        'bronze_games': bronze_games,
+    }
+
+    return render(request, 'lottery/types.html', context=context)
 
 
 # Search view

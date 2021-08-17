@@ -92,6 +92,7 @@ class SteamUser(models.Model):
     class Meta:
         verbose_name = 'Steam пользователь'
         verbose_name_plural = 'Steam пользователи'
+        ordering = ['-pk']
 
 
 # Функция обновления информации пользователя
@@ -328,6 +329,7 @@ class LotteryGame(models.Model):
     class Meta:
         verbose_name = 'Розыгрыш (фактический - не менять)'
         verbose_name_plural = 'Розыгрыши (фактические - не менять)'
+        ordering = ['-pk']
 
     def __str__(self):
         return '{0}'.format(self.pk)

@@ -18,11 +18,13 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
-from lottery.sitemaps import StaticViewSitemap
+from lottery.sitemaps import StaticViewSitemap, SteamUserSitemap, LotteryGameSitemap
 
 
 sitemaps = {
-    'static': StaticViewSitemap
+    'static': StaticViewSitemap,
+    'steamuser': SteamUserSitemap,
+    'lotterygame': LotteryGameSitemap
 }
 
 urlpatterns = [
