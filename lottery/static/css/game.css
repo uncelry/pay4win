@@ -28,7 +28,9 @@ main{
 .slf-game-info-wrapper{
     display: flex;
     width: 100%;
-    height: 320px;
+    height: auto;
+    min-height: 320px;
+    align-items: flex-start;
 }
 
 .slf-game-info-secondary-wrapper{
@@ -674,4 +676,120 @@ img.slf-slider-main:hover, img.slf-slider-main:active, img.slf-slider-main:focus
         width: 100%;
     }
 
+
+
+}
+
+
+/* Форма покупки билета */
+
+.slf-game-ticket-info-wrapper{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.slf-game-ticket-h2{
+    margin: 0;
+    font-weight: 700;
+    text-align: center;
+    color: #66a9ca;
+}
+
+.slf-lottery-page-not-logged-in-btn{
+    color: #000000;
+    background-color: #f6e444;
+    outline: none;
+    box-shadow: none;
+    border: none;
+    max-width: 360px;
+    line-height: 45px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: auto;
+    margin-top: 20px;
+}
+
+.slf-lottery-page-not-logged-in-btn:active, .slf-lottery-page-not-logged-in-btn:hover, .slf-lottery-page-not-logged-in-btn:focus, .slf-lottery-page-not-logged-in-btn:target{
+    outline: none;
+    box-shadow: none;
+    border: none;
+    background-color: #BDAF34FF;
+    color: #000000;
+}
+
+@media screen and (max-width: 575px) {
+    .slf-lottery-page-not-logged-in-btn{
+        max-width: 320px;
+        line-height: 20px;
+    }
+}
+
+.slf-game-ticket-form{
+    margin-top: 10px;
+    text-align: center;
+}
+
+.slf-game-input-group{
+    width: auto;
+    display: flex;
+    align-items: center
+}
+
+.form-check-label{
+    margin-right: 5px;
+}
+
+.slf-game-amount-input{
+    border-radius: 0;
+}
+
+.slf-game-form-save{
+    background-color: #e7c963;
+    color: #FFFFFF;
+    font-weight: 800;
+    font-size: 2.5rem;
+    border: 0;
+    border-radius: 0;
+    padding: 3px 30px;
+}
+
+.slf-game-form-save:active, .slf-game-form-save:hover, .slf-game-form-save:focus, .slf-game-form-save:target{
+    outline: none;
+    box-shadow: none;
+    border: none;
+    background-color: #af984a;
+    color: #FFFFFF;
+}
+
+.form-data-wrapper{
+    display: flex;
+    width: 100%;
+    padding: 0 15px;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.slf-form-span{
+    color: #e1bc14;
+    font-size: 1.4rem;
+}
+
+@media screen and (max-width: 575px) {
+    .form-data-wrapper{
+        flex-direction: column;
+    }
+}
+
+.slf-form-note-text{
+    margin: 0;
+    text-align: center;
+}
+
+.slf-form-note-wrapper{
+    justify-content: center;
+    margin-top: 10px;
 }

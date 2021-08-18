@@ -6,7 +6,7 @@ from django.contrib.auth import logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views import generic
 from .models import FAQ, LotteryGame, Genre, SteamUser, Game
-from .forms import UserPrivacyForm
+from .forms import UserPrivacyForm, BuyTicketForm
 from django.shortcuts import get_object_or_404
 from itertools import groupby
 
@@ -239,4 +239,50 @@ class LotteryDetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super(LotteryDetailView, self).get_context_data(**kwargs)
         context['lotterygame_economy'] = context['lotterygame'].abstract_lottery.game.price - context['lotterygame'].ticket_price
+        context['form'] = BuyTicketForm(initial={'amount': 1})
+
+        context['form'].fields['amount'].widget.attrs.update({'max': context['lotterygame'].tickets_left})
+        if self.request.user.is_authenticated:
+            if context['lotterygame'].check_if_user_is_in_lottery(self.request.user.steamuser):
+                context['user_is_participant'] = True
+
+        if 'result_code' in self.request.GET:
+            context[str(self.request.GET['result_code'])] = True
+
         return context
+
+    def post(self, request, *args, **kwargs):
+        current_lottery = get_object_or_404(LotteryGame, pk=self.kwargs['pk'])
+
+        form = BuyTicketForm(self.request.POST)
+
+        if form.is_valid():
+            if (0 < form.cleaned_data['amount'] <= current_lottery.tickets_left) and ((form.cleaned_data['amount'] * current_lottery.ticket_price) <= self.request.user.steamuser.money_current) and current_lottery.lottery_state == 'o':
+                res = current_lottery.buy_tickets(self.request.user.steamuser, form.cleaned_data['amount'])
+                if res:
+                    result_code = 'res_success'
+                else:
+                    result_code = 'res_error'
+
+            elif (form.cleaned_data['amount'] * current_lottery.ticket_price) > self.request.user.steamuser.money_current:
+                # Недостаточно средств на счету
+                result_code = 'res_low_balance'
+
+            elif (form.cleaned_data['amount'] <= 0) or (form.cleaned_data['amount'] > current_lottery.tickets_left):
+                # Введено неверное кол-во билетов для покупки
+                result_code = 'res_wrong_number'
+
+            elif current_lottery.lottery_state != 'o':
+                # Розыгрыш уже закрыт
+                result_code = 'res_lottery_closed'
+            else:
+                # Произошла ошибка, попробуйте ещё раз
+                result_code = 'res_error'
+
+        else:
+            # Неверно заполнена форма, попробуйте ещё раз
+            result_code = 'res_bad_form'
+
+        prev_http = request.META.get('HTTP_REFERER')
+        prev_http = prev_http[:prev_http.find('?')]
+        return HttpResponseRedirect(prev_http + '?result_code=' + result_code)

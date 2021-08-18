@@ -326,6 +326,47 @@ class LotteryGame(models.Model):
     def calculate_win_chance_for_user(self, participant):
         return round(round(participant.ticket_set.filter(lottery=self).count() / self.abstract_lottery.tickets_amount, 2) * 100)
 
+    def check_if_user_is_in_lottery(self, steam_user):
+        if steam_user.ticket_set.filter(lottery=self).count() > 0:
+            return True
+        return False
+
+    def buy_tickets(self, steam_user, ticket_amount):
+        # Проверяем достаточно ли у пользователя средств / билетов в розыгрыше / открыт ли розыгрыш
+        if (steam_user.money_current < ticket_amount * self.ticket_price) or (self.tickets_left < ticket_amount) or (self.lottery_state != 'o'):
+            return False
+
+        # Если всё хорошо, то начинаем обновлять данные. Если пользователь новый
+        if not self.check_if_user_is_in_lottery(steam_user):
+            self.players.add(steam_user)
+            self.players_amount += 1
+
+        # Создаем билеты
+        for i in range(ticket_amount):
+            Ticket.objects.create(
+                owner=steam_user,
+                lottery=self
+            )
+
+        # Уменьшаем деньги пользователя
+        steam_user.money_current -= ticket_amount * self.ticket_price
+
+        # Добавляем розыгрыш к пользователю в активные
+        steam_user.lotteries_ongoing.add(self)
+
+        # Обновляем информацию розыгрыша
+        self.tickets_bought += ticket_amount
+        self.tickets_left -= ticket_amount
+
+        # Сохраняем всё
+        steam_user.save()
+        self.save()
+
+        return True
+
+    def finish_lottery(self):
+        print('Lottery finished!')
+
     class Meta:
         verbose_name = 'Розыгрыш (фактический - не менять)'
         verbose_name_plural = 'Розыгрыши (фактические - не менять)'
@@ -336,6 +377,17 @@ class LotteryGame(models.Model):
 
     def get_absolute_url(self):
         return reverse('game', args=[str(self.pk)])
+
+
+@receiver(post_save, sender=LotteryGame)
+def save_lottery_game(sender, instance, created, **kwargs):
+    if not created and instance.tickets_bought != 0 and instance.lottery_state != 'c':
+
+        new_progress = math.floor((instance.tickets_bought / (instance.tickets_bought + instance.tickets_left)) * 100)
+        LotteryGame.objects.filter(pk=instance.pk).update(lottery_progress=new_progress)
+
+        if instance.tickets_left == 0:
+            instance.finish_lottery()
 
 
 # Билет (привязан к игроку и розыгрышу)

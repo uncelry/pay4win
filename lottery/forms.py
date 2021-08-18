@@ -8,3 +8,14 @@ class UserPrivacyForm(forms.Form):
         'type': 'checkbox',
         'id': 'flexSwitchCheckChecked'
     })
+
+
+class BuyTicketForm(forms.Form):
+    amount = forms.IntegerField(label='Количество', required=True)
+    amount.widget.attrs.update({
+        'class': 'form-control slf-game-amount-input',
+        'type': 'text',
+        'id': 'formAmountInput',
+        'min': 1,
+        'max': 5
+    })

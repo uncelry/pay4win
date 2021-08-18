@@ -15,6 +15,8 @@
 
 {% block title %}<title>Pay4Win - Розыгрыш {{ lotterygame.abstract_lottery.game.name }}</title>{% endblock %}
 
+{% load lotteries_extras %}
+
 {% block content %}
 
     <main class="container">
@@ -104,6 +106,78 @@
                 </div>
             </div>
         </div>
+        {% if user.is_authenticated %}
+            <div class="slf-game-ticket-info-wrapper">
+                <h2 class="slf-game-ticket-h2">Купить билет</h2>
+                
+                <!-- Ответ формы -->
+                <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+                    <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                    </symbol>
+                    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                    </symbol>
+                    <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+                    </symbol>
+                </svg>
+                    {% if res_success %}
+                        <div class="alert alert-success d-flex align-items-center slf-form-note-wrapper" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                            <p class="slf-form-note-text">Покупка успешно совершена!</p>
+                        </div>
+                    {% elif res_low_balance %}
+                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                            <p class="slf-form-note-text">Не удалось совершить попку - недостаточно средств на счету</p>
+                        </div>
+                    {% elif res_wrong_number %}
+                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                            <p class="slf-form-note-text">Ошибка - введено неверное кол-во билетов для покупки</p>
+                        </div>
+                    {% elif res_error %}
+                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                            <p class="slf-form-note-text">Произошла ошибка - попробуйте ещё раз</p>
+                        </div>
+                    {% elif res_bad_form %}
+                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                            <p class="slf-form-note-text">Произошла ошибка - форма заполнена неверно</p>
+                        </div>
+                    {% elif res_lottery_closed %}
+                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                            <p class="slf-form-note-text">Произошла ошибка - розыгрыш уже завершен</p>
+                        </div>
+                    {% endif %}
+                <!-- Конец ответа формы-->
+                
+                <form class="slf-game-ticket-form" method="post" action="">
+                    {% csrf_token %}
+                    <div class="form-data-wrapper">
+                        <div class="input-group mb-3 slf-game-input-group">
+                            <label class="form-check-label" for="formAmountInput">Количество:</label>
+                            {{ form.amount }}
+                        </div>
+                        <p class="slf-game-tickets-left">Осталось: {{ lotterygame.tickets_left }}шт.</p>
+                        <p class="slf-game-form-total-price">Общая цена: <span class="slf-form-span">{{ lotterygame.ticket_price }}<sup>руб</sup></span></p>
+                        <p class="slf-game-form-ticket-price">Цена билета: <span class="slf-form-span">{{ lotterygame.ticket_price }}<sup>руб</sup></span></p>
+                        <p class="slf-game-form-ticket-bought-amount">Вы купили: <span class="slf-form-span">{% get_ongoing_ticks_amount_of_participant lotterygame user.steamuser %}<sup>шт.</sup></span></p>
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-3 slf-game-form-save">Купить</button>
+                </form>
+
+            </div>
+
+            {% if user_is_participant %}
+                IN LOTTERY
+            {% endif %}
+        {% else %}
+            <a class="btn btn-primary slf-lottery-page-not-logged-in-btn" href="{% url 'steam_login' %}"><img src="{% static 'img/lottery-card-steam-btn.png' %}" alt=""> Войти через STEAM, чтобы играть!</a>
+        {% endif %}
     </main>
 
 <div class="slf-modal-game-slider-window slf-modal-closed">
