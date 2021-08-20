@@ -3,8 +3,8 @@ from django.urls import reverse
 from allauth.socialaccount.providers.openid.views import OpenIDCallbackView, OpenIDLoginView
 from allauth.socialaccount.providers.steam.provider import SteamOpenIDProvider
 from django.contrib.auth import logout
-from django.http import HttpResponseRedirect, HttpResponse
-from django.views import generic
+from django.http import HttpResponseRedirect, JsonResponse, StreamingHttpResponse
+from django.views import generic, View
 from .models import FAQ, LotteryGame, Genre, SteamUser, Game
 from .forms import UserPrivacyForm, BuyTicketForm
 from django.shortcuts import get_object_or_404
@@ -268,13 +268,14 @@ class LotteryDetailView(generic.DetailView):
                 # Недостаточно средств на счету
                 result_code = 'res_low_balance'
 
+            elif current_lottery.lottery_state != 'o':
+                # Розыгрыш уже закрыт
+                result_code = 'res_lottery_closed'
+
             elif (form.cleaned_data['amount'] <= 0) or (form.cleaned_data['amount'] > current_lottery.tickets_left):
                 # Введено неверное кол-во билетов для покупки
                 result_code = 'res_wrong_number'
 
-            elif current_lottery.lottery_state != 'o':
-                # Розыгрыш уже закрыт
-                result_code = 'res_lottery_closed'
             else:
                 # Произошла ошибка, попробуйте ещё раз
                 result_code = 'res_error'
@@ -283,6 +284,26 @@ class LotteryDetailView(generic.DetailView):
             # Неверно заполнена форма, попробуйте ещё раз
             result_code = 'res_bad_form'
 
-        prev_http = request.META.get('HTTP_REFERER')
-        prev_http = prev_http[:prev_http.find('?')]
-        return HttpResponseRedirect(prev_http + '?result_code=' + result_code)
+        if request.is_ajax():
+            # Если запрос - AJAX
+
+            if current_lottery.tickets_left != 0:
+                lottery_finished = False
+            else:
+                lottery_finished = True
+
+            return JsonResponse({
+                'result_code': result_code,
+                'is_lottery_finished': lottery_finished,
+                'tickets_left': current_lottery.tickets_left,
+                'total_bought_for_user': current_lottery.calculate_ticks_for_user(self.request.user.steamuser),
+                'is_user_in_lottery': current_lottery.check_if_user_is_in_lottery(self.request.user.steamuser),
+                'steam_user_new_balance': self.request.user.steamuser.money_current,
+                'user_win_chance': current_lottery.calculate_win_chance_for_user(self.request.user.steamuser)
+            }, status=200)
+
+        else:
+            # Если запрос - не AJAX
+            prev_http = request.META.get('HTTP_REFERER')
+            prev_http = prev_http[:prev_http.find('?')]
+            return HttpResponseRedirect(prev_http + '?result_code=' + result_code)

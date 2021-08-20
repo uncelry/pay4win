@@ -11,6 +11,8 @@
     <script src="{% static 'js/libs/jquery.min.js' %}"></script>
     <script src="{% static 'js/game-slider.js' %}"></script>
     <script src="{% static 'js/lottery-number-copy.js' %}"></script>
+    <script src="{% static 'js/game-ajax.js' %}"></script>
+    <script src="{% static 'js/game-ongoing-carousel.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Розыгрыш {{ lotterygame.abstract_lottery.game.name }}</title>{% endblock %}
@@ -106,56 +108,56 @@
                 </div>
             </div>
         </div>
-        {% if user.is_authenticated %}
-            <div class="slf-game-ticket-info-wrapper">
-                <h2 class="slf-game-ticket-h2">Купить билет</h2>
-                
-                <!-- Ответ формы -->
+        {% if user.is_authenticated and lotterygame.lottery_state == 'o' %}
+            <!-- Ответ формы -->
                 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
                     <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                    </symbol>
-                    <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
                     </symbol>
                     <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
                     </symbol>
                 </svg>
-                    {% if res_success %}
-                        <div class="alert alert-success d-flex align-items-center slf-form-note-wrapper" role="alert">
-                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
-                            <p class="slf-form-note-text">Покупка успешно совершена!</p>
-                        </div>
-                    {% elif res_low_balance %}
-                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
-                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                            <p class="slf-form-note-text">Не удалось совершить попку - недостаточно средств на счету</p>
-                        </div>
-                    {% elif res_wrong_number %}
-                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
-                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                            <p class="slf-form-note-text">Ошибка - введено неверное кол-во билетов для покупки</p>
-                        </div>
-                    {% elif res_error %}
-                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
-                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                            <p class="slf-form-note-text">Произошла ошибка - попробуйте ещё раз</p>
-                        </div>
-                    {% elif res_bad_form %}
-                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
-                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                            <p class="slf-form-note-text">Произошла ошибка - форма заполнена неверно</p>
-                        </div>
-                    {% elif res_lottery_closed %}
-                        <div class="alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert">
-                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
-                            <p class="slf-form-note-text">Произошла ошибка - розыгрыш уже завершен</p>
-                        </div>
-                    {% endif %}
-                <!-- Конец ответа формы-->
+
+                <div id="alert_res_success" class="slf-tickets-alert alert alert-success d-flex align-items-center slf-form-note-wrapper" role="alert" {% if not res_success %}style="display: none!important"{% endif %}>
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                    <p class="slf-form-note-text">Покупка успешно совершена!</p>
+                </div>
+
+                <div id="alert_res_low_balance" class="slf-tickets-alert alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert" {% if not res_low_balance %}style="display: none!important"{% endif %}>
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                    <p class="slf-form-note-text">Не удалось совершить попку - недостаточно средств на счету</p>
+                </div>
+
+
+                <div id="alert_res_wrong_number" class="slf-tickets-alert alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert" {% if not res_wrong_number %}style="display: none!important"{% endif %}>
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                    <p class="slf-form-note-text">Ошибка - введено неверное кол-во билетов для покупки</p>
+                </div>
+
+
+                <div id="alert_res_error" class="slf-tickets-alert alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert" {% if not res_error %}style="display: none!important"{% endif %}>
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                    <p class="slf-form-note-text">Произошла ошибка - попробуйте ещё раз</p>
+                </div>
+
+
+                <div id="alert_res_bad_form" class="slf-tickets-alert alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert" {% if not res_bad_form %}style="display: none!important"{% endif %}>
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                    <p class="slf-form-note-text">Произошла ошибка - форма заполнена неверно</p>
+                </div>
+
+
+                <div id="alert_res_lottery_closed" class="slf-tickets-alert alert alert-danger d-flex align-items-center slf-form-note-wrapper" role="alert" {% if not res_lottery_closed %}style="display: none!important"{% endif %}>
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                    <p class="slf-form-note-text">Произошла ошибка - розыгрыш уже завершен</p>
+                </div>
+            <!-- Конец ответа формы-->
+
+            <div class="slf-game-ticket-info-wrapper">
+                <h2 class="slf-game-ticket-h2">Купить билет</h2>
                 
-                <form class="slf-game-ticket-form" method="post" action="">
+                <form id="formTicketID" class="slf-game-ticket-form" method="post" action="">
                     {% csrf_token %}
                     <div class="form-data-wrapper">
                         <div class="input-group mb-3 slf-game-input-group">
@@ -167,16 +169,62 @@
                         <p class="slf-game-form-ticket-price">Цена билета: <span class="slf-form-span">{{ lotterygame.ticket_price }}<sup>руб</sup></span></p>
                         <p class="slf-game-form-ticket-bought-amount">Вы купили: <span class="slf-form-span">{% get_ongoing_ticks_amount_of_participant lotterygame user.steamuser %}<sup>шт.</sup></span></p>
                     </div>
-                    <button type="submit" class="btn btn-primary mb-3 slf-game-form-save">Купить</button>
+                    <button id="gameFormBuyTicket" type="submit" class="btn btn-primary mb-3 slf-game-form-save">Купить</button>
                 </form>
 
             </div>
-
+            <span id="participatorMagic" style="display: none!important;"></span>
             {% if user_is_participant %}
-                IN LOTTERY
+                <h3 class="slf-participant-win-chance-user">Ваш шанс на победу: <span>{% get_ongoing_win_chance_of_participant lotterygame user.steamuser %}%</span></h3>
             {% endif %}
-        {% else %}
+        {% elif not user.is_authenticated and lotterygame.lottery_state == 'o' %}
             <a class="btn btn-primary slf-lottery-page-not-logged-in-btn" href="{% url 'steam_login' %}"><img src="{% static 'img/lottery-card-steam-btn.png' %}" alt=""> Войти через STEAM, чтобы играть!</a>
+        {% elif lotterygame.lottery_state == 'c' %}
+            Розыгрыш окончен!
+        {% endif %}
+
+        {% if lotterygame.lottery_state == 'o' %}
+            <div class="slf-game-progress-wrapper">
+                <div class="slf-lottery-card-progress">
+                    <div class="progress-bar stripes animated slower" style="width: {{ lotterygame.lottery_progress }}%"></div>
+                    <p class="slf-lottery-card-progress-tickets">
+                        {{ lotterygame.tickets_bought }}/{{ lotterygame.abstract_lottery.tickets_amount }}<br><span>БИЛЕТОВ</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="slf-game-carousel-ongoing-wrapper {% if lotterygame.abstract_lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lotterygame.abstract_lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lotterygame.abstract_lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
+                <div class="slf-user-closed-games-card-slider-wrapper">
+                    <i class="bi bi-caret-left-fill slf-user-closed-games-card-slider-left-btn slf-btn-slider-inactive slf-slider-btn"></i>
+                    <div class="slf-user-closed-games-card-slider-left-btn-under"></div>
+                    <div class="slf-user-closed-games-slider-body">
+                        {% for lottery_player in lotterygame.players.all %}
+                            <a class="slf-user-closed-games-slider-element" style="background-image: url({{ lottery_player.avatar_full }})" title="{{ lottery_player.persona_name }}" href="{% url 'user' lottery_player.pk %}" target="_blank">
+                                <p class="slf-user-closed-games-slider-element-win-chance">{% get_ongoing_win_chance_of_participant lotterygame lottery_player %}%</p>
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <div class="slf-user-closed-games-card-slider-right-btn-under"></div>
+                    <i class="bi bi-caret-right-fill slf-user-closed-games-card-slider-right-btn slf-btn-slider-inactive slf-slider-btn"></i>
+                </div>
+            </div>
+
+            <div class="slf-game-updates-wrapper">
+                {% for lottery_player in lotterygame.players.all %}
+                    <div id="player-{{ lottery_player.pk }}" class="slf-game-update-player">
+                        <div class="slf-game-update-left">
+                            <div class="slf-game-update-left-user-avatar" style="background-image: url({{ lottery_player.avatar_full }})"></div>
+                            <p class="slf-game-update-left-user-info"><a href="{% url 'user' lottery_player.pk %}">{{ lottery_player.persona_name }}</a> приобрел:</p>
+                            <div class="slf-game-update-left-user-chance-wrapper">
+                                <p class="slf-game-update-left-user-chance-text">ШАНС ПОБЕДИТЬ</p>
+                                <p class="slf-game-update-left-user-chance-chance">{% get_ongoing_win_chance_of_participant lotterygame lottery_player %}%</p>
+                            </div>
+                        </div>
+                        <div class="slf-game-update-middle"></div>
+                        <p class="slf-game-update-right-text">{% get_ongoing_ticks_amount_of_participant lotterygame lottery_player %} <span>БИЛЕТОВ(-А)(-Т)</span></p>
+                    </div>
+                {% endfor %}
+            </div>
         {% endif %}
     </main>
 
