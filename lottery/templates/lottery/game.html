@@ -214,14 +214,14 @@
                     <div id="player-{{ lottery_player.pk }}" class="slf-game-update-player">
                         <div class="slf-game-update-left">
                             <div class="slf-game-update-left-user-avatar" style="background-image: url({{ lottery_player.avatar_full }})"></div>
-                            <p class="slf-game-update-left-user-info"><a href="{% url 'user' lottery_player.pk %}">{{ lottery_player.persona_name }}</a> приобрел:</p>
-                            <div class="slf-game-update-left-user-chance-wrapper">
-                                <p class="slf-game-update-left-user-chance-text">ШАНС ПОБЕДИТЬ</p>
+                            <p class="slf-game-update-left-user-info"><a href="{% url 'user' lottery_player.pk %}">{{ lottery_player.persona_name }}</a> только что приобрел:</p>
+                            <div class="slf-game-update-left-user-chance-wrapper" style="background-image: url({% static 'img/game-win-rate-bg.png' %})">
+                                <p class="slf-game-update-left-user-chance-text">Шанс победить</p>
                                 <p class="slf-game-update-left-user-chance-chance">{% get_ongoing_win_chance_of_participant lotterygame lottery_player %}%</p>
                             </div>
                         </div>
                         <div class="slf-game-update-middle"></div>
-                        <p class="slf-game-update-right-text">{% get_ongoing_ticks_amount_of_participant lotterygame lottery_player %} <span>БИЛЕТОВ(-А)(-Т)</span></p>
+                        <p class="slf-game-update-right-text">{% get_ongoing_ticks_amount_of_participant lotterygame lottery_player %} <br><span>Билетов(-а)(-т)</span></p>
                     </div>
                 {% endfor %}
             </div>
