@@ -1364,5 +1364,61 @@ img.slf-slider-main:hover, img.slf-slider-main:active, img.slf-slider-main:focus
 }
 
 .slf-game-ended-h2{
+    margin: 40px auto;
+    text-align: center;
+    font-weight: 700;
+    color: #29abcd;
+    font-size: 2.5rem;
+}
 
+.slf-game-user-self-winner{
+    text-align: center;
+    font-weight: 700;
+    color: #29abcd;
+    font-size: 2rem;
+}
+
+.slf-game-user-not-self-winner{
+    text-align: center;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+span.slf-game-user-self-winner{
+    text-decoration: underline;
+}
+
+.slf-game-self-winner-pic{
+    height: 115px;
+    margin: 10px auto;
+    -webkit-box-shadow: 0px 0px 17px 0px rgba(41, 171, 205, 0.75);
+    -moz-box-shadow:    0px 0px 17px 0px rgba(41, 171, 205, 0.75);
+    box-shadow:         0px 0px 17px 0px rgba(41, 171, 205, 0.75);
+}
+
+.slf-game-self-winner-pic-line{
+    background-color: rgba(41, 171, 205, 0.8);
+}
+
+.slf-game-self-winner-pic-wrapper{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.slf-game-not-yet-people{
+    text-align: center;
+}
+
+.slf-game-not-self-winner-pic{
+    height: 115px;
+    margin: 10px auto;
+    -webkit-box-shadow: 0px 0px 17px 0px rgba(255, 185, 22, 0.9);
+    -moz-box-shadow:    0px 0px 17px 0px rgba(255, 185, 22, 0.9);
+    box-shadow:         0px 0px 17px 0px rgba(255, 185, 22, 0.9);
+}
+
+.slf-game-not-self-winner-pic-line{
+    background-color: rgba(231, 201, 99, 0.8);
 }

@@ -8,7 +8,6 @@ $( document ).ready(function() {
             data: frm.serialize(),
 
             success: function(response) {
-                console.log(response); // УБРАТЬ!---------------------
                 updateTicketForm(response);
             },
 
@@ -45,7 +44,7 @@ function updateTicketForm(data){
         // Если не закончена, то обновляем поля в форме
         $(".slf-game-tickets-left").text("Осталось: " + data.tickets_left + "шт.");
         $(".slf-game-form-ticket-bought-amount .slf-form-span").html(data.total_bought_for_user + "<sup>шт.</sup>");
-        $('#formAmountInput').val(1).attr('max', data.tickets_left);
+        $('#formAmountInput').val(1).attr('max', data.tickets_left).trigger("input");
     }
 
     // Если пользователь только вступил в розыгрыш, то показываем ему шанс выигрыша

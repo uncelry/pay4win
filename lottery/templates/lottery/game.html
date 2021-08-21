@@ -13,6 +13,7 @@
     <script src="{% static 'js/lottery-number-copy.js' %}"></script>
     <script src="{% static 'js/game-ajax.js' %}"></script>
     <script src="{% static 'js/game-ongoing-carousel.js' %}"></script>
+    <script src="{% static 'js/game-form-price.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Розыгрыш {{ lotterygame.abstract_lottery.game.name }}</title>{% endblock %}
@@ -166,7 +167,7 @@
                         </div>
                         <p class="slf-game-tickets-left">Осталось: {{ lotterygame.tickets_left }}шт.</p>
                         <p class="slf-game-form-total-price">Общая цена: <span class="slf-form-span">{{ lotterygame.ticket_price }}<sup>руб</sup></span></p>
-                        <p class="slf-game-form-ticket-price">Цена билета: <span class="slf-form-span">{{ lotterygame.ticket_price }}<sup>руб</sup></span></p>
+                        <p class="slf-game-form-ticket-price">Цена билета: <span class="slf-form-span" ticket-price="{{ lotterygame.ticket_price }}">{{ lotterygame.ticket_price }}<sup>руб</sup></span></p>
                         <p class="slf-game-form-ticket-bought-amount">Вы купили: <span class="slf-form-span">{% get_ongoing_ticks_amount_of_participant lotterygame user.steamuser %}<sup>шт.</sup></span></p>
                     </div>
                     <button id="gameFormBuyTicket" type="submit" class="btn btn-primary mb-3 slf-game-form-save">Купить</button>
@@ -182,9 +183,19 @@
         {% elif lotterygame.lottery_state == 'c' %}
             <h2 class="slf-game-ended-h2">Розыгрыш окончен!</h2>
             {% if user.is_authenticated and user.steamuser.pk == lotterygame.lottery_winner.pk %}
-                ВЫ ПОБЕДИЛИ
+                <p class="slf-game-user-self-winner">Поздравляем, вы победили!</p>
+                <div class="slf-game-self-winner-pic-wrapper">
+                    <a class="slf-user-closed-games-slider-element slf-game-self-winner-pic" style="background-image: url({{ lotterygame.lottery_winner.avatar_full }})" title="{{ lotterygame.lottery_winner.persona_name }}" href="{% url 'user' lotterygame.lottery_winner.pk %}" target="_blank">
+                        <p class="slf-user-closed-games-slider-element-win-chance slf-game-self-winner-pic-line">{% get_ongoing_win_chance_of_participant lotterygame lotterygame.lottery_winner %}%</p>
+                    </a>
+                </div>
             {% else %}
-                ПОБЕДИЛ ДРУГОЙ
+        <p class="slf-game-user-not-self-winner">Победил <span class="slf-game-user-self-winner">{{ lotterygame.lottery_winner.persona_name }}</span></p>
+                <div class="slf-game-self-winner-pic-wrapper">
+                    <a class="slf-user-closed-games-slider-element slf-game-not-self-winner-pic" style="background-image: url({{ lotterygame.lottery_winner.avatar_full }})" title="{{ lotterygame.lottery_winner.persona_name }}" href="{% url 'user' lotterygame.lottery_winner.pk %}" target="_blank">
+                        <p class="slf-user-closed-games-slider-element-win-chance slf-game-not-self-winner-pic-line">{% get_ongoing_win_chance_of_participant lotterygame lotterygame.lottery_winner %}%</p>
+                    </a>
+                </div>
             {% endif %}
         {% endif %}
 
@@ -198,21 +209,26 @@
                 </div>
             </div>
         {% endif %}
-        <div class="slf-game-carousel-ongoing-wrapper {% if lotterygame.abstract_lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lotterygame.abstract_lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lotterygame.abstract_lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
-            <div class="slf-user-closed-games-card-slider-wrapper">
-                <i class="bi bi-caret-left-fill slf-user-closed-games-card-slider-left-btn slf-btn-slider-inactive slf-slider-btn"></i>
-                <div class="slf-user-closed-games-card-slider-left-btn-under"></div>
-                <div class="slf-user-closed-games-slider-body">
-                    {% for lottery_player in lotterygame.players.all %}
-                        <a class="slf-user-closed-games-slider-element" style="background-image: url({{ lottery_player.avatar_full }})" title="{{ lottery_player.persona_name }}" href="{% url 'user' lottery_player.pk %}" target="_blank">
-                            <p class="slf-user-closed-games-slider-element-win-chance">{% get_ongoing_win_chance_of_participant lotterygame lottery_player %}%</p>
-                        </a>
-                    {% endfor %}
+
+        {% if lotterygame.players_amount > 0 %}
+            <div class="slf-game-carousel-ongoing-wrapper {% if lotterygame.abstract_lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lotterygame.abstract_lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lotterygame.abstract_lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
+                <div class="slf-user-closed-games-card-slider-wrapper">
+                    <i class="bi bi-caret-left-fill slf-user-closed-games-card-slider-left-btn slf-btn-slider-inactive slf-slider-btn"></i>
+                    <div class="slf-user-closed-games-card-slider-left-btn-under"></div>
+                    <div class="slf-user-closed-games-slider-body">
+                        {% for lottery_player in lotterygame.players.all %}
+                            <a class="slf-user-closed-games-slider-element" style="background-image: url({{ lottery_player.avatar_full }})" title="{{ lottery_player.persona_name }}" href="{% url 'user' lottery_player.pk %}" target="_blank">
+                                <p class="slf-user-closed-games-slider-element-win-chance">{% get_ongoing_win_chance_of_participant lotterygame lottery_player %}%</p>
+                            </a>
+                        {% endfor %}
+                    </div>
+                    <div class="slf-user-closed-games-card-slider-right-btn-under"></div>
+                    <i class="bi bi-caret-right-fill slf-user-closed-games-card-slider-right-btn slf-btn-slider-inactive slf-slider-btn"></i>
                 </div>
-                <div class="slf-user-closed-games-card-slider-right-btn-under"></div>
-                <i class="bi bi-caret-right-fill slf-user-closed-games-card-slider-right-btn slf-btn-slider-inactive slf-slider-btn"></i>
             </div>
-        </div>
+        {% else %}
+            <p class="slf-game-not-yet-people">В этой игре пока нет участников</p>
+        {% endif %}
 
         <div class="slf-game-updates-wrapper">
             {% for event in events %}
@@ -226,7 +242,11 @@
                         </div>
                     </div>
                     <div class="slf-game-update-middle"></div>
-                    <p class="slf-game-update-right-text">{{ event.tickets_amount }} <br><span>Билетов(-а)(-т)</span></p>
+                    <p class="slf-game-update-right-text">{{ event.tickets_amount }} <br>
+                        <span>
+                            {% get_right_spelling_for_event event.tickets_amount %}
+                        </span>
+                    </p>
                 </div>
             {% endfor %}
         </div>

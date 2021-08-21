@@ -10,6 +10,7 @@ from allauth.socialaccount.models import SocialAccount
 from django.utils.timezone import now
 from bs4 import BeautifulSoup
 import requests
+import random
 
 
 # Жанр
@@ -374,7 +375,67 @@ class LotteryGame(models.Model):
         return True
 
     def finish_lottery(self):
-        print('Lottery finished!')
+        # Определяем победителя
+        winner = self.pick_winner()
+
+        # Обновляем статистику всех участников (и победителя в том числе)
+        participants_list = self.players.all()
+
+        for i in range(len(participants_list)):
+
+            # Увеличиваем на 1 кол-во завершенных лотерей
+            participants_list[i].lotteries_total_amount += 1
+
+            # Увеличиваем на 1 кол-во завершенных лотерей по типу
+            if self.abstract_lottery.lottery_type == 'g':
+                participants_list[i].lotteries_gold_amount += 1
+            elif self.abstract_lottery.lottery_type == 's':
+                participants_list[i].lotteries_silver_amount += 1
+            elif self.abstract_lottery.lottery_type == 'b':
+                participants_list[i].lotteries_bronze_amount += 1
+
+            # Добавляем лотерею в список завершенных у пользователей
+            participants_list[i].lotteries_finished.add(self)
+
+            # Убираем лотерею из списка текущих у пользователя
+            participants_list[i].lotteries_ongoing.remove(self)
+
+            # Если победитель
+            if participants_list[i] == winner:
+                money_spent = self.calculate_ticks_for_user(participants_list[i]) * self.ticket_price
+                if money_spent <= self.abstract_lottery.game.price:
+                    participants_list[i].money_saved += (self.abstract_lottery.game.price - money_spent)
+                participants_list[i].lotteries_won_amount += 1
+            # Если не победитель
+            else:
+                participants_list[i].lotteries_lost_amount += 1
+
+            # Сохраняем изменения у пользователя
+            participants_list[i].save()
+
+        # Обновляем информацию лотереи (закрываем её)
+
+
+    def pick_winner(self):
+        # Получаем список всех участников
+        participants_list = self.players.all()
+
+        # Создаем список
+        participants_percentage = list()
+
+        # Заполняем словарь (id_пользователя: список процентов)
+        percent_cnt = 1
+        for i in range(len(participants_list)):
+            participants_percentage.append(list(range(percent_cnt, percent_cnt + self.calculate_win_chance_for_user(participants_list[i]))))
+            percent_cnt = percent_cnt + self.calculate_win_chance_for_user(participants_list[i])
+
+        # Генерируем случайное число от 1 до 100 (percent_cnt - 1)
+        win_num = random.randint(1, percent_cnt - 1)
+
+        # Узнаем какому участнику оно соответствует
+        for i in range(len(participants_list)):
+            if win_num in participants_percentage[i]:
+                return participants_list[i]
 
     class Meta:
         verbose_name = 'Розыгрыш (фактический - не менять)'
