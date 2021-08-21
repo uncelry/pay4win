@@ -1,5 +1,5 @@
 from django.contrib import admin
-from lottery.models import FAQ, SteamUser, AbstractLottery, Genre, LotteryGame, Ticket, Game, GameSliderPicture, GameSliderVideo
+from lottery.models import FAQ, SteamUser, AbstractLottery, Genre, LotteryGame, Ticket, Game, GameSliderPicture, GameSliderVideo, EventLottery
 
 
 class GenreAdmin(admin.ModelAdmin):
@@ -50,6 +50,12 @@ class TicketAdmin(admin.ModelAdmin):
     list_display = ('owner', 'lottery')
 
 
+class EventLotteryAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'target_lottery', 'target_user', 'event_time')
+    list_filter = ('event_time', )
+    search_fields = ['pk']
+
+
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(FAQ, FAQAdmin)
 admin.site.register(SteamUser, SteamUserAdmin)
@@ -59,3 +65,4 @@ admin.site.register(GameSliderVideo, GameSliderVideoAdmin)
 admin.site.register(AbstractLottery, AbstractLotteryAdmin)
 admin.site.register(LotteryGame, LotteryGameAdmin)
 admin.site.register(Ticket, TicketAdmin)
+admin.site.register(EventLottery, EventLotteryAdmin)

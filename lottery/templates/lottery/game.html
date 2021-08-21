@@ -180,7 +180,12 @@
         {% elif not user.is_authenticated and lotterygame.lottery_state == 'o' %}
             <a class="btn btn-primary slf-lottery-page-not-logged-in-btn" href="{% url 'steam_login' %}"><img src="{% static 'img/lottery-card-steam-btn.png' %}" alt=""> Войти через STEAM, чтобы играть!</a>
         {% elif lotterygame.lottery_state == 'c' %}
-            Розыгрыш окончен!
+            <h2 class="slf-game-ended-h2">Розыгрыш окончен!</h2>
+            {% if user.is_authenticated and user.steamuser.pk == lotterygame.lottery_winner.pk %}
+                ВЫ ПОБЕДИЛИ
+            {% else %}
+                ПОБЕДИЛ ДРУГОЙ
+            {% endif %}
         {% endif %}
 
         {% if lotterygame.lottery_state == 'o' %}
@@ -192,40 +197,39 @@
                     </p>
                 </div>
             </div>
-
-            <div class="slf-game-carousel-ongoing-wrapper {% if lotterygame.abstract_lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lotterygame.abstract_lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lotterygame.abstract_lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
-                <div class="slf-user-closed-games-card-slider-wrapper">
-                    <i class="bi bi-caret-left-fill slf-user-closed-games-card-slider-left-btn slf-btn-slider-inactive slf-slider-btn"></i>
-                    <div class="slf-user-closed-games-card-slider-left-btn-under"></div>
-                    <div class="slf-user-closed-games-slider-body">
-                        {% for lottery_player in lotterygame.players.all %}
-                            <a class="slf-user-closed-games-slider-element" style="background-image: url({{ lottery_player.avatar_full }})" title="{{ lottery_player.persona_name }}" href="{% url 'user' lottery_player.pk %}" target="_blank">
-                                <p class="slf-user-closed-games-slider-element-win-chance">{% get_ongoing_win_chance_of_participant lotterygame lottery_player %}%</p>
-                            </a>
-                        {% endfor %}
-                    </div>
-                    <div class="slf-user-closed-games-card-slider-right-btn-under"></div>
-                    <i class="bi bi-caret-right-fill slf-user-closed-games-card-slider-right-btn slf-btn-slider-inactive slf-slider-btn"></i>
-                </div>
-            </div>
-
-            <div class="slf-game-updates-wrapper">
-                {% for lottery_player in lotterygame.players.all %}
-                    <div id="player-{{ lottery_player.pk }}" class="slf-game-update-player">
-                        <div class="slf-game-update-left">
-                            <div class="slf-game-update-left-user-avatar" style="background-image: url({{ lottery_player.avatar_full }})"></div>
-                            <p class="slf-game-update-left-user-info"><a href="{% url 'user' lottery_player.pk %}">{{ lottery_player.persona_name }}</a> только что приобрел:</p>
-                            <div class="slf-game-update-left-user-chance-wrapper" style="background-image: url({% static 'img/game-win-rate-bg.png' %})">
-                                <p class="slf-game-update-left-user-chance-text">Шанс победить</p>
-                                <p class="slf-game-update-left-user-chance-chance">{% get_ongoing_win_chance_of_participant lotterygame lottery_player %}%</p>
-                            </div>
-                        </div>
-                        <div class="slf-game-update-middle"></div>
-                        <p class="slf-game-update-right-text">{% get_ongoing_ticks_amount_of_participant lotterygame lottery_player %} <br><span>Билетов(-а)(-т)</span></p>
-                    </div>
-                {% endfor %}
-            </div>
         {% endif %}
+        <div class="slf-game-carousel-ongoing-wrapper {% if lotterygame.abstract_lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lotterygame.abstract_lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lotterygame.abstract_lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
+            <div class="slf-user-closed-games-card-slider-wrapper">
+                <i class="bi bi-caret-left-fill slf-user-closed-games-card-slider-left-btn slf-btn-slider-inactive slf-slider-btn"></i>
+                <div class="slf-user-closed-games-card-slider-left-btn-under"></div>
+                <div class="slf-user-closed-games-slider-body">
+                    {% for lottery_player in lotterygame.players.all %}
+                        <a class="slf-user-closed-games-slider-element" style="background-image: url({{ lottery_player.avatar_full }})" title="{{ lottery_player.persona_name }}" href="{% url 'user' lottery_player.pk %}" target="_blank">
+                            <p class="slf-user-closed-games-slider-element-win-chance">{% get_ongoing_win_chance_of_participant lotterygame lottery_player %}%</p>
+                        </a>
+                    {% endfor %}
+                </div>
+                <div class="slf-user-closed-games-card-slider-right-btn-under"></div>
+                <i class="bi bi-caret-right-fill slf-user-closed-games-card-slider-right-btn slf-btn-slider-inactive slf-slider-btn"></i>
+            </div>
+        </div>
+
+        <div class="slf-game-updates-wrapper">
+            {% for event in events %}
+                <div id="player-{{ event.target_user.pk }}" class="slf-game-update-player">
+                    <div class="slf-game-update-left">
+                        <div class="slf-game-update-left-user-avatar" style="background-image: url({{ event.target_user.avatar_full }})"></div>
+                        <p class="slf-game-update-left-user-info"><a href="{% url 'user' event.target_user.pk %}">{{ event.target_user.persona_name }}</a> только что приобрел:</p>
+                        <div class="slf-game-update-left-user-chance-wrapper" style="background-image: url({% static 'img/game-win-rate-bg.png' %})">
+                            <p class="slf-game-update-left-user-chance-text">Шанс победить</p>
+                            <p class="slf-game-update-left-user-chance-chance">{{ event.win_chacne }}%</p>
+                        </div>
+                    </div>
+                    <div class="slf-game-update-middle"></div>
+                    <p class="slf-game-update-right-text">{{ event.tickets_amount }} <br><span>Билетов(-а)(-т)</span></p>
+                </div>
+            {% endfor %}
+        </div>
     </main>
 
 <div class="slf-modal-game-slider-window slf-modal-closed">

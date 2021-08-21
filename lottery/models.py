@@ -358,6 +358,15 @@ class LotteryGame(models.Model):
         self.tickets_bought += ticket_amount
         self.tickets_left -= ticket_amount
 
+        # Создаем новое событие
+        win_chance_for_event = round(round(ticket_amount / self.abstract_lottery.tickets_amount, 2) * 100)
+        EventLottery.objects.create(
+            target_user=steam_user,
+            target_lottery=self,
+            tickets_amount=ticket_amount,
+            win_chacne=win_chance_for_event
+        )
+
         # Сохраняем всё
         steam_user.save()
         self.save()
@@ -406,3 +415,25 @@ class Ticket(models.Model):
 
     def __str__(self):
         return '{0}, {1}'.format(self.owner, self.lottery)
+
+
+# Событие в розыгрыше (привязано к розыгрышу и игроку)
+class EventLottery(models.Model):
+    """
+    Модель, отвечающая за событие в розыгрыше
+    """
+
+    target_user = models.ForeignKey(SteamUser, on_delete=models.SET_NULL, null=True, verbose_name='Пользователь события')
+    target_lottery = models.ForeignKey(LotteryGame, on_delete=models.CASCADE, null=True,
+                                verbose_name='Розыгрыш события')
+    tickets_amount = models.IntegerField(verbose_name="Кол-во билетов, купленных в событии")
+    win_chacne = models.IntegerField(verbose_name="Шанс выигрыша по билетам в событии")
+    event_time = models.DateTimeField(default=now, verbose_name="Дата и время события")
+
+    class Meta:
+        verbose_name = 'Игровое событие'
+        verbose_name_plural = 'Игровые события'
+        ordering = ['-pk']
+
+    def __str__(self):
+        return '{0}: {1} - {2}'.format(self.pk, self.target_lottery, self.target_user)

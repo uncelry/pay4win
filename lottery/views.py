@@ -249,6 +249,8 @@ class LotteryDetailView(generic.DetailView):
         if 'result_code' in self.request.GET:
             context[str(self.request.GET['result_code'])] = True
 
+        context['events'] = context['lotterygame'].eventlottery_set.filter(target_lottery=context['lotterygame'])
+
         return context
 
     def post(self, request, *args, **kwargs):
