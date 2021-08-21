@@ -358,6 +358,8 @@ class LotteryGame(models.Model):
         # Обновляем информацию розыгрыша
         self.tickets_bought += ticket_amount
         self.tickets_left -= ticket_amount
+        new_progress = math.floor((self.tickets_bought / (self.tickets_bought + self.tickets_left)) * 100)
+        self.lottery_progress = new_progress
 
         # Создаем новое событие
         win_chance_for_event = round(round(ticket_amount / self.abstract_lottery.tickets_amount, 2) * 100)
@@ -365,7 +367,7 @@ class LotteryGame(models.Model):
             target_user=steam_user,
             target_lottery=self,
             tickets_amount=ticket_amount,
-            win_chacne=win_chance_for_event
+            win_chance=win_chance_for_event
         )
 
         # Сохраняем всё
@@ -414,7 +416,13 @@ class LotteryGame(models.Model):
             participants_list[i].save()
 
         # Обновляем информацию лотереи (закрываем её)
+        self.lottery_state = 'c'
+        self.lottery_winner = winner
+        self.time_finished = now()
+        self.save()
 
+        # И в самом конце решаем нужно ли создавать следующую(-ие) лотерею(-и)
+        self.decide_generate_new_lotteries_or_not()
 
     def pick_winner(self):
         # Получаем список всех участников
@@ -437,6 +445,17 @@ class LotteryGame(models.Model):
             if win_num in participants_percentage[i]:
                 return participants_list[i]
 
+    def decide_generate_new_lotteries_or_not(self):
+        # Если у родительского розыгрыша стоит галочка, то проверяем дальше
+        if self.abstract_lottery.lottery_active:
+
+            # Если сейчас меньше активных дочерних розыгрышей, чем указано у родителя, то создаем разницу (по кол-ву)
+            current_active_lotteries = self.abstract_lottery.lotterygame_set.filter(lottery_state='o').count()
+            if current_active_lotteries < self.abstract_lottery.lotteries_amount:
+                amount_to_create = self.abstract_lottery.lotteries_amount - current_active_lotteries
+                for i in range(amount_to_create):
+                    create_lottery_from_abstract(self.abstract_lottery)
+
     class Meta:
         verbose_name = 'Розыгрыш (фактический - не менять)'
         verbose_name_plural = 'Розыгрыши (фактические - не менять)'
@@ -451,11 +470,9 @@ class LotteryGame(models.Model):
 
 @receiver(post_save, sender=LotteryGame)
 def save_lottery_game(sender, instance, created, **kwargs):
+
+    # Если в лотерее уже есть купленные билеты и она ещё не закончилась
     if not created and instance.tickets_bought != 0 and instance.lottery_state != 'c':
-
-        new_progress = math.floor((instance.tickets_bought / (instance.tickets_bought + instance.tickets_left)) * 100)
-        LotteryGame.objects.filter(pk=instance.pk).update(lottery_progress=new_progress)
-
         if instance.tickets_left == 0:
             instance.finish_lottery()
 
@@ -488,7 +505,7 @@ class EventLottery(models.Model):
     target_lottery = models.ForeignKey(LotteryGame, on_delete=models.CASCADE, null=True,
                                 verbose_name='Розыгрыш события')
     tickets_amount = models.IntegerField(verbose_name="Кол-во билетов, купленных в событии")
-    win_chacne = models.IntegerField(verbose_name="Шанс выигрыша по билетам в событии")
+    win_chance = models.IntegerField(verbose_name="Шанс выигрыша по билетам в событии")
     event_time = models.DateTimeField(default=now, verbose_name="Дата и время события")
 
     class Meta:
