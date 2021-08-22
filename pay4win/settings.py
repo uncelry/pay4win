@@ -32,6 +32,10 @@ ALLOWED_HOSTS = ['0.0.0.0', '192.168.0.100', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    # Django-channels
+    'channels',
+
+    # Default
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -49,6 +53,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.steam',
+
 ]
 
 MIDDLEWARE = [
@@ -133,6 +138,16 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'gallery')
 MEDIA_URL = '/gallery/'
 
+# Django-channels settings
+ASGI_APPLICATION = "pay4win.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

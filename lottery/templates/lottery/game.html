@@ -11,7 +11,6 @@
     <script src="{% static 'js/libs/jquery.min.js' %}"></script>
     <script src="{% static 'js/game-slider.js' %}"></script>
     <script src="{% static 'js/lottery-number-copy.js' %}"></script>
-    <script src="{% static 'js/game-ajax.js' %}"></script>
     <script src="{% static 'js/game-ongoing-carousel.js' %}"></script>
     <script src="{% static 'js/game-form-price.js' %}"></script>
 {% endblock %}
@@ -238,7 +237,7 @@
                         <p class="slf-game-update-left-user-info"><a href="{% url 'user' event.target_user.pk %}">{{ event.target_user.persona_name }}</a> только что приобрел:</p>
                         <div class="slf-game-update-left-user-chance-wrapper" style="background-image: url({% static 'img/game-win-rate-bg.png' %})">
                             <p class="slf-game-update-left-user-chance-text">Шанс победить</p>
-                            <p class="slf-game-update-left-user-chance-chance">{{ event.win_chacne }}%</p>
+                            <p class="slf-game-update-left-user-chance-chance">{{ event.win_chance }}%</p>
                         </div>
                     </div>
                     <div class="slf-game-update-middle"></div>
@@ -251,6 +250,97 @@
             {% endfor %}
         </div>
     </main>
+
+    <!-- Скрипт сокетов -->
+    <script>
+        const gameID = '{{lotterygame.pk}}'
+
+        const chatSocket = new WebSocket(
+            `ws://${window.location.host}/ws/game/${gameID}/`
+        );
+
+        chatSocket.onopen = function() {
+          console.log("Соединение установлено");  // УБРАТЬ! =======================================================================
+        };
+
+        chatSocket.onmessage = function(response) {
+            updateTicketForm(response);
+            const data = JSON.parse(response.data);
+            console.log("Получены данные ", data);  // УБРАТЬ! =====================================================================
+        };
+
+        chatSocket.onclose = function(response) {
+            if (response.wasClean) {
+                console.log("Соединение закрыто успешно"); // УБРАТЬ! ===========================
+            } else {
+                console.log('Обрыв соединения');  // УБРАТЬ! ============================
+            }
+            console.log('Код: ' + response.code + ' причина: ' + response.reason);  // УБРАТЬ! ===========
+        };
+
+        chatSocket.onerror = function(response) {
+            // Скрываем все сообщения
+            let alerts = $('.slf-tickets-alert').attr({"style": "display: none!important"});
+            $("#alert_res_error").css({"display": "unset"});
+            console.log("Ошибка " + response.message); // УБРАТЬ! ===============================================================
+        };
+
+
+        // Выставляем информацию по форме
+        $( document ).ready(function() {
+            let frm = $('#formTicketID');
+
+            // При отправке формы вызываем сокетное соединение
+            frm.submit(function() {
+                console.log("Trting to send!") // УБРАТЬ! ========================================================================
+                let data_to_send = frm.serialize();
+                console.log(data_to_send)
+                chatSocket.send(JSON.stringify({
+                    'amount': $(this).find('input[name=amount]').val()
+                }));
+                return false;
+            });
+
+        });
+
+
+        // Обновляем данные формы, полученным пакетом
+        function updateTicketForm(data){
+
+            // Скрываем все сообщения
+            let alerts = $('.slf-tickets-alert').attr({"style": "display: none!important"});
+
+            // Показываем актуальное сообщение
+            $("#alert_" + String(data.result_code)).css({"display": "unset"});
+
+            // Обновляем баланс пользователя
+            $("#navbarNavAltMarkup .slf-steam-login-inv-wrapper .slf-nav-steam-user-links p.dropdown-item").html("Баланс: " + data.steam_user_new_balance + "<span>₽</span>");
+
+            // Проверяем закончена ли игра
+            if(data.is_lottery_finished){
+                $('div.slf-game-ticket-info-wrapper').fadeOut(300, function(){
+                    $(this).remove();
+                });
+            }else{
+                // Если не закончена, то обновляем поля в форме
+                $(".slf-game-tickets-left").text("Осталось: " + data.tickets_left + "шт.");
+                $(".slf-game-form-ticket-bought-amount .slf-form-span").html(data.total_bought_for_user + "<sup>шт.</sup>");
+                $('#formAmountInput').val(1).attr('max', data.tickets_left).trigger("input");
+            }
+
+            // Если пользователь только вступил в розыгрыш, то показываем ему шанс выигрыша
+            if(data.is_user_in_lottery && !$('.slf-participant-win-chance-user').length){
+                $("#participatorMagic").after("<h3 class=\"slf-participant-win-chance-user\">Ваш шанс на победу: <span>" + data.user_win_chance + "%</span></h3>");
+                $(".slf-participant-win-chance-user").hide().fadeIn(300);
+
+            } else if($('.slf-participant-win-chance-user').length){
+                // Если пользователь уже был в розыгрыше, то обновляем данные
+                $(".slf-participant-win-chance-user").html("Ваш шанс на победу: <span>" + data.user_win_chance + "%</span>");
+            }
+
+        }
+    </script>
+    <!-- Конец скрипта сокетов -->
 
 <div class="slf-modal-game-slider-window slf-modal-closed">
     <div class="slf-modal-inner-body">

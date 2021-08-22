@@ -286,26 +286,6 @@ class LotteryDetailView(generic.DetailView):
             # Неверно заполнена форма, попробуйте ещё раз
             result_code = 'res_bad_form'
 
-        if request.is_ajax():
-            # Если запрос - AJAX
-
-            if current_lottery.tickets_left != 0:
-                lottery_finished = False
-            else:
-                lottery_finished = True
-
-            return JsonResponse({
-                'result_code': result_code,
-                'is_lottery_finished': lottery_finished,
-                'tickets_left': current_lottery.tickets_left,
-                'total_bought_for_user': current_lottery.calculate_ticks_for_user(self.request.user.steamuser),
-                'is_user_in_lottery': current_lottery.check_if_user_is_in_lottery(self.request.user.steamuser),
-                'steam_user_new_balance': self.request.user.steamuser.money_current,
-                'user_win_chance': current_lottery.calculate_win_chance_for_user(self.request.user.steamuser)
-            }, status=200)
-
-        else:
-            # Если запрос - не AJAX
-            prev_http = request.META.get('HTTP_REFERER')
-            prev_http = prev_http[:prev_http.find('?')]
-            return HttpResponseRedirect(prev_http + '?result_code=' + result_code)
+        prev_http = request.META.get('HTTP_REFERER')
+        prev_http = prev_http[:prev_http.find('?')]
+        return HttpResponseRedirect(prev_http + '?result_code=' + result_code)

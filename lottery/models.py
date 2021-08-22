@@ -1,5 +1,4 @@
 import math
-
 from django.db import models
 from django.urls import reverse
 import uuid
@@ -11,6 +10,7 @@ from django.utils.timezone import now
 from bs4 import BeautifulSoup
 import requests
 import random
+from asgiref.sync import sync_to_async
 
 
 # Жанр
@@ -333,6 +333,9 @@ class LotteryGame(models.Model):
         return False
 
     def buy_tickets(self, steam_user, ticket_amount):
+
+        print('Okay!')
+
         # Проверяем достаточно ли у пользователя средств / билетов в розыгрыше / открыт ли розыгрыш
         if (steam_user.money_current < ticket_amount * self.ticket_price) or (self.tickets_left < ticket_amount) or (self.lottery_state != 'o'):
             return False
