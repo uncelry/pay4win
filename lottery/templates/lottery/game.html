@@ -209,8 +209,8 @@
             </div>
         {% endif %}
 
-        {% if lotterygame.players_amount > 0 %}
-            <div class="slf-game-carousel-ongoing-wrapper {% if lotterygame.abstract_lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lotterygame.abstract_lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lotterygame.abstract_lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
+
+            <div {% if lotterygame.players_amount == 0 %}style="display: none;"{% endif %} class="slf-game-carousel-ongoing-wrapper {% if lotterygame.abstract_lottery.lottery_type == "g" %}slf-lottery-card-gold{% elif lotterygame.abstract_lottery.lottery_type == "s" %}slf-lottery-card-silver{% elif lotterygame.abstract_lottery.lottery_type == "b" %}slf-lottery-card-bronze{% endif %}">
                 <div class="slf-user-closed-games-card-slider-wrapper">
                     <i class="bi bi-caret-left-fill slf-user-closed-games-card-slider-left-btn slf-btn-slider-inactive slf-slider-btn"></i>
                     <div class="slf-user-closed-games-card-slider-left-btn-under"></div>
@@ -225,7 +225,7 @@
                     <i class="bi bi-caret-right-fill slf-user-closed-games-card-slider-right-btn slf-btn-slider-inactive slf-slider-btn"></i>
                 </div>
             </div>
-        {% else %}
+        {% if lotterygame.players_amount == 0 %}
             <p class="slf-game-not-yet-people">В этой игре пока нет участников</p>
         {% endif %}
 
@@ -260,29 +260,29 @@
         );
 
         chatSocket.onopen = function() {
-          console.log("Соединение установлено");  // УБРАТЬ! =======================================================================
+            // Сокетное соединение открыто
         };
 
         chatSocket.onmessage = function(response) {
-            updateTicketForm(response);
             const data = JSON.parse(response.data);
+            updateTicketForm(data);
             console.log("Получены данные ", data);  // УБРАТЬ! =====================================================================
         };
 
         chatSocket.onclose = function(response) {
             if (response.wasClean) {
-                console.log("Соединение закрыто успешно"); // УБРАТЬ! ===========================
+                // Если соединение закрыто чисто
             } else {
-                console.log('Обрыв соединения');  // УБРАТЬ! ============================
+                // Если соединение оборвалось
+                $('.slf-tickets-alert').attr({"style": "display: none!important"});
+                $("#alert_res_error").css({"display": "unset"});
             }
-            console.log('Код: ' + response.code + ' причина: ' + response.reason);  // УБРАТЬ! ===========
         };
 
         chatSocket.onerror = function(response) {
             // Скрываем все сообщения
-            let alerts = $('.slf-tickets-alert').attr({"style": "display: none!important"});
+            $('.slf-tickets-alert').attr({"style": "display: none!important"});
             $("#alert_res_error").css({"display": "unset"});
-            console.log("Ошибка " + response.message); // УБРАТЬ! ===============================================================
         };
 
 
@@ -292,9 +292,7 @@
 
             // При отправке формы вызываем сокетное соединение
             frm.submit(function() {
-                console.log("Trting to send!") // УБРАТЬ! ========================================================================
                 let data_to_send = frm.serialize();
-                console.log(data_to_send)
                 chatSocket.send(JSON.stringify({
                     'amount': $(this).find('input[name=amount]').val()
                 }));
@@ -308,13 +306,17 @@
         function updateTicketForm(data){
 
             // Скрываем все сообщения
-            let alerts = $('.slf-tickets-alert').attr({"style": "display: none!important"});
+            $('.slf-tickets-alert').attr({"style": "display: none!important"});
 
             // Показываем актуальное сообщение
             $("#alert_" + String(data.result_code)).css({"display": "unset"});
 
             // Обновляем баланс пользователя
             $("#navbarNavAltMarkup .slf-steam-login-inv-wrapper .slf-nav-steam-user-links p.dropdown-item").html("Баланс: " + data.steam_user_new_balance + "<span>₽</span>");
+
+            // Обновляем прогресс игры
+            $('div.progress-bar.stripes.animated.slower').css('width', data.lottery_progress + '%');
+            $('p.slf-lottery-card-progress-tickets').html(data.tickets_bought + '/' + Number(data.tickets_bought + data.tickets_left) + "<br><span>БИЛЕТОВ</span>");
 
             // Проверяем закончена ли игра
             if(data.is_lottery_finished){
@@ -328,16 +330,58 @@
                 $('#formAmountInput').val(1).attr('max', data.tickets_left).trigger("input");
             }
 
-            // Если пользователь только вступил в розыгрыш, то показываем ему шанс выигрыша
-            if(data.is_user_in_lottery && !$('.slf-participant-win-chance-user').length){
-                $("#participatorMagic").after("<h3 class=\"slf-participant-win-chance-user\">Ваш шанс на победу: <span>" + data.user_win_chance + "%</span></h3>");
-                $(".slf-participant-win-chance-user").hide().fadeIn(300);
+            if(data.result_code == 'res_success'){
 
-            } else if($('.slf-participant-win-chance-user').length){
-                // Если пользователь уже был в розыгрыше, то обновляем данные
-                $(".slf-participant-win-chance-user").html("Ваш шанс на победу: <span>" + data.user_win_chance + "%</span>");
+
+                // Если в игре данный пользователь - первый участник, то скрываем надпись, что участников нет и показываем слайдер
+                if(data.lottery_progress < 100 && !$('div.slf-user-closed-games-slider-body > a.slf-user-closed-games-slider-element').length){
+                    $('p.slf-game-not-yet-people').remove();
+                    $('div.slf-game-carousel-ongoing-wrapper').css('display', 'unset').hide().fadeIn(300);
+                }
+
+                // Если пользователь только вступил в розыгрыш, то показываем ему шанс выигрыша и добавляем его в слайдер
+                if(data.is_user_in_lottery && !$('.slf-participant-win-chance-user').length){
+                    $("#participatorMagic").after("<h3 class=\"slf-participant-win-chance-user\">Ваш шанс на победу: <span>" + data.user_win_chance + "%</span></h3>");
+                    $(".slf-participant-win-chance-user").hide().fadeIn(300);
+
+                    // Добавляем нового пользователя в слайдер
+                    $('.slf-user-closed-games-slider-body').append(
+                        '<a class="slf-user-closed-games-slider-element" style="background-image: url(' + data.lottery_player_avatar_full + ')" title="' + data.persona_name + '" href="' + data.user_page_url + '" target="_blank">' +
+                            '<p class="slf-user-closed-games-slider-element-win-chance">' + data.user_win_chance + '%</p>' +
+                        '</a>'
+                    ).hide().fadeIn(300);
+
+                    // Обновляем слайдер
+                    resetAllSliderElements();
+                    setCarouselButtons();
+                    setEventListenersToButtons();
+
+                } else if($('.slf-participant-win-chance-user').length){
+                    // Если пользователь уже был в розыгрыше, то обновляем данные
+                    $(".slf-participant-win-chance-user").html("Ваш шанс на победу: <span>" + data.user_win_chance + "%</span>");
+
+                    // Обновляем данные слайдера
+                    $('a.slf-user-closed-games-slider-element[href=\"' + String(data.user_page_url) + '\"] > p.slf-user-closed-games-slider-element-win-chance').text(data.user_win_chance + '%');
+                }
+
+                // Добавляем новое событие
+                $('.slf-game-updates-wrapper').prepend(
+                    '<div id="player-' + data.steam_user_id + '" class="slf-game-update-player">' +
+                        '<div class="slf-game-update-left">' +
+                            '<div class="slf-game-update-left-user-avatar" style="background-image: url(' + data.lottery_player_avatar_full + ')"></div>' +
+                            '<p class="slf-game-update-left-user-info"><a href="' + data.user_page_url + '">' + data.persona_name + '</a> только что приобрел:</p>' +
+                            '<div class="slf-game-update-left-user-chance-wrapper" style="background-image: url({% static 'img/game-win-rate-bg.png' %})">' +
+                                '<p class="slf-game-update-left-user-chance-text">Шанс победить</p>' +
+                                '<p class="slf-game-update-left-user-chance-chance">' + data.event_win_chance + '%</p>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="slf-game-update-middle"></div>' +
+                        '<p class="slf-game-update-right-text">' + data.tickets_bought_this_event + ' <br>' +
+                            '<span>' + data.right_spelling + '</span>' +
+                        '</p>' +
+                    '</div>'
+                ).hide().fadeIn(300);
             }
-
         }
     </script>
     <!-- Конец скрипта сокетов -->

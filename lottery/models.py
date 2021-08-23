@@ -334,8 +334,6 @@ class LotteryGame(models.Model):
 
     def buy_tickets(self, steam_user, ticket_amount):
 
-        print('Okay!')
-
         # Проверяем достаточно ли у пользователя средств / билетов в розыгрыше / открыт ли розыгрыш
         if (steam_user.money_current < ticket_amount * self.ticket_price) or (self.tickets_left < ticket_amount) or (self.lottery_state != 'o'):
             return False
