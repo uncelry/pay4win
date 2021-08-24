@@ -343,6 +343,9 @@ class LotteryGame(models.Model):
             self.players.add(steam_user)
             self.players_amount += 1
 
+            # Добавляем розыгрыш к пользователю в активные
+            steam_user.lotteries_ongoing.add(self)
+
         # Создаем билеты
         for i in range(ticket_amount):
             Ticket.objects.create(
@@ -353,12 +356,10 @@ class LotteryGame(models.Model):
         # Уменьшаем деньги пользователя
         steam_user.money_current -= ticket_amount * self.ticket_price
 
-        # Добавляем розыгрыш к пользователю в активные
-        steam_user.lotteries_ongoing.add(self)
-
         # Обновляем информацию розыгрыша
         self.tickets_bought += ticket_amount
         self.tickets_left -= ticket_amount
+
         new_progress = math.floor((self.tickets_bought / (self.tickets_bought + self.tickets_left)) * 100)
         self.lottery_progress = new_progress
 

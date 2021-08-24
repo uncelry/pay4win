@@ -37,9 +37,6 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
             self.steam_user = await get_steamuser_from_user(self.scope["user"])
             self.user_page_url = await call_user_get_absolute_url_method(self.steam_user)
 
-        # Получаем объект текущей лотереи
-        self.current_lottery = await get_lottery_by_pk(self.lottery_id)
-
         # Подключение к группе
         await self.channel_layer.group_add(
             self.lottery_group_id,
@@ -58,6 +55,10 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
 
     # Метод при получении сообщения по сокетам
     async def receive(self, text_data):
+
+        # Получаем объект текущей лотереи
+        self.current_lottery = await get_lottery_by_pk(self.lottery_id)
+
         # Собираем полученный от клиента json в объект
         text_data_json = json.loads(text_data)
 
@@ -103,34 +104,60 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
         else:
             lottery_finished = True
 
-        # Генерируем сообщение в ответ клиенту
-        message = json.dumps({
-            'result_code': result_code,
-            'is_lottery_finished': lottery_finished,
-            'tickets_left': self.current_lottery.tickets_left,
-            'total_bought_for_user': await call_lottery_calculate_ticks_for_user_method(self.current_lottery, self.steam_user),
-            'is_user_in_lottery': await call_lottery_check_if_user_is_in_lottery_method(self.current_lottery, self.steam_user),
-            'steam_user_new_balance': self.steam_user.money_current,
-            'user_win_chance': await call_lottery_calculate_win_chance_for_user_method(self.current_lottery, self.steam_user),
-            'lottery_progress': self.current_lottery.lottery_progress,
-            'tickets_bought': self.current_lottery.tickets_bought,
-            'user_page_url': self.user_page_url,
-            'lottery_player_avatar_full': self.steam_user.avatar_full,
-            'persona_name': self.steam_user.persona_name,
-            'steam_user_id': self.steam_user.pk,
-            'event_win_chance': event_win_chance,
-            'tickets_bought_this_event': form.cleaned_data['amount'],
-            'right_spelling': await get_right_spelling_for_event_ticks(form.cleaned_data['amount'])
-        })
+        # Генерируем и отправляем личное сообщение клиенту
+        # Если всё прошло успешно, посылаем всю информацию клиенту и обновляем данные розыгрыша для всех
+        if result_code == 'res_success':
 
-        # Посылаем сообщение в группу розыгрыша
-        await self.channel_layer.group_send(
-            self.lottery_group_id,
-            {
-                'type': 'lottery_response',
-                'message': message
-            }
-        )
+            total_bought_for_user = await call_lottery_calculate_ticks_for_user_method(self.current_lottery, self.steam_user)
+
+            is_user_new_in_lottery = False
+
+            if total_bought_for_user == form.cleaned_data['amount']:
+                is_user_new_in_lottery = True
+
+            await self.send(json.dumps({
+                'message_type': 'private',
+                'result_code': result_code,
+                'total_bought_for_user': total_bought_for_user,
+                'steam_user_new_balance': self.steam_user.money_current,
+                'is_user_in_lottery': await call_lottery_check_if_user_is_in_lottery_method(self.current_lottery, self.steam_user),
+                'user_win_chance': await call_lottery_calculate_win_chance_for_user_method(self.current_lottery, self.steam_user)
+            }))
+
+            # Генерируем сообщение в ответ клиенту
+            message = json.dumps({
+                'message_type': 'public',
+                'is_lottery_finished': lottery_finished,
+                'tickets_left': self.current_lottery.tickets_left,
+                'is_user_in_lottery': await call_lottery_check_if_user_is_in_lottery_method(self.current_lottery, self.steam_user),
+                'user_win_chance': await call_lottery_calculate_win_chance_for_user_method(self.current_lottery, self.steam_user),
+                'lottery_progress': self.current_lottery.lottery_progress,
+                'tickets_bought': self.current_lottery.tickets_bought,
+                'user_page_url': self.user_page_url,
+                'lottery_player_avatar_full': self.steam_user.avatar_full,
+                'persona_name': self.steam_user.persona_name,
+                'steam_user_id': self.steam_user.pk,
+                'event_win_chance': event_win_chance,
+                'tickets_bought_this_event': form.cleaned_data['amount'],
+                'right_spelling': await get_right_spelling_for_event_ticks(form.cleaned_data['amount']),
+                'is_user_new_in_lottery': is_user_new_in_lottery
+            })
+
+            # Посылаем сообщение в группу розыгрыша
+            await self.channel_layer.group_send(
+                self.lottery_group_id,
+                {
+                    'type': 'lottery_response',
+                    'message': message
+                }
+            )
+
+        # Если что-то пошло не так, то просто отправляем сообщение с кодом ошибки клиенту
+        else:
+            await self.send(json.dumps({
+                'message_type': 'private',
+                'result_code': result_code
+            }))
 
     # Получение сообщения из группы розыгрыша
     async def lottery_response(self, event):
