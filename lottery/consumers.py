@@ -3,6 +3,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from .forms import BuyTicketForm
 from .models import SteamUser, LotteryGame
 from asgiref.sync import sync_to_async
+from random import shuffle
 
 
 class LotteryGameConsumer(AsyncWebsocketConsumer):
@@ -124,6 +125,42 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
             if total_bought_for_user == form.cleaned_data['amount']:
                 is_user_new_in_lottery = True
 
+            winner_pick_array = None
+
+            # Если лотерея закончилась, то высылаем список карточек участников для загрузки в карусель выбора победителя
+            if lottery_finished:
+
+                winner_pick_array = list()
+                lottery_participants = await get_participants_of_lottery(self.current_lottery)
+                for i in range(len(lottery_participants)):
+
+                    win_chance_for_user = await call_lottery_calculate_win_chance_for_user_method(self.current_lottery, lottery_participants[i])
+                    steam_usr_url = await call_user_get_absolute_url_method(lottery_participants[i])
+
+                    tmp_list = [{
+                        'user_card_name': lottery_participants[i].persona_name,
+                        'user_card_avatar': lottery_participants[i].avatar_full,
+                        'user_card_link': steam_usr_url,
+                        'user_card_chance': win_chance_for_user
+                    } for one_chance in range(win_chance_for_user)]
+
+                    winner_pick_array.extend(tmp_list)
+
+                # Теперь перемешиваем случайным образом
+                shuffle(winner_pick_array)
+
+                # На 72-ю позицию ставим победителя
+                winner_link = await get_lottery_winner(self.current_lottery)
+                winner_link = await call_user_get_absolute_url_method(winner_link)
+
+                for i in range(len(winner_pick_array)):
+                    if winner_pick_array[i]['user_card_link'] == winner_link:
+                        # На 72-ю позицию ставим текущую карточку победителя
+                        tmp = winner_pick_array[i]
+                        winner_pick_array[i] = winner_pick_array[72]
+                        winner_pick_array[72] = tmp
+                        break
+
             await self.send(json.dumps({
                 'message_type': 'private',
                 'result_code': result_code,
@@ -149,7 +186,8 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
                 'event_win_chance': event_win_chance,
                 'tickets_bought_this_event': form.cleaned_data['amount'],
                 'right_spelling': await get_right_spelling_for_event_ticks(form.cleaned_data['amount']),
-                'is_user_new_in_lottery': is_user_new_in_lottery
+                'is_user_new_in_lottery': is_user_new_in_lottery,
+                'winner_pick_array': winner_pick_array
             })
 
             # Посылаем сообщение в группу розыгрыша
@@ -242,3 +280,19 @@ def get_right_spelling_for_event_ticks(amount_of_ticks):
 @sync_to_async
 def get_steam_user_via_id(usr_id):
     return SteamUser.objects.get(pk=usr_id)
+
+
+# Функция получения списка участников розыгрыша
+@sync_to_async
+def get_participants_of_lottery(lottery):
+    participants_query_set = lottery.players.all()
+    res_list = list()
+    for i in range(len(participants_query_set)):
+        res_list.append(participants_query_set[i])
+    return res_list
+
+
+# Функция получения победителя лотереи
+@sync_to_async
+def get_lottery_winner(lottery):
+    return lottery.lottery_winner
