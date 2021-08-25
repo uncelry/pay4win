@@ -126,6 +126,7 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
                 is_user_new_in_lottery = True
 
             winner_pick_array = None
+            winner_steamuser_id = None
 
             # Если лотерея закончилась, то высылаем список карточек участников для загрузки в карусель выбора победителя
             if lottery_finished:
@@ -151,14 +152,15 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
 
                 # На 72-ю позицию ставим победителя
                 winner_link = await get_lottery_winner(self.current_lottery)
+                winner_steamuser_id = winner_link.pk
                 winner_link = await call_user_get_absolute_url_method(winner_link)
 
                 for i in range(len(winner_pick_array)):
                     if winner_pick_array[i]['user_card_link'] == winner_link:
-                        # На 72-ю позицию ставим текущую карточку победителя
+                        # На 1-ю позицию ставим текущую карточку победителя
                         tmp = winner_pick_array[i]
-                        winner_pick_array[i] = winner_pick_array[72]
-                        winner_pick_array[72] = tmp
+                        winner_pick_array[i] = winner_pick_array[0]
+                        winner_pick_array[0] = tmp
                         break
 
             await self.send(json.dumps({
@@ -187,7 +189,8 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
                 'tickets_bought_this_event': form.cleaned_data['amount'],
                 'right_spelling': await get_right_spelling_for_event_ticks(form.cleaned_data['amount']),
                 'is_user_new_in_lottery': is_user_new_in_lottery,
-                'winner_pick_array': winner_pick_array
+                'winner_pick_array': winner_pick_array,
+                'winner_steamuser_id': winner_steamuser_id
             })
 
             # Посылаем сообщение в группу розыгрыша

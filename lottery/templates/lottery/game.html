@@ -253,6 +253,13 @@
 
     <!-- Скрипт сокетов -->
     <script>
+
+        {% if user.is_authenticated %}
+            const USER_ID = {{ user.steamuser.pk }};
+        {% else %}
+            const USER_ID = null;
+        {% endif %}
+
         const gameID = '{{lotterygame.pk}}'
 
         const chatSocket = new WebSocket(
@@ -270,7 +277,6 @@
             }else{
                 updateGamePagePublic(data);
             }
-            console.log("Получены данные ", data);  // УБРАТЬ! =====================================================================
         };
 
         chatSocket.onclose = function(response) {
@@ -366,7 +372,7 @@
                 }
 
                 // Добавляем на страницу блок с активным выбором победителя
-                gameLotteryPickWinner();
+                gameLotteryPickWinner(data.winner_pick_array, data.winner_steamuser_id);
 
             }else{
                 // Если не закончена, то обновляем поля в форме
@@ -421,8 +427,8 @@
         }
 
 
-        // Функция добавления на страницу блока выбора победителя
-        function gameLotteryPickWinner(){
+        // Функция добавления на страницу блока выбора победителя и его анимации
+        function gameLotteryPickWinner(usersCards, winnerID){
             // Добавляем блок выбора победителя
             $('div.slf-game-carousel-ongoing-wrapper').before('<div class="slf-game-winner-pick-wrapper">' +
                     '<h3 class="slf-game-winner-pick-h3">Выбор победителя</h3>' +
@@ -432,6 +438,72 @@
                         '</div>' +
                     '</div>' +
                 '</div>').hide().fadeIn(300);
+
+            usersCards.forEach(function(card, i, arr){
+                $('.slf-game-winner-pick-carousel-body').append(
+                    '<div class="slf-user-winner-picker-games-slider-element" style="background-image: url(' + card.user_card_avatar + ')" title="' + card.user_card_name + '">' +
+                        '<p class="slf-user-winner-picker-games-slider-element-win-chance">' + card.user_card_chance + '%</p>' +
+                    '</div>'
+                );
+            });
+
+            // Дублируем элементы в карусели
+            $('.slf-user-winner-picker-games-slider-element').clone().appendTo('.slf-game-winner-pick-carousel-body');
+            $('.slf-user-winner-picker-games-slider-element').clone().appendTo('.slf-game-winner-pick-carousel-body');
+
+            // Ждем 4 секунды и запускаем анимацию
+            setTimeout(function(){
+                $('.slf-user-winner-picker-games-slider-element:first-of-type').animate({
+                    marginLeft: "-100px"
+                }, 8000, "swing", function (){
+
+                    // Подсвечиваем победителя
+                    setTimeout(function (){
+                        $('.slf-user-winner-picker-games-slider-element:nth-of-type(201) .slf-user-winner-picker-games-slider-element-win-chance').addClass('slf-bg-p-anim');
+
+                        // Скрываем блок выбора победителя и инфо сообщения (если они были)
+                        setTimeout(function (){
+                            $('.slf-tickets-alert').fadeOut(300, function(){
+                                $(this).remove();
+                            });
+                            $('.slf-game-winner-pick-wrapper').fadeOut(300, function(){
+                                $(this).remove();
+                            });
+
+                            // Показываем информацию о победителе
+                            setTimeout(function (){
+                                $('.slf-game-info-wrapper').after('<h2 class="slf-game-ended-h2">Розыгрыш окончен!</h2>');
+
+                                // Проверяем является ли текущий игрок победителем
+                                if(winnerID === USER_ID){
+                                    $('.slf-game-ended-h2').after(
+                                        '<p class="slf-game-user-self-winner">Поздравляем, вы победили!</p>' +
+                                        '<div class="slf-game-self-winner-pic-wrapper">' +
+                                            '<a class="slf-user-closed-games-slider-element slf-game-self-winner-pic"' +
+                                               'style="background-image: url(' + usersCards[0].user_card_avatar + ')"' +
+                                               'title="' + usersCards[0].user_card_name + '" href="' + usersCards[0].user_card_link + '" target="_blank">' +
+                                                '<p class="slf-user-closed-games-slider-element-win-chance slf-game-self-winner-pic-line">' + usersCards[0].user_card_chance + '%</p>' +
+                                            '</a>' +
+                                        '</div>'
+                                    );
+                                }else{
+                                    $('.slf-game-ended-h2').after(
+                                        '<p class="slf-game-user-not-self-winner">Победил <span class="slf-game-user-self-winner">' + usersCards[0].user_card_name + '</span></p>' +
+                                        '<div class="slf-game-self-winner-pic-wrapper">' +
+                                            '<a class="slf-user-closed-games-slider-element slf-game-not-self-winner-pic"' +
+                                               'style="background-image: url(' + usersCards[0].user_card_avatar + ')"' +
+                                               'title="' + usersCards[0].user_card_name + '" href="' + usersCards[0].user_card_link + '" target="_blank">' +
+                                                '<p class="slf-user-closed-games-slider-element-win-chance slf-game-not-self-winner-pic-line">' + usersCards[0].user_card_chance + '%</p>' +
+                                            '</a>' +
+                                        '</div>'
+                                    );
+                                }
+                            }, 300);
+                        }, 3000);
+
+                    }, 500);
+                });
+            },4000);
         }
     </script>
     <!-- Конец скрипта сокетов -->

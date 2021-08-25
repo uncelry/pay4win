@@ -1454,12 +1454,15 @@ span.slf-game-user-self-winner{
     height: 100px;
     background-color: #e0e0e0;
     position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    justify-content: center;
 }
 
 .slf-game-winner-pick-carousel-winner-picker{
     display: inline-block;
     position: absolute;
-    width: 2px;
+    width: 3px;
     height: 100%;
     background-color: #3DCCFFFF;
     top: 0;
@@ -1467,4 +1470,111 @@ span.slf-game-user-self-winner{
     left: 0;
     right: 0;
     margin: auto;
+    z-index: 200;
+}
+
+.slf-user-winner-picker-games-slider-element{
+    width: 100px;
+    min-width: 100px;
+    height: 100px;
+    min-height: 100px;
+    background-size: contain;
+    display: inline-block;
+    margin-left: 4px;
+    position: relative;
+}
+
+.slf-user-winner-picker-games-slider-element:first-of-type{
+    /*margin-left: -100px;*/
+    margin-left: 39600px;
+}
+
+.slf-user-winner-picker-games-slider-element-win-chance{
+    margin-bottom: 0;
+    text-align: center;
+    color: #FFFFFF;
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'Open Sans', sans-serif!important;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(150, 150, 150, 0.7);
+}
+
+@keyframes slfShadowPulse {
+    0% {
+        background-color: rgba(150, 150, 150, 0.7);
+    }
+
+    100% {
+        background-color: rgba(41, 171, 205, 0.8);
+    }
+}
+
+@-webkit-keyframes slfShadowPulse {
+    0% {
+        background-color: rgba(150, 150, 150, 0.7);
+    }
+
+    100% {
+        background-color: rgba(41, 171, 205, 0.8);
+    }
+}
+
+@-moz-keyframes slfShadowPulse {
+    0% {
+        background-color: rgba(150, 150, 150, 0.7);
+    }
+
+    100% {
+        background-color: rgba(41, 171, 205, 0.8);
+    }
+}
+
+@-ms-keyframes slfShadowPulse {
+    0% {
+        background-color: rgba(150, 150, 150, 0.7);
+    }
+
+    100% {
+        background-color: rgba(41, 171, 205, 0.8);
+    }
+}
+
+@-o-keyframes slfShadowPulse {
+    0% {
+        background-color: rgba(150, 150, 150, 0.7);
+    }
+
+    100% {
+        background-color: rgba(41, 171, 205, 0.8);
+    }
+}
+
+.slf-bg-p-anim {
+    animation-name: slfShadowPulse;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode:forwards;
+
+    -webkit-animation-name: slfShadowPulse;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-timing-function: ease-in-out;
+    -webkit-animation-fill-mode:forwards;
+
+    -moz-animation-name: slfShadowPulse;
+    -moz-animation-duration: 1s;
+    -moz-animation-timing-function: ease-in-out;
+    -moz-animation-fill-mode:forwards;
+
+    -ms-animation-name: slfShadowPulse;
+    -ms-animation-duration: 1s;
+    -ms-animation-timing-function: ease-in-out;
+    -ms-animation-fill-mode:forwards;
+
+    -o-animation-name: slfShadowPulse;
+    -o-animation-duration: 1s;
+    -o-animation-timing-function: ease-in-out;
+    -o-animation-fill-mode:forwards;
 }

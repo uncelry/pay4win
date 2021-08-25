@@ -240,10 +240,10 @@
 
 
             <div class="slf-user-closed-games">
-                {% if steamuser.lotteries_finished.all %}
+                {% if user_closed_lotteries %}
                     <h2 class="slf-user-closed-games-title">Закрытые розыгрыши</h2>
                     <div id="slfClosedCardHolder" class="slf-card-holder slf-closed-card-holder">
-                        {% for closed_lottery in steamuser.lotteries_finished.all %}
+                        {% for closed_lottery in user_closed_lotteries %}
                             {% include "lottery/game_card_finished.html" with closed_lottery=closed_lottery %}
                         {% endfor %}
                         <a id="slfSearchShowMoreBtn" class="btn btn-primary slf-lottery-card-wrapper-load-more-btn" href="#" onclick="showMore(event, this);">Подгрузить ещё</a>

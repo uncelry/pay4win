@@ -217,7 +217,7 @@ class UserDetailView(generic.DetailView):
         context['form'] = UserPrivacyForm(initial={'is_private': context['steamuser'].profile_is_private},
                                           use_required_attribute=False)
         context['steamusers_set'] = SteamUser.objects.order_by('-money_saved')
-
+        context['user_closed_lotteries'] = context['steamuser'].lotteries_finished.all().order_by('-time_finished')
         return context
 
     def post(self, request, *args, **kwargs):
