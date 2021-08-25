@@ -323,7 +323,7 @@
                 $(".slf-game-form-ticket-bought-amount .slf-form-span").html(data.total_bought_for_user + "<sup>шт.</sup>");
 
                 // Если пользователь только вступил в лотерею, показываем ему шанс на победу
-                if (data.is_user_in_lottery && !$('.slf-participant-win-chance-user').length) {
+                if (data.is_user_in_lottery && !$('.slf-participant-win-chance-user').length && (data.user_win_chance < 100)) {
                     $("#participatorMagic").after("<h3 class=\"slf-participant-win-chance-user\">Ваш шанс на победу: <span>" + data.user_win_chance + "%</span></h3>");
                     $(".slf-participant-win-chance-user").hide().fadeIn(300);
                 }
@@ -346,9 +346,28 @@
 
             // Проверяем закончена ли игра
             if(data.is_lottery_finished){
+                // Скрываем форму
                 $('div.slf-game-ticket-info-wrapper').fadeOut(300, function(){
                     $(this).remove();
                 });
+
+                // Скрываем надпись про шанс пользователя на победу
+                if($('h3.slf-participant-win-chance-user').length){
+                    $('h3.slf-participant-win-chance-user').fadeOut(300, function(){
+                        $(this).remove();
+                    });
+                }
+
+                // Скрываем прогресс бар
+                if($('div.slf-game-progress-wrapper').length){
+                    $('div.slf-game-progress-wrapper').fadeOut(300, function(){
+                        $(this).remove();
+                    });
+                }
+
+                // Добавляем на страницу блок с активным выбором победителя
+                gameLotteryPickWinner();
+
             }else{
                 // Если не закончена, то обновляем поля в форме
                 $(".slf-game-tickets-left").text("Осталось: " + data.tickets_left + "шт.");
@@ -357,7 +376,7 @@
 
 
             // Если в игре данный пользователь - первый участник, то скрываем надпись, что участников нет и показываем слайдер
-            if(data.lottery_progress < 100 && !$('div.slf-user-closed-games-slider-body > a.slf-user-closed-games-slider-element').length){
+            if(!$('div.slf-user-closed-games-slider-body > a.slf-user-closed-games-slider-element').length){
                 $('p.slf-game-not-yet-people').remove();
                 $('div.slf-game-carousel-ongoing-wrapper').css('display', 'unset').hide().fadeIn(300);
             }
@@ -399,6 +418,20 @@
                 '</div>'
             ).hide().fadeIn(300);
 
+        }
+
+
+        // Функция добавления на страницу блока выбора победителя
+        function gameLotteryPickWinner(){
+            // Добавляем блок выбора победителя
+            $('div.slf-game-carousel-ongoing-wrapper').before('<div class="slf-game-winner-pick-wrapper">' +
+                    '<h3 class="slf-game-winner-pick-h3">Выбор победителя</h3>' +
+                    '<div class="slf-game-winner-pick-carousel-wrapper">' +
+                        '<div class="slf-game-winner-pick-carousel-body">' +
+                            '<span class="slf-game-winner-pick-carousel-winner-picker"></span>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>').hide().fadeIn(300);
         }
     </script>
     <!-- Конец скрипта сокетов -->

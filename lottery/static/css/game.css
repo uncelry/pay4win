@@ -1422,3 +1422,49 @@ span.slf-game-user-self-winner{
 .slf-game-not-self-winner-pic-line{
     background-color: rgba(231, 201, 99, 0.8);
 }
+
+
+/* Активный выбор победителя */
+
+.slf-game-winner-pick-wrapper{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: auto;
+}
+
+.slf-game-winner-pick-h3{
+    margin: 10px auto;
+    text-align: center;
+    font-weight: 700;
+    color: #29abcd;
+    font-size: 2.5rem;
+}
+
+.slf-game-winner-pick-carousel-wrapper{
+    margin-top: 10px;
+    display: flex;
+    width: 100%;
+    padding: 0 15px;
+}
+
+.slf-game-winner-pick-carousel-body{
+    display: flex;
+    width: 100%;
+    height: 100px;
+    background-color: #e0e0e0;
+    position: relative;
+}
+
+.slf-game-winner-pick-carousel-winner-picker{
+    display: inline-block;
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    background-color: #3DCCFFFF;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}

@@ -19,6 +19,9 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
     # Текущий пользователь
     steam_user = None
 
+    # ID пользователя
+    steam_user_id = None
+
     # Текущая лотерея
     current_lottery = None
 
@@ -35,6 +38,7 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
         # Если пользователь авторизован, то получаем его объект и ссылку на страницу
         if self.scope["user"].is_authenticated:
             self.steam_user = await get_steamuser_from_user(self.scope["user"])
+            self.steam_user_id = self.steam_user.pk
             self.user_page_url = await call_user_get_absolute_url_method(self.steam_user)
 
         # Подключение к группе
@@ -55,6 +59,11 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
 
     # Метод при получении сообщения по сокетам
     async def receive(self, text_data):
+
+        # Если пользователь авторизован, то получаем его объект и ссылку на страницу
+        if self.scope["user"].is_authenticated:
+            self.steam_user = await get_steam_user_via_id(self.steam_user_id)
+            self.user_page_url = await call_user_get_absolute_url_method(self.steam_user)
 
         # Получаем объект текущей лотереи
         self.current_lottery = await get_lottery_by_pk(self.lottery_id)
@@ -227,3 +236,9 @@ def get_right_spelling_for_event_ticks(amount_of_ticks):
         return "Билета"
     else:
         return "Билетов"
+
+
+# Функция получения steam user по его ID
+@sync_to_async
+def get_steam_user_via_id(usr_id):
+    return SteamUser.objects.get(pk=usr_id)
