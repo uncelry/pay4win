@@ -5,7 +5,7 @@ from django.urls import path
 
 urlpatterns = [
 
-    #url(r'^$', views.index, name='index'),
+    url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^faq/$', views.FAQListView.as_view(), name='faq'),
     url(r'^contacts/$', views.contacts, name='contacts'),
     url(r'^manual/$', views.manual, name='manual'),

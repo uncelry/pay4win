@@ -1,0 +1,26 @@
+main{
+    padding: 0 !important;
+    background-color: #FFFFFF;
+    padding-bottom: 65px!important;
+    overflow: hidden;
+    min-height: 100vh;
+    font-family: 'Open Sans', sans-serif!important;
+}
+
+@media screen and (min-width: 992px){
+	body{
+        background-size: 100%;
+        background-position: center top;
+        background-repeat: no-repeat;
+        background-color: #FFFFFF;
+    }
+}
+
+@media screen and (max-width: 575px) {
+	body{
+        background-image: none!important;
+    }
+    main{
+        background-color: white!important;
+    }
+}

@@ -4,7 +4,7 @@ from allauth.socialaccount.providers.openid.views import OpenIDCallbackView, Ope
 from allauth.socialaccount.providers.steam.provider import SteamOpenIDProvider
 from django.contrib.auth import logout
 from django.http import HttpResponseRedirect, JsonResponse, StreamingHttpResponse
-from django.views import generic, View
+from django.views import generic
 from .models import FAQ, LotteryGame, Genre, SteamUser, Game
 from .forms import UserPrivacyForm, BuyTicketForm
 from django.shortcuts import get_object_or_404
@@ -232,6 +232,7 @@ class UserDetailView(generic.DetailView):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+# Lottery game view
 class LotteryDetailView(generic.DetailView):
     model = LotteryGame
     template_name = 'lottery/game.html'
@@ -289,3 +290,14 @@ class LotteryDetailView(generic.DetailView):
         prev_http = request.META.get('HTTP_REFERER')
         prev_http = prev_http[:prev_http.find('?')]
         return HttpResponseRedirect(prev_http + '?result_code=' + result_code)
+
+
+# Main page (index) view
+class IndexView(generic.TemplateView):
+
+    template_name = "lottery/index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # context['latest_articles'] = Article.objects.all()[:5]
+        return context
