@@ -4,11 +4,7 @@
 
 .slf-closed-card-holder .slf-lottery-card-info-wrapper {
     display: flex;
-    justify-content: flex-start;
-}
-
-.slf-closed-card-holder .slf-lottery-card-lottery-info-wrapper{
-    margin-left: 25%;
+    justify-content: space-between;
 }
 
 .slf-closed-card-holder .slf-lottery-card-lottery-num-number, .slf-lottery-card-lottery-type{
@@ -27,9 +23,19 @@
     border-bottom: 10px solid #ba7e3b;
 }
 
+.slf-closed-game-not-btn{
+    background-color: #bebebe;
+}
+
+.slf-closed-game-not-btn:active, .slf-closed-game-not-btn:hover, .slf-closed-game-not-btn:focus{
+    background-color: #bebebe;
+    cursor: default;
+}
+
 .slf-closed-card-holder .slf-user-closed-games-card-slider-wrapper{
     display: flex;
     height: 115px;
+    min-height: 115px;
     width: 100%;
     overflow: hidden;
     align-items: center;
@@ -188,8 +194,12 @@
     }
 
     .slf-closed-card-holder .slf-user-closed-games-card-slider-wrapper{
-        margin-top: 50px;
-        margin-bottom: 40px;
+        /*margin-top: 50px;*/
+        margin-bottom: 5px;
+    }
+
+    .slf-closed-game-not-btn{
+        margin-top: 10px;
     }
 }
 

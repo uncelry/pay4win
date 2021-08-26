@@ -4,14 +4,64 @@
 
 {% block links %}
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <script src="{% static 'js/libs/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'css/game_card_open.css' %}">
+    <link rel="stylesheet" href="{% static 'css/game_card_finished.css' %}">
+    <script src="{% static 'js/user-finished-game-slider.js' %}"></script>
+    <script src="{% static 'js/lottery-number-copy.js' %}"></script>
+    <script src="{% static 'js/index-slider.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Главная</title>{% endblock %}
 
 {% block content %}
 
-    <main class="container">
-        Это главная страница!
-    </main>
+    <section class="slf-index-top-slider">
+        <div class="slf-index-top-slider-ui-text-card">
+            <h2 class="slf-index-top-slider-ui-text-card-h2">Немного информации о нашем сайте Pay4Win:</h2>
+            <p class="slf-index-top-slider-ui-text-card-p">
+                Наш сервис помогает очень многим геймерам, таким же, как
+                и мы сами, получать лицензионные игры гораздо дешевле, чем они продаются в Steam. Главной отличительной
+                чертой Pay4Win является то, что участники заранее знают, какая игра является призом. На нашем сайте
+                ежеминутно проводятся розыгрыши популярных игр. Помимо этого, мы разыгрываем одни из самых дорогих
+                товаров в Steam, и тем самым даём возможность всем геймерам получать игровые новинки по невероятно
+                низким ценам ещё до их выхода - уже на моменте предзаказа. Наш сайт полностью автоматизирован, а
+                победитель выбирается случайным образом. <br>
+                <span>У нас нет утешительных призов - всё или ничего!</span>
+            </p>
+        </div>
+        <div class="slf-index-top-slider-body">
+            <div class="slf-index-top-slider-slide slf-index-top-slider-slide-active" style="background-image: url({% static 'img/index-slider-1.png' %})"></div>
+            <div class="slf-index-top-slider-slide" style="background-image: url({% static 'img/index-slider-4.png' %})"></div>
+            <div class="slf-index-top-slider-slide" style="background-image: url({% static 'img/index-slider-3.jpg' %})"></div>
+            <div class="slf-index-top-slider-slide" style="background-image: url({% static 'img/index-slider-2.jpg' %})"></div>
+            <div class="slf-index-top-slider-slide" style="background-image: url({% static 'img/index-slider-5.jpg' %})"></div>
+        </div>
+    </section>
+    <div class="slf-index-top-flowers" style="background-image: url({% static 'img/index-flowers.png' %})"></div>
+
+    <section class="container slf-index-closed-section">
+        <h2 class="slf-index-closed-section-sub-name">Последние розыгрыши</h2>
+        <div class="slf-index-closed-section-filter-and-name-wrapper">
+            <h2 class="slf-index-closed-section-name">Закрытые игры</h2>
+            <select class="form-select slf-index-closed-filter" aria-label="Closed select" name="filter_closed">
+                <option value="all" selected>Все</option>
+                <option value="gold">Золотые</option>
+                <option value="silver">Серебряные</option>
+                <option value="bronze">Бронзовые</option>
+            </select>
+        </div>
+
+        {% if closed_lotteries %}
+            <div id="slfClosedCardHolder" class="slf-card-holder slf-closed-card-holder">
+                {% for closed_lottery in closed_lotteries %}
+                    {% include "lottery/game_card_finished.html" with closed_lottery=closed_lottery %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="slf-index-closed-games-empty">История завершенных игр пуста</p>
+        {% endif %}
+
+    </section>
 
 {% endblock %}
