@@ -11,7 +11,7 @@ $( document ).ready(function() {
     let all_slides = $('.slf-index-top-slider-body .slf-index-top-slider-slide');
 
     // Анимация слайдера циклической функцией
-    setInterval(function(){
+    setTimeout(function(){
         animateTopSlider(all_slides);
     }, 10000);
 });
@@ -44,6 +44,10 @@ function animateTopSlider(slides_arr){
             first_slide_offset -= 100;
             $(slides_arr[0]).removeClass('slf-index-top-slider-slide-active');
             $(slides_arr[1]).addClass('slf-index-top-slider-slide-active');
+
+            setTimeout(function(){
+                animateTopSlider(slides_arr);
+            }, 11000);
         });
 
     // Иначе просто переключаем на следующий
@@ -55,7 +59,12 @@ function animateTopSlider(slides_arr){
             first_slide_offset -= 100;
             $(slides_arr[curr_slide_number]).removeClass('slf-index-top-slider-slide-active');
             $(slides_arr[curr_slide_number + 1]).addClass('slf-index-top-slider-slide-active');
+
+            setTimeout(function(){
+                animateTopSlider(slides_arr);
+            }, 11000);
         });
     }
+
 
 }
