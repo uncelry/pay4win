@@ -484,3 +484,168 @@ body{
         margin-top: 10px;
     }
 }
+
+.slf-index-best-players{
+    width: 100%;
+    padding-right: 0;
+    padding-left: 0;
+    background-color: #f2f2ef;
+    height: auto;
+    margin-top: -30px;
+    padding-top: 30px;
+}
+
+.slf-index-best-players-body{
+    padding-right: 0;
+    padding-left: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.slf-index-best-players-name{
+    margin-top: 30px;
+    margin-bottom: 10px;
+    font-family: 'Open Sans', sans-serif!important;
+    color: #272727;
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+.slf-index-best-players-no-players{
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 100px;
+    font-family: 'Open Sans', sans-serif!important;
+}
+
+.slf-index-best-players-wrapper{
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: space-evenly;
+    margin-top: 30px;
+    align-items: flex-end;
+}
+
+.slf-index-best-players-player-card{
+    width: 318px;
+    height: auto;
+    min-height: 438px;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    border-radius: 3px;
+    align-items: center;
+    padding: 6px 0;
+}
+
+.slf-index-best-players-player-card:nth-of-type(1){
+    border: 1px solid #9f9f9f;
+}
+
+.slf-index-best-players-player-card:nth-of-type(2){
+    border: 1px solid #ffdd00;
+}
+
+.slf-index-best-players-player-card:nth-of-type(3){
+    border: 1px solid #ffc31d;
+}
+
+.slf-index-best-players-player-card-img{
+    width: 304px;
+    height: 304px;
+    background-size: cover;
+}
+
+.slf-index-best-players-player-info{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-bottom: 20px;
+}
+
+.slf-index-best-players-player-info-name{
+    font-family: 'Open Sans', sans-serif!important;
+    color: #010101;
+    font-size: 1.9rem;
+    font-weight: 800;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: auto;
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.slf-index-best-players-player-info-place{
+    font-family: 'Open Sans', sans-serif!important;
+    font-size: 1.3rem;
+    font-weight: 800;
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+.slf-index-best-players-player-card:nth-of-type(1) .slf-index-best-players-player-info-place{
+    color: #909090;
+}
+
+.slf-index-best-players-player-card:nth-of-type(2) .slf-index-best-players-player-info-place{
+    color: #ffd517;
+}
+
+.slf-index-best-players-player-card:nth-of-type(3) .slf-index-best-players-player-info-place{
+    color: #ffc41e;
+}
+
+.slf-index-best-players-player-wins-info, .slf-index-best-players-player-economy-info{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.slf-index-best-players-player-wins-info-wins, .slf-index-best-players-player-economy-info-economy{
+    font-family: 'Open Sans', sans-serif!important;
+    font-size: 1.3rem;
+    font-weight: 700;
+    white-space: nowrap;
+    margin-bottom: 0;
+    color: #010101;
+}
+
+.slf-index-best-players-player-wins-info-amount, .slf-index-best-players-player-economy-info-amount{
+    text-align: left;
+    font-family: 'Open Sans', sans-serif!important;
+    font-size: 1.3rem;
+    white-space: nowrap;
+    margin-bottom: 0;
+    font-weight: 400;
+    color: #29abcd;
+}
+
+.slf-index-best-players-player-economy-info-amount sup{
+    font-family: 'Open Sans', sans-serif!important;
+    margin-left: 3px;
+}
+
+.slf-index-best-players{
+    padding-bottom: 100px;
+}
+
+.slf-index-best-players-player-card-crown-wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 85px;
+}
+
+.slf-index-best-players-player-card-crown{
+    width: 165px;
+    height: 100px;
+    background-size: cover;
+    margin-bottom: 10px;
+}

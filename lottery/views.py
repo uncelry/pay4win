@@ -301,4 +301,11 @@ class IndexView(generic.TemplateView):
         context = super().get_context_data(**kwargs)
         context['closed_lotteries'] = LotteryGame.objects.all().filter(lottery_state='c').order_by('-time_finished')[:3]
         context['open_lotteries'] = LotteryGame.objects.all().filter(lottery_state='o').order_by('-time_started')[:3]
+
+        best_players_list = list(SteamUser.objects.all().order_by('-money_saved')[:3])
+
+        if len(best_players_list) == 3:
+            best_players_list[0], best_players_list[1] = best_players_list[1], best_players_list[0]
+            context['best_players'] = best_players_list
+
         return context

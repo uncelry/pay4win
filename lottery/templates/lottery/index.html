@@ -93,4 +93,47 @@
         <div class="slf-index-open-section-right-side-filler"></div>
     </section>
 
+    <section class="slf-index-best-players">
+        <div class="container slf-index-best-players-body">
+            <h2 class="slf-index-best-players-name">Лучшие игроки</h2>
+
+            {% if best_players %}
+                <div class="slf-index-best-players-wrapper">
+                    {% for best_player in best_players %}
+                        {% if forloop.counter0 == 1 %}<div class="slf-index-best-players-player-card-crown-wrapper"><div class="slf-index-best-players-player-card-crown" style="background-image: url({% static 'img/index-crown.png' %})"></div>{% endif %}
+                            <div class="slf-index-best-players-player-card">
+                                <a class="slf-index-best-players-player-card-img" style="background-image: url({{ best_player.avatar_full }})" href="{{ best_player.get_absolute_url }}"></a>
+                                <div class="slf-index-best-players-player-info">
+                                    <p class="slf-index-best-players-player-info-name">{{ best_player.persona_name }}</p>
+                                    <p class="slf-index-best-players-player-info-place">
+                                        {% if forloop.counter0 == 0 %}
+                                            2-е место
+                                        {% elif forloop.counter0 == 1 %}
+                                            1-е место
+                                        {% elif forloop.counter0 == 2 %}
+                                            3-е место
+                                        {% endif %}
+                                    </p>
+                                </div>
+
+                                <div class="slf-index-best-players-player-wins-info">
+                                    <p class="slf-index-best-players-player-wins-info-wins">Побед:</p>
+                                    <p class="slf-index-best-players-player-wins-info-amount">{{ best_player.lotteries_won_amount }}</p>
+                                </div>
+
+                                <div class="slf-index-best-players-player-economy-info">
+                                    <p class="slf-index-best-players-player-economy-info-economy">Сэкономил:</p>
+                                    <p class="slf-index-best-players-player-economy-info-amount">{{ best_player.money_saved }}<sup>руб</sup></p>
+                                </div>
+                            </div>
+                        {% if forloop.counter0 == 1 %}</div>{% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="slf-index-best-players-no-players">В данный момент на сервисе нет игроков</p>
+            {% endif %}
+
+        </div>
+    </section>
+
 {% endblock %}
