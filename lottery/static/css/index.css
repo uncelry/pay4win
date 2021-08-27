@@ -649,3 +649,62 @@ body{
     background-size: cover;
     margin-bottom: 10px;
 }
+
+@media screen and (min-width: 992px) and (max-width: 1199px){
+    .slf-index-best-players-player-card{
+        width: 280px;
+        min-height: 410px;
+    }
+
+    .slf-index-best-players-player-card-img{
+        width: 264px;
+        height: 264px;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px){
+    .slf-index-best-players-wrapper{
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .slf-index-best-players-player-card:first-of-type{
+        margin-bottom: 20px;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px){
+    .slf-index-best-players-wrapper{
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .slf-index-best-players-player-card:first-of-type{
+        margin-bottom: 20px;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .slf-index-best-players-wrapper{
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .slf-index-best-players-player-card:first-of-type{
+        margin-bottom: 20px;
+    }
+
+    .slf-index-best-players-player-card{
+        width: 280px;
+        min-height: 410px;
+    }
+
+    .slf-index-best-players-player-card-img{
+        width: 264px;
+        height: 264px;
+    }
+
+    .slf-index-best-players-name{
+        text-align: center;
+    }
+}
