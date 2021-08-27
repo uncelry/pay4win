@@ -321,3 +321,166 @@ body{
         overflow: hidden;
     }
 }
+
+
+/* Секция с открытыми играми */
+
+.slf-index-open-section{
+    width: 100%;
+    height: auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.slf-index-open-section-div{
+    min-height: 300px;
+    height: auto;
+    background-color: #60abe2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 20;
+    position: relative;
+    border-bottom: 30px solid #f2f2ef;
+
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.slf-index-open-section-right-side-filler{
+    width: 100%;
+    background-color: #60abe2;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    z-index: 10;
+    height: 100%;
+    min-height: 100%;
+    border-bottom: 30px solid #f2f2ef;
+}
+
+#s_w_side {
+    height: 100%;
+    width: 70px;
+    background-color: #60abe2;
+    background: linear-gradient(to left, #60abe2, #4589bb);
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    margin-left: -70px;
+}
+
+#s_w_s_top {
+    width: 0;
+    height: 0;
+    border-top: 30px solid #FFF;
+    border-right: 70px solid transparent;
+}
+
+#s_w_s_bot {
+    border-bottom: 30px solid #F2F2EF;
+    border-left: 70px solid transparent;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: -30px;
+}
+
+.slf-index-open-section-inside-filler{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: -30px;
+    background-color: #60abe2;
+    background: linear-gradient(to left, #60abe2, #4589bb);
+}
+
+.slf-index-open-section-left-side-filler{
+    width: 100%;
+    background-color: #4589bb;
+    position: absolute;
+    right: 50%;
+    top: 0;
+    z-index: 10;
+    height: 100%;
+    min-height: 100%;
+    margin-top: 30px;
+}
+
+.slf-index-open-top-text{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-top: 40px;
+    margin-bottom: 30px;
+}
+
+.slf-index-open-name{
+    font-family: 'Open Sans', sans-serif!important;
+    margin-bottom: 0;
+    color: #FFFFFF;
+    font-size: 2rem;
+    text-transform: uppercase;
+    font-weight: 800;
+    text-align: left;
+}
+
+.slf-index-open-show-all-small-link{
+    font-family: 'Open Sans', sans-serif!important;
+    margin-bottom: 0;
+    color: #FFFFFF;
+    font-size: 1rem;
+    font-weight: 300;
+    text-decoration: none;
+    border-bottom: 1px dashed #FFFFFF;
+    line-height: 1rem;
+    padding: 0;
+    margin-left: 50px;
+}
+
+.slf-index-open-show-all-small-link:hover, .slf-index-open-show-all-small-link:active, .slf-index-open-show-all-small-link:focus{
+    color: #FFFFFF;
+    border: 0;
+}
+
+.slf-user-opened-games-empty{
+    color: #FFFFFF;
+    margin-top: 50px;
+    font-weight: 800;
+}
+
+#slfSearchShowMoreBtn.slf-index-open-show-all-btn{
+    background-color: unset;
+    color: #FFFFFF;
+    border: 3px #FFFFFF solid;
+    margin-bottom: 40px;
+}
+
+#slfSearchShowMoreBtn.slf-index-open-show-all-btn:active, #slfSearchShowMoreBtn.slf-index-open-show-all-btn:hover, #slfSearchShowMoreBtn.slf-index-open-show-all-btn:focus{
+    color: #cccccc;
+    border: 3px #cccccc solid;
+}
+
+#slfSearchCardHolder.slf-card-holder{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px){
+    .slf-index-open-top-text{
+        justify-content: space-evenly;
+    }
+}
+
+@media screen and (max-width: 575px) {
+    .slf-index-open-top-text{
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .slf-index-open-show-all-small-link{
+        margin-left: 0;
+        margin-top: 10px;
+    }
+}

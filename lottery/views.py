@@ -300,4 +300,5 @@ class IndexView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['closed_lotteries'] = LotteryGame.objects.all().filter(lottery_state='c').order_by('-time_finished')[:3]
+        context['open_lotteries'] = LotteryGame.objects.all().filter(lottery_state='o').order_by('-time_started')[:3]
         return context

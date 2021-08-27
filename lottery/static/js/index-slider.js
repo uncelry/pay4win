@@ -13,7 +13,7 @@ $( document ).ready(function() {
     // Анимация слайдера циклической функцией
     setTimeout(function(){
         animateTopSlider(all_slides);
-    }, 10000);
+    }, 1000);
 });
 
 

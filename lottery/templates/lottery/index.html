@@ -61,7 +61,36 @@
         {% else %}
             <p class="slf-index-closed-games-empty">История завершенных игр пуста</p>
         {% endif %}
+    </section>
 
+    <section class="slf-index-open-section">
+        <div class="slf-index-open-section-left-side-filler"></div>
+        <div class="container slf-index-open-section-div">
+            <div id="s_w_side">
+                <div id="s_w_s_top" class="s_w_s_aj"></div>
+                <div class="slf-index-open-section-inside-filler"></div>
+                <div id="s_w_s_bot" class="s_w_s_aj"></div>
+            </div>
+            <div class="slf-index-open-top-text">
+                <h2 class="slf-index-open-name">Открытые игры</h2>
+                <a class="slf-index-open-show-all-small-link" href="{% url 'search' %}">Смотреть все</a>
+            </div>
+
+            {% if open_lotteries %}
+                <div id="slfSearchCardHolder" class="slf-card-holder">
+                    {% for open_lottery in open_lotteries %}
+                        {% include "lottery/game_card_open.html" with lottery=open_lottery %}
+                    {% endfor %}
+
+                    <a id="slfSearchShowMoreBtn" class="btn btn-primary slf-lottery-card-wrapper-load-more-btn slf-index-open-show-all-btn" href="{% url 'search' %}">Смотреть все</a>
+
+                </div>
+            {% else %}
+                <p class="slf-user-opened-games-empty">В данный момент активных розыгрышей нет</p>
+            {% endif %}
+
+        </div>
+        <div class="slf-index-open-section-right-side-filler"></div>
     </section>
 
 {% endblock %}
