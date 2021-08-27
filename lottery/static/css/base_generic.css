@@ -70,9 +70,8 @@ body > nav.navbar > div.container{
     }
 
     .slf-brand-nav{
-        padding: 5px 0;
+        padding: 0 0;
         background-color: white;
-        display: none;
     }
 
     .slf-brand-nav img{
@@ -80,7 +79,7 @@ body > nav.navbar > div.container{
     }
 
     .slf-navbar-nav{
-        margin-left: 0px;
+        margin-left: 87px;
     }
 
     .slf-top-nav{
@@ -677,7 +676,7 @@ footer{
 
 @media screen and (min-width: 768px) and (max-width: 991px){
     .slf-steam-logged-inv span{
-        max-width: 175px;
+        max-width: 80px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
