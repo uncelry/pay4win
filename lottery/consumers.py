@@ -63,7 +63,8 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
 
         # Если пользователь авторизован, то получаем его объект и ссылку на страницу
         if self.scope["user"].is_authenticated:
-            self.steam_user = await get_steam_user_via_id(self.steam_user_id)
+            self.steam_user = await get_steamuser_from_user(self.scope["user"])
+            self.steam_user_id = self.steam_user.pk
             self.user_page_url = await call_user_get_absolute_url_method(self.steam_user)
 
         # Получаем объект текущей лотереи
@@ -150,14 +151,14 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
                 # Теперь перемешиваем случайным образом
                 shuffle(winner_pick_array)
 
-                # На 72-ю позицию ставим победителя
+                # На 0-ю позицию ставим победителя
                 winner_link = await get_lottery_winner(self.current_lottery)
                 winner_steamuser_id = winner_link.pk
                 winner_link = await call_user_get_absolute_url_method(winner_link)
 
                 for i in range(len(winner_pick_array)):
                     if winner_pick_array[i]['user_card_link'] == winner_link:
-                        # На 1-ю позицию ставим текущую карточку победителя
+                        # На 0-ю позицию ставим текущую карточку победителя
                         tmp = winner_pick_array[i]
                         winner_pick_array[i] = winner_pick_array[0]
                         winner_pick_array[0] = tmp
@@ -216,6 +217,81 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
 
         # Отправляем сообщение по сокет-соединению (как json)
         await self.send(text_data=message)
+
+
+class IndexConsumer(AsyncWebsocketConsumer):
+    """
+    Обработка асинхронного сокета на главной странице
+    """
+
+    # ID группы (сокеты на главной странице)
+    socket_room_id = None
+
+    # Текущий пользователь
+    steam_user = None
+
+    # ID пользователя
+    steam_user_id = None
+
+    # Метод при подключении нового сокета
+    async def connect(self):
+        # Создаем id группы из id лотереи
+        self.socket_room_id = 'ws-index-room'
+
+        # Если пользователь авторизован, то получаем его объект и ID
+        if self.scope["user"].is_authenticated:
+            self.steam_user = await get_steamuser_from_user(self.scope["user"])
+            self.steam_user_id = self.steam_user.pk
+
+        # Подключение сокета к группе
+        await self.channel_layer.group_add(
+            self.socket_room_id,
+            self.channel_name
+        )
+
+        await self.accept()
+
+    # Метод при отключении сокета
+    async def disconnect(self, close_code):
+        # Отключение от группы
+        await self.channel_layer.group_discard(
+            self.socket_room_id,
+            self.channel_name
+        )
+
+    # Метод при получении сообщения по сокетам
+    async def receive(self, text_data):
+
+        # Если пользователь авторизован, то получаем его объект
+        if self.scope["user"].is_authenticated:
+            self.steam_user = await get_steamuser_from_user(self.scope["user"])
+            self.steam_user_id = self.steam_user.pk
+        else:
+            self.steam_user = None
+            self.steam_user_id = None
+
+        # Собираем полученный от клиента json в объект
+        text_data_json = json.loads(text_data)
+
+        closed_res = await get_last_three_closed_lotteries_filtered(text_data_json['closed_filter_type'])
+
+        # По умолчанию ставим данные как пустые
+        result_list = None
+
+        # Если данные - не пустые, то обрабатываем их
+        if closed_res:
+            tmp_list = closed_res
+            result_list = list()
+
+            # Обрабатываем данные в цикле
+            for i in range(len(tmp_list)):
+                result_list.append(await get_dict_from_closed_lottery_for_index(tmp_list[i], self.steam_user))
+
+        # Отправляем данные
+        await self.send(json.dumps({
+            'message_type': 'index_private',
+            'closed_filter_res': result_list
+        }))
 
 
 # Функция получения steamuser'а через обычного пользователя
@@ -299,3 +375,75 @@ def get_participants_of_lottery(lottery):
 @sync_to_async
 def get_lottery_winner(lottery):
     return lottery.lottery_winner
+
+
+# Функция получения последних 3-ех закрытых розыгрышей по фильтру
+@sync_to_async
+def get_last_three_closed_lotteries_filtered(type_filter):
+    if type_filter == 'all':
+        return list(LotteryGame.objects.all().filter(lottery_state='c').order_by('-time_finished')[:3])
+    elif type_filter == 'gold':
+        return list(LotteryGame.objects.all().filter(lottery_state='c').filter(abstract_lottery__lottery_type='g').order_by('-time_finished')[:3])
+    elif type_filter == 'silver':
+        return list(LotteryGame.objects.all().filter(lottery_state='c').filter(abstract_lottery__lottery_type='s').order_by('-time_finished')[:3])
+    elif type_filter == 'bronze':
+        return list(LotteryGame.objects.all().filter(lottery_state='c').filter(abstract_lottery__lottery_type='b').order_by('-time_finished')[:3])
+    else:
+        return None
+
+
+# Функция получения словаря из закрытого розыгрыша для отправки на главную страницу
+@sync_to_async
+def get_dict_from_closed_lottery_for_index(lottery, steam_usr):
+
+    result = dict()
+
+    if lottery.lottery_winner == steam_usr:
+        result['is_winner'] = True
+    else:
+        result['is_winner'] = False
+
+    result['lottery_amount_of_bought_tickets_for_user'] = None
+
+    if steam_usr:
+        result['is_authenticated'] = True
+
+        if lottery in steam_usr.lotteries_finished.all():
+            result['is_participant'] = True
+            result['lottery_amount_of_bought_tickets_for_user'] = lottery.calculate_ticks_for_user(steam_usr)
+        else:
+            result['is_participant'] = False
+    else:
+        result['is_authenticated'] = False
+        result['is_participant'] = False
+
+    result['lottery_type'] = lottery.abstract_lottery.lottery_type
+    result['game_img'] = lottery.abstract_lottery.game.img.url
+    result['game_name'] = lottery.abstract_lottery.game.name
+
+    # Жанры
+    lottery_genres = list(lottery.abstract_lottery.game.genres.all())
+    genres_list = list()
+    for i in range(len(lottery_genres)):
+        genres_list.append(lottery_genres[i].name)
+    result['game_genres'] = genres_list
+
+    result['lottery_id'] = str(lottery.id)
+    result['lottery_winner_name'] = lottery.lottery_winner.persona_name
+
+    # Участники
+    lottery_participants = list(lottery.players.all())
+    participants_list = list()
+    for i in range(len(lottery_participants)):
+        participants_list.append({
+            "avatar": lottery_participants[i].avatar_full,
+            "name": lottery_participants[i].persona_name,
+            "link": lottery_participants[i].get_absolute_url(),
+            "chance": lottery.calculate_win_chance_for_user(lottery_participants[i])
+        })
+    result["lottery_participants"] = participants_list
+
+    result["game_desc"] = lottery.abstract_lottery.game.desc[:200] + "..."
+    result['lottery_ticket_price'] = lottery.ticket_price
+
+    return result

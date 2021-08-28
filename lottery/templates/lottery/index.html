@@ -165,4 +165,40 @@
             document.documentElement.scrollTop = 0;
         }
     </script>
+
+    <!-- Скрипт web socket -->
+    <script>
+        const chatSocket = new WebSocket(
+            `ws://${window.location.host}/ws/index/`
+        );
+
+        chatSocket.onopen = function() {
+            // Сокетное соединение открыто
+        };
+
+        chatSocket.onmessage = function(response) {
+            const data = JSON.parse(response.data);
+            console.log(data); // УБРАТЬ! =====================================================
+        };
+
+        chatSocket.onclose = function(response) {
+            if (response.wasClean) {
+                // Если соединение закрыто чисто
+            } else {
+                // Если соединение оборвалось
+            }
+        };
+
+        chatSocket.onerror = function(response) {
+            // Скрываем все сообщения
+        };
+
+        $( document ).ready(function() {
+            // ДОПИСАТЬ СОБЫТИЕ ИЗМЕНЕНИЯ ФОРМЫ ЗАКРЫТЫХ РОЗЫГРЫШЕЙ ================================
+            chatSocket.send(JSON.stringify({
+                'closed_filter_type': 'all'
+            }));
+        });
+
+    </script>
 {% endblock %}

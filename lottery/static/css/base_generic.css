@@ -682,6 +682,29 @@ footer{
         text-overflow: ellipsis;
         display: block;
     }
+
+    .slf-steam-login-inv-wrapper > a.slf-steam-login-inv{
+        max-width: 115px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+    /*.slf-top-nav a{*/
+    /*    padding: 0 5px!important;*/
+    /*}*/
+
+    /*.slf-navbar-nav{*/
+    /*    margin-left: 71px;*/
+    /*}*/
+
+    /*.slf-brand-nav > a{*/
+    /*    padding: 0!important;*/
+    /*}*/
+
+    /*.slf-navbar-nav > a{*/
+    /*    font-size: 1.2rem !important;*/
+    /*}*/
 }
 
 

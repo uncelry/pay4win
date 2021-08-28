@@ -718,7 +718,7 @@ body{
     opacity: 0.7;
 }
 
-@media screen and (max-width: 991px){
+@media screen and (max-width: 767px){
     #btn-back-to-top{
         display: none!important;
     }
