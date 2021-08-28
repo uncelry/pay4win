@@ -10,6 +10,7 @@
     <script src="{% static 'js/user-finished-game-slider.js' %}"></script>
     <script src="{% static 'js/lottery-number-copy.js' %}"></script>
     <script src="{% static 'js/index-slider.js' %}"></script>
+    <script src="{% static 'js/index-closed-games-update.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Главная</title>{% endblock %}
@@ -44,7 +45,7 @@
         <h2 class="slf-index-closed-section-sub-name">Последние розыгрыши</h2>
         <div class="slf-index-closed-section-filter-and-name-wrapper">
             <h2 class="slf-index-closed-section-name">Закрытые игры</h2>
-            <select class="form-select slf-index-closed-filter" aria-label="Closed select" name="filter_closed">
+            <select id="indexSelectClosedGames" class="form-select slf-index-closed-filter" aria-label="Closed select" name="filter_closed">
                 <option value="all" selected>Все</option>
                 <option value="gold">Золотые</option>
                 <option value="silver">Серебряные</option>
@@ -179,6 +180,12 @@
         chatSocket.onmessage = function(response) {
             const data = JSON.parse(response.data);
             console.log(data); // УБРАТЬ! =====================================================
+            if(data.message_type === "index_private"){
+                // Обновляем закрытые
+                indexUpdateClosedGamesPrivate(data.closed_filter_res, $('#slfClosedCardHolder'));
+            }else if(data.message_type === "index_public"){
+                // Обновляем открытые
+            }
         };
 
         chatSocket.onclose = function(response) {
@@ -194,10 +201,11 @@
         };
 
         $( document ).ready(function() {
-            // ДОПИСАТЬ СОБЫТИЕ ИЗМЕНЕНИЯ ФОРМЫ ЗАКРЫТЫХ РОЗЫГРЫШЕЙ ================================
-            chatSocket.send(JSON.stringify({
-                'closed_filter_type': 'all'
-            }));
+            $("#indexSelectClosedGames").change(function(){
+                chatSocket.send(JSON.stringify({
+                    'closed_filter_type': $(this).val()
+                }));
+            });
         });
 
     </script>
