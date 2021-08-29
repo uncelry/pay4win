@@ -1,9 +1,12 @@
 import json
+import channels.layers
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .forms import BuyTicketForm
 from .models import SteamUser, LotteryGame
-from asgiref.sync import sync_to_async
+from asgiref.sync import sync_to_async, async_to_sync
 from random import shuffle
+from django.db.models import signals
+from django.dispatch import receiver
 
 
 class LotteryGameConsumer(AsyncWebsocketConsumer):
@@ -63,7 +66,7 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
 
         # Если пользователь авторизован, то получаем его объект и ссылку на страницу
         if self.scope["user"].is_authenticated:
-            self.steam_user = await get_steamuser_from_user(self.scope["user"])
+            self.steam_user = await get_steam_user_via_id(self.steam_user.pk)
             self.steam_user_id = self.steam_user.pk
             self.user_page_url = await call_user_get_absolute_url_method(self.steam_user)
 
@@ -224,9 +227,6 @@ class IndexConsumer(AsyncWebsocketConsumer):
     Обработка асинхронного сокета на главной странице
     """
 
-    # ID группы (сокеты на главной странице)
-    socket_room_id = None
-
     # Текущий пользователь
     steam_user = None
 
@@ -235,29 +235,39 @@ class IndexConsumer(AsyncWebsocketConsumer):
 
     # Метод при подключении нового сокета
     async def connect(self):
-        # Создаем id группы из id лотереи
-        self.socket_room_id = 'ws-index-room'
 
         # Если пользователь авторизован, то получаем его объект и ID
         if self.scope["user"].is_authenticated:
             self.steam_user = await get_steamuser_from_user(self.scope["user"])
             self.steam_user_id = self.steam_user.pk
 
-        # Подключение сокета к группе
-        await self.channel_layer.group_add(
-            self.socket_room_id,
-            self.channel_name
-        )
+            # Подключение сокета к группе
+            await self.channel_layer.group_add(
+                'ws-index-room-auth',
+                self.channel_name
+            )
+        else:
+            # Подключение сокета к группе
+            await self.channel_layer.group_add(
+                'ws-index-room-no-auth',
+                self.channel_name
+            )
 
         await self.accept()
 
     # Метод при отключении сокета
     async def disconnect(self, close_code):
         # Отключение от группы
-        await self.channel_layer.group_discard(
-            self.socket_room_id,
-            self.channel_name
-        )
+        if self.scope["user"].is_authenticated:
+            await self.channel_layer.group_discard(
+                'ws-index-room-auth',
+                self.channel_name
+            )
+        else:
+            await self.channel_layer.group_discard(
+                'ws-index-room-no-auth',
+                self.channel_name
+            )
 
     # Метод при получении сообщения по сокетам
     async def receive(self, text_data):
@@ -292,6 +302,100 @@ class IndexConsumer(AsyncWebsocketConsumer):
             'message_type': 'index_private',
             'closed_filter_res': result_list
         }))
+
+    # Метод отправки сообщений в группу главной странице (авторизованным)
+    async def events_logged(self, event):
+
+        if not self.scope["user"].is_authenticated:
+            return
+
+        message = event['message']
+
+        # Получаем лотерею по ID
+        lottery = await get_lottery_by_pk(message['lottery_id'])
+
+        # Удаляем лишнее значение
+        del message['lottery_desc_200']
+
+        # Проверяем участвует ли пользователь в лотерее
+        steam_usr = await get_steamuser_from_user(self.scope["user"])
+        is_participant = await call_lottery_check_if_user_is_in_lottery_method(lottery, steam_usr)
+        message['is_participant'] = is_participant
+
+        if is_participant:
+            message['lottery_ticks_for_user'] = await call_lottery_calculate_ticks_for_user_method(lottery, steam_usr)
+            message['lottery_win_chance_for_user'] = await call_lottery_calculate_win_chance_for_user_method(lottery, steam_usr)
+        else:
+            message['lottery_ticks_for_user'] = None
+            message['lottery_win_chance_for_user'] = None
+
+        # Указываем, авторизован ли данный пользователь
+        message['is_authenticated'] = True
+        message = json.dumps(message)
+
+        await self.send(text_data=message)
+
+    # Метод отправки сообщений в группу главной странице (неавторизованным)
+    async def events_unlogged(self, event):
+
+        if self.scope["user"].is_authenticated:
+            return
+
+        message = event['message']
+
+        # Удаляем лишнее значение
+        del message['lottery_desc_480']
+
+        # Лотереи нет у пользователя в активных, выставляем это
+        message['is_participant'] = False
+
+        # Указываем, авторизован ли данный пользователь
+        message['is_authenticated'] = False
+        message = json.dumps(message)
+
+        await self.send(text_data=message)
+
+    # Метод, вызываемый сигналом создания любого фактического розыгрыша
+    @staticmethod
+    @receiver(signals.post_save, sender=LotteryGame)
+    def lottery_game_post_save_signal(sender, instance, created, **kwargs):
+
+        # Если розыгрыш находится в последних 3 актуальных активных, то обновляем его на главной
+        if instance in LotteryGame.objects.all().filter(lottery_state='o').order_by('-time_started')[:3]:
+            layer = channels.layers.get_channel_layer()
+
+            # Жанры
+            lottery_genres = list(instance.abstract_lottery.game.genres.all())
+            genres_list = list()
+            for i in range(len(lottery_genres)):
+                genres_list.append(lottery_genres[i].name)
+
+            # Формируем json объект о новом розыгрыше для отправки
+            message = {
+                'message_type': 'index_public',
+                'lottery_type': instance.abstract_lottery.lottery_type,
+                'game_img': instance.abstract_lottery.game.img.url,
+                'game_name': instance.abstract_lottery.game.name,
+                'game_genres': genres_list,
+                'lottery_id': str(instance.id),
+                'lottery_link': instance.get_absolute_url(),
+                'lottery_progress': instance.lottery_progress,
+                'lottery_tickets_bought': instance.tickets_bought,
+                'lottery_tickets_total': instance.abstract_lottery.tickets_amount,
+                'lottery_desc_480': instance.abstract_lottery.game.desc[:480],
+                'lottery_desc_200': instance.abstract_lottery.game.desc[:200],
+                'lottery_ticket_price': instance.ticket_price
+            }
+
+            async_to_sync(layer.group_send)('ws-index-room-auth', {
+                'type': 'events.logged',
+                'message': message
+            })
+
+            async_to_sync(layer.group_send)('ws-index-room-no-auth', {
+                'type': 'events.unlogged',
+                'message': message
+            })
 
 
 # Функция получения steamuser'а через обычного пользователя
