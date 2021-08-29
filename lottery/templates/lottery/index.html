@@ -179,7 +179,6 @@
 
         chatSocket.onmessage = function(response) {
             const data = JSON.parse(response.data);
-            console.log(data); // УБРАТЬ! =====================================================
             if(data.message_type === "index_private"){
                 // Обновляем закрытые
                 indexUpdateClosedGamesPrivate(data.closed_filter_res, $('#slfClosedCardHolder'));
