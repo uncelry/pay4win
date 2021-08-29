@@ -11,6 +11,7 @@
     <script src="{% static 'js/lottery-number-copy.js' %}"></script>
     <script src="{% static 'js/index-slider.js' %}"></script>
     <script src="{% static 'js/index-closed-games-update.js' %}"></script>
+    <script src="{% static 'js/index-open-games-update-logged-in.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Главная</title>{% endblock %}
@@ -184,6 +185,11 @@
                 indexUpdateClosedGamesPrivate(data.closed_filter_res, $('#slfClosedCardHolder'));
             }else if(data.message_type === "index_public"){
                 // Обновляем открытые
+                if(data.is_authenticated){
+                    indexUpdateOpenGamesLoggedIn(data, $('#slfSearchCardHolder'));
+                }else{
+                    indexUpdateOpenGamesNotLoggedIn(data, $('#slfSearchCardHolder'));
+                }
                 console.log(data);
             }
         };
