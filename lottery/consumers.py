@@ -339,28 +339,72 @@ class IndexConsumer(AsyncWebsocketConsumer):
         if instance in LotteryGame.objects.all().filter(lottery_state='o').order_by('-time_started')[:3]:
             layer = channels.layers.get_channel_layer()
 
-            # Жанры
-            lottery_genres = list(instance.abstract_lottery.game.genres.all())
-            genres_list = list()
-            for i in range(len(lottery_genres)):
-                genres_list.append(lottery_genres[i].name)
+            # Если создан новый розыгрыш
+            if created:
+                change_type = 'new_lottery'
+                lott_list = list()
+                # Подцепляем информацию сразу о трех последних розыгрышах
+                lotteries_list = list(LotteryGame.objects.all().filter(lottery_state='o').order_by('-time_started')[:3])
 
-            # Формируем json объект о новом розыгрыше для отправки
-            message = {
-                'message_type': 'index_public',
-                'lottery_type': instance.abstract_lottery.lottery_type,
-                'game_img': instance.abstract_lottery.game.img.url,
-                'game_name': instance.abstract_lottery.game.name,
-                'game_genres': genres_list,
-                'lottery_id': str(instance.id),
-                'lottery_link': instance.get_absolute_url(),
-                'lottery_progress': instance.lottery_progress,
-                'lottery_tickets_bought': instance.tickets_bought,
-                'lottery_tickets_total': instance.abstract_lottery.tickets_amount,
-                'lottery_desc_480': instance.abstract_lottery.game.desc[:480],
-                'lottery_desc_200': instance.abstract_lottery.game.desc[:200],
-                'lottery_ticket_price': instance.ticket_price
-            }
+                for i in range(len(lotteries_list)):
+
+                    # Жанры
+                    lottery_genres = list(lotteries_list[i].abstract_lottery.game.genres.all())
+                    genres_list = list()
+                    for j in range(len(lottery_genres)):
+                        genres_list.append(lottery_genres[j].name)
+
+                    message_lottery = {
+                        'lottery_type': lotteries_list[i].abstract_lottery.lottery_type,
+                        'game_img': lotteries_list[i].abstract_lottery.game.img.url,
+                        'game_name': lotteries_list[i].abstract_lottery.game.name,
+                        'game_genres': genres_list,
+                        'lottery_id': str(lotteries_list[i].id),
+                        'lottery_link': lotteries_list[i].get_absolute_url(),
+                        'lottery_progress': lotteries_list[i].lottery_progress,
+                        'lottery_tickets_bought': lotteries_list[i].tickets_bought,
+                        'lottery_tickets_total': lotteries_list[i].abstract_lottery.tickets_amount,
+                        'lottery_desc_480': lotteries_list[i].abstract_lottery.game.desc[:480],
+                        'lottery_desc_200': lotteries_list[i].abstract_lottery.game.desc[:200],
+                        'lottery_ticket_price': lotteries_list[i].ticket_price
+                    }
+
+                    lott_list.append(message_lottery)
+
+                # Формируем json объект о новом розыгрыше для отправки
+                message = {
+                    'message_type': 'index_public',
+                    'change_type': change_type,
+                    'lotteries_array': lott_list
+                }
+
+            # Если просто произошло обновление в одном из розыгрышей
+            else:
+                change_type = 'lottery_update'
+
+                # Жанры
+                lottery_genres = list(instance.abstract_lottery.game.genres.all())
+                genres_list = list()
+                for i in range(len(lottery_genres)):
+                    genres_list.append(lottery_genres[i].name)
+
+                # Формируем json объект о новом розыгрыше для отправки
+                message = {
+                    'message_type': 'index_public',
+                    'change_type': change_type,
+                    'lottery_type': instance.abstract_lottery.lottery_type,
+                    'game_img': instance.abstract_lottery.game.img.url,
+                    'game_name': instance.abstract_lottery.game.name,
+                    'game_genres': genres_list,
+                    'lottery_id': str(instance.id),
+                    'lottery_link': instance.get_absolute_url(),
+                    'lottery_progress': instance.lottery_progress,
+                    'lottery_tickets_bought': instance.tickets_bought,
+                    'lottery_tickets_total': instance.abstract_lottery.tickets_amount,
+                    'lottery_desc_480': instance.abstract_lottery.game.desc[:480],
+                    'lottery_desc_200': instance.abstract_lottery.game.desc[:200],
+                    'lottery_ticket_price': instance.ticket_price
+                }
 
             async_to_sync(layer.group_send)('ws-index-room-auth', {
                 'type': 'events.logged',
@@ -377,26 +421,57 @@ class IndexConsumer(AsyncWebsocketConsumer):
 @sync_to_async
 def ready_up_dict_for_index_logged_in(basic_usr_pk, message):
 
-    # Получаем лотерею по ID
-    lottery = LotteryGame.objects.get(pk=message['lottery_id'])
+    # Проверяем какого типа сообщение
+    if message['change_type'] == 'lottery_update':
 
-    # Проверяем участвует ли пользователь в лотерее
-    actual_basic_usr = User.objects.get(pk=basic_usr_pk)
-    steam_usr = actual_basic_usr.steamuser
-    is_participant = lottery.check_if_user_is_in_lottery(steam_usr)
-    message['is_participant'] = is_participant
+        # Получаем лотерею по ID
+        lottery = LotteryGame.objects.get(pk=message['lottery_id'])
 
-    if is_participant:
-        message['lottery_ticks_for_user'] = lottery.calculate_ticks_for_user(steam_usr)
-        message['lottery_win_chance_for_user'] = lottery.calculate_win_chance_for_user(steam_usr)
-    else:
-        message['lottery_ticks_for_user'] = None
-        message['lottery_win_chance_for_user'] = None
+        # Проверяем участвует ли пользователь в лотерее
+        actual_basic_usr = User.objects.get(pk=basic_usr_pk)
+        steam_usr = actual_basic_usr.steamuser
+        is_participant = lottery.check_if_user_is_in_lottery(steam_usr)
+        message['is_participant'] = is_participant
 
-    # Указываем, авторизован ли данный пользователь
-    message['is_authenticated'] = True
+        if is_participant:
+            message['lottery_ticks_for_user'] = lottery.calculate_ticks_for_user(steam_usr)
+            message['lottery_win_chance_for_user'] = lottery.calculate_win_chance_for_user(steam_usr)
+        else:
+            message['lottery_ticks_for_user'] = None
+            message['lottery_win_chance_for_user'] = None
 
-    return json.dumps(message)
+        # Указываем, авторизован ли данный пользователь
+        message['is_authenticated'] = True
+
+        return json.dumps(message)
+
+    # Если это новая лотерея, то обрабатываем массив из 3-х лотерей
+    elif message['change_type'] == 'new_lottery':
+
+        lotteries_arr = message['lotteries_array']
+
+        for i in range(len(lotteries_arr)):
+
+            # Получаем лотерею по ID
+            lottery = LotteryGame.objects.get(pk=lotteries_arr[i]['lottery_id'])
+
+            # Проверяем участвует ли пользователь в лотерее
+            actual_basic_usr = User.objects.get(pk=basic_usr_pk)
+            steam_usr = actual_basic_usr.steamuser
+            is_participant = lottery.check_if_user_is_in_lottery(steam_usr)
+            message['lotteries_array'][i]['is_participant'] = is_participant
+
+            if is_participant:
+                message['lotteries_array'][i]['lottery_ticks_for_user'] = lottery.calculate_ticks_for_user(steam_usr)
+                message['lotteries_array'][i]['lottery_win_chance_for_user'] = lottery.calculate_win_chance_for_user(steam_usr)
+            else:
+                message['lotteries_array'][i]['lottery_ticks_for_user'] = None
+                message['lotteries_array'][i]['lottery_win_chance_for_user'] = None
+
+        # Указываем, авторизован ли данный пользователь
+        message['is_authenticated'] = True
+
+        return json.dumps(message)
 
 
 # Функция получения обычного пользователя через его ID
