@@ -66,151 +66,23 @@ class LotteryGameConsumer(AsyncWebsocketConsumer):
 
         # Если пользователь авторизован, то получаем его объект и ссылку на страницу
         if self.scope["user"].is_authenticated:
-            self.steam_user = await get_steam_user_via_id(self.steam_user.pk)
-            self.steam_user_id = self.steam_user.pk
-            self.user_page_url = await call_user_get_absolute_url_method(self.steam_user)
-
-        # Получаем объект текущей лотереи
-        self.current_lottery = await get_lottery_by_pk(self.lottery_id)
-
-        # Собираем полученный от клиента json в объект
-        text_data_json = json.loads(text_data)
-
-        # Создаем объект форму, и загружаем туда данные от клиента
-        form = BuyTicketForm(text_data_json)
-
-        event_win_chance = None
-
-        # Проверяем правильность заполнения формы
-        if form.is_valid():
-            if (0 < form.cleaned_data['amount'] <= self.current_lottery.tickets_left) and ((form.cleaned_data['amount'] * self.current_lottery.ticket_price) <= self.steam_user.money_current) and self.current_lottery.lottery_state == 'o':
-                res = await call_lottery_buy_tickets_method(self.current_lottery, self.steam_user, form.cleaned_data['amount'])
-                if res:
-                    result_code = 'res_success'
-                    parent_lottery = await get_parent_lottery_for_lottery(self.current_lottery)
-                    event_win_chance = round(round(form.cleaned_data['amount'] / parent_lottery.tickets_amount, 2) * 100)
-                else:
-                    result_code = 'res_error'
-
-            elif (form.cleaned_data['amount'] * self.current_lottery.ticket_price) > self.steam_user.money_current:
-                # Недостаточно средств на счету
-                result_code = 'res_low_balance'
-
-            elif self.current_lottery.lottery_state != 'o':
-                # Розыгрыш уже закрыт
-                result_code = 'res_lottery_closed'
-
-            elif (form.cleaned_data['amount'] <= 0) or (form.cleaned_data['amount'] > self.current_lottery.tickets_left):
-                # Введено неверное кол-во билетов для покупки
-                result_code = 'res_wrong_number'
-
-            else:
-                # Произошла ошибка, попробуйте ещё раз
-                result_code = 'res_error'
-
+            res = await game_room_ready_up_response(self.steam_user.pk, self.lottery_id, text_data)
         else:
-            # Неверно заполнена форма, попробуйте ещё раз
-            result_code = 'res_bad_form'
+            res = await game_room_ready_up_response(None, self.lottery_id, text_data)
 
-        # Проверяем закончилась ли лотерея
-        if self.current_lottery.tickets_left != 0:
-            lottery_finished = False
-        else:
-            lottery_finished = True
-
-        # Генерируем и отправляем личное сообщение клиенту
-        # Если всё прошло успешно, посылаем всю информацию клиенту и обновляем данные розыгрыша для всех
-        if result_code == 'res_success':
-
-            total_bought_for_user = await call_lottery_calculate_ticks_for_user_method(self.current_lottery, self.steam_user)
-
-            is_user_new_in_lottery = False
-
-            if total_bought_for_user == form.cleaned_data['amount']:
-                is_user_new_in_lottery = True
-
-            winner_pick_array = None
-            winner_steamuser_id = None
-
-            # Если лотерея закончилась, то высылаем список карточек участников для загрузки в карусель выбора победителя
-            if lottery_finished:
-
-                winner_pick_array = list()
-                lottery_participants = await get_participants_of_lottery(self.current_lottery)
-                for i in range(len(lottery_participants)):
-
-                    win_chance_for_user = await call_lottery_calculate_win_chance_for_user_method(self.current_lottery, lottery_participants[i])
-                    steam_usr_url = await call_user_get_absolute_url_method(lottery_participants[i])
-
-                    tmp_list = [{
-                        'user_card_name': lottery_participants[i].persona_name,
-                        'user_card_avatar': lottery_participants[i].avatar_full,
-                        'user_card_link': steam_usr_url,
-                        'user_card_chance': win_chance_for_user
-                    } for one_chance in range(win_chance_for_user)]
-
-                    winner_pick_array.extend(tmp_list)
-
-                # Теперь перемешиваем случайным образом
-                shuffle(winner_pick_array)
-
-                # На 0-ю позицию ставим победителя
-                winner_link = await get_lottery_winner(self.current_lottery)
-                winner_steamuser_id = winner_link.pk
-                winner_link = await call_user_get_absolute_url_method(winner_link)
-
-                for i in range(len(winner_pick_array)):
-                    if winner_pick_array[i]['user_card_link'] == winner_link:
-                        # На 0-ю позицию ставим текущую карточку победителя
-                        tmp = winner_pick_array[i]
-                        winner_pick_array[i] = winner_pick_array[0]
-                        winner_pick_array[0] = tmp
-                        break
-
-            await self.send(json.dumps({
-                'message_type': 'private',
-                'result_code': result_code,
-                'total_bought_for_user': total_bought_for_user,
-                'steam_user_new_balance': self.steam_user.money_current,
-                'is_user_in_lottery': await call_lottery_check_if_user_is_in_lottery_method(self.current_lottery, self.steam_user),
-                'user_win_chance': await call_lottery_calculate_win_chance_for_user_method(self.current_lottery, self.steam_user)
-            }))
-
-            # Генерируем сообщение в ответ клиенту
-            message = json.dumps({
-                'message_type': 'public',
-                'is_lottery_finished': lottery_finished,
-                'tickets_left': self.current_lottery.tickets_left,
-                'is_user_in_lottery': await call_lottery_check_if_user_is_in_lottery_method(self.current_lottery, self.steam_user),
-                'user_win_chance': await call_lottery_calculate_win_chance_for_user_method(self.current_lottery, self.steam_user),
-                'lottery_progress': self.current_lottery.lottery_progress,
-                'tickets_bought': self.current_lottery.tickets_bought,
-                'user_page_url': self.user_page_url,
-                'lottery_player_avatar_full': self.steam_user.avatar_full,
-                'persona_name': self.steam_user.persona_name,
-                'steam_user_id': self.steam_user.pk,
-                'event_win_chance': event_win_chance,
-                'tickets_bought_this_event': form.cleaned_data['amount'],
-                'right_spelling': await get_right_spelling_for_event_ticks(form.cleaned_data['amount']),
-                'is_user_new_in_lottery': is_user_new_in_lottery,
-                'winner_pick_array': winner_pick_array,
-                'winner_steamuser_id': winner_steamuser_id
-            })
-
-            # Посылаем сообщение в группу розыгрыша
+        if res[0] == 'res_success':
+            await self.send(res[1])
             await self.channel_layer.group_send(
                 self.lottery_group_id,
                 {
                     'type': 'lottery_response',
-                    'message': message
+                    'message': res[2]
                 }
             )
-
-        # Если что-то пошло не так, то просто отправляем сообщение с кодом ошибки клиенту
         else:
             await self.send(json.dumps({
                 'message_type': 'private',
-                'result_code': result_code
+                'result_code': res[0]
             }))
 
     # Получение сообщения из группы розыгрыша
@@ -415,6 +287,166 @@ class IndexConsumer(AsyncWebsocketConsumer):
                 'type': 'events.unlogged',
                 'message': message
             })
+
+
+# Функция формирования ответа в комнате игры
+@sync_to_async
+def game_room_ready_up_response(basic_usr_pk, lottery_id, text_data):
+
+    steam_user_id = None
+    user_page_url = None
+    steam_user = None
+
+    # Проверяем авторизован ли пользователь
+    if basic_usr_pk:
+        steam_user = SteamUser.objects.get(pk=basic_usr_pk)
+        steam_user_id = steam_user.pk
+        user_page_url = steam_user.get_absolute_url()
+
+    # Получаем объект текущей лотереи
+    current_lottery = LotteryGame.objects.get(pk=lottery_id)
+
+    # Собираем полученный от клиента json в объект
+    text_data_json = json.loads(text_data)
+
+    # Создаем объект форму, и загружаем туда данные от клиента
+    form = BuyTicketForm(text_data_json)
+
+    event_win_chance = None
+
+    # Проверяем правильность заполнения формы
+    if form.is_valid():
+        if (0 < form.cleaned_data['amount'] <= current_lottery.tickets_left) and ((form.cleaned_data[
+                                                                                            'amount'] * current_lottery.ticket_price) <= steam_user.money_current) and current_lottery.lottery_state == 'o':
+            res = current_lottery.buy_tickets(steam_user, form.cleaned_data['amount'])
+            if res:
+                result_code = 'res_success'
+                parent_lottery = current_lottery.abstract_lottery
+                event_win_chance = round(round(form.cleaned_data['amount'] / parent_lottery.tickets_amount, 2) * 100)
+            else:
+                result_code = 'res_error'
+
+        elif (form.cleaned_data['amount'] * current_lottery.ticket_price) > steam_user.money_current:
+            # Недостаточно средств на счету
+            result_code = 'res_low_balance'
+
+        elif current_lottery.lottery_state != 'o':
+            # Розыгрыш уже закрыт
+            result_code = 'res_lottery_closed'
+
+        elif (form.cleaned_data['amount'] <= 0) or (form.cleaned_data['amount'] > current_lottery.tickets_left):
+            # Введено неверное кол-во билетов для покупки
+            result_code = 'res_wrong_number'
+
+        else:
+            # Произошла ошибка, попробуйте ещё раз
+            result_code = 'res_error'
+
+    else:
+        # Неверно заполнена форма, попробуйте ещё раз
+        result_code = 'res_bad_form'
+
+    # Проверяем закончилась ли лотерея
+    if current_lottery.tickets_left != 0:
+        lottery_finished = False
+    else:
+        lottery_finished = True
+
+    # Генерируем и отправляем личное сообщение клиенту
+    # Если всё прошло успешно, посылаем всю информацию клиенту и обновляем данные розыгрыша для всех
+    if result_code == 'res_success':
+
+        total_bought_for_user = current_lottery.calculate_ticks_for_user(steam_user)
+
+        is_user_new_in_lottery = False
+
+        if total_bought_for_user == form.cleaned_data['amount']:
+            is_user_new_in_lottery = True
+
+        winner_pick_array = None
+        winner_steamuser_id = None
+
+        # Если лотерея закончилась, то высылаем список карточек участников для загрузки в карусель выбора победителя
+        if lottery_finished:
+
+            winner_pick_array = list()
+
+            participants_query_set = current_lottery.players.all()
+            res_list = list()
+            for i in range(len(participants_query_set)):
+                res_list.append(participants_query_set[i])
+            lottery_participants = res_list
+
+            for i in range(len(lottery_participants)):
+                win_chance_for_user = current_lottery.calculate_win_chance_for_user(lottery_participants[i])
+                steam_usr_url = lottery_participants[i].get_absolute_url()
+
+                tmp_list = [{
+                    'user_card_name': lottery_participants[i].persona_name,
+                    'user_card_avatar': lottery_participants[i].avatar_full,
+                    'user_card_link': steam_usr_url,
+                    'user_card_chance': win_chance_for_user
+                } for one_chance in range(win_chance_for_user)]
+
+                winner_pick_array.extend(tmp_list)
+
+            # Теперь перемешиваем случайным образом
+            shuffle(winner_pick_array)
+
+            # На 0-ю позицию ставим победителя
+            winner_link = current_lottery.lottery_winner
+            winner_steamuser_id = winner_link.pk
+            winner_link = winner_link.get_absolute_url()
+
+            for i in range(len(winner_pick_array)):
+                if winner_pick_array[i]['user_card_link'] == winner_link:
+                    # На 0-ю позицию ставим текущую карточку победителя
+                    tmp = winner_pick_array[i]
+                    winner_pick_array[i] = winner_pick_array[0]
+                    winner_pick_array[0] = tmp
+                    break
+
+        res_private_msg = json.dumps({
+            'message_type': 'private',
+            'result_code': result_code,
+            'total_bought_for_user': total_bought_for_user,
+            'steam_user_new_balance': steam_user.money_current,
+            'is_user_in_lottery': current_lottery.check_if_user_is_in_lottery(steam_user),
+            'user_win_chance': current_lottery.calculate_win_chance_for_user(steam_user)
+        })
+
+        if 10 < form.cleaned_data['amount'] < 20:
+            right_spell = "Билетов"
+        elif form.cleaned_data['amount'] % 10 == 1:
+            right_spell = "Билет"
+        elif 2 <= (form.cleaned_data['amount'] % 10) <= 4:
+            right_spell = "Билета"
+        else:
+            right_spell = "Билетов"
+
+        res_public_msg = json.dumps({
+            'message_type': 'public',
+            'is_lottery_finished': lottery_finished,
+            'tickets_left': current_lottery.tickets_left,
+            'is_user_in_lottery': current_lottery.check_if_user_is_in_lottery(steam_user),
+            'user_win_chance': current_lottery.calculate_win_chance_for_user(steam_user),
+            'lottery_progress': current_lottery.lottery_progress,
+            'tickets_bought': current_lottery.tickets_bought,
+            'user_page_url': user_page_url,
+            'lottery_player_avatar_full': steam_user.avatar_full,
+            'persona_name': steam_user.persona_name,
+            'steam_user_id': steam_user.pk,
+            'event_win_chance': event_win_chance,
+            'tickets_bought_this_event': form.cleaned_data['amount'],
+            'right_spelling': right_spell,
+            'is_user_new_in_lottery': is_user_new_in_lottery,
+            'winner_pick_array': winner_pick_array,
+            'winner_steamuser_id': winner_steamuser_id
+        })
+
+        return result_code, res_private_msg, res_public_msg
+    else:
+        return result_code, None, None
 
 
 # Функция дополнения словаря для обновленных розыгрышах на главной странице для авторизованных пользователей
