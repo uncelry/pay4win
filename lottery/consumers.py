@@ -2,7 +2,7 @@ import json
 import channels.layers
 from channels.generic.websocket import AsyncWebsocketConsumer
 from .forms import BuyTicketForm
-from .models import SteamUser, LotteryGame
+from .models import SteamUser, LotteryGame, User
 from asgiref.sync import sync_to_async, async_to_sync
 from random import shuffle
 from django.db.models import signals
@@ -309,29 +309,7 @@ class IndexConsumer(AsyncWebsocketConsumer):
         if not self.scope["user"].is_authenticated:
             return
 
-        message = event['message']
-
-        # Получаем лотерею по ID
-        lottery = await get_lottery_by_pk(message['lottery_id'])
-
-        # Удаляем лишнее значение
-        del message['lottery_desc_200']
-
-        # Проверяем участвует ли пользователь в лотерее
-        steam_usr = await get_steamuser_from_user(self.scope["user"])
-        is_participant = await call_lottery_check_if_user_is_in_lottery_method(lottery, steam_usr)
-        message['is_participant'] = is_participant
-
-        if is_participant:
-            message['lottery_ticks_for_user'] = await call_lottery_calculate_ticks_for_user_method(lottery, steam_usr)
-            message['lottery_win_chance_for_user'] = await call_lottery_calculate_win_chance_for_user_method(lottery, steam_usr)
-        else:
-            message['lottery_ticks_for_user'] = None
-            message['lottery_win_chance_for_user'] = None
-
-        # Указываем, авторизован ли данный пользователь
-        message['is_authenticated'] = True
-        message = json.dumps(message)
+        message = await ready_up_dict_for_index_logged_in(self.scope["user"].pk, event['message'])
 
         await self.send(text_data=message)
 
@@ -342,9 +320,6 @@ class IndexConsumer(AsyncWebsocketConsumer):
             return
 
         message = event['message']
-
-        # Удаляем лишнее значение
-        del message['lottery_desc_480']
 
         # Лотереи нет у пользователя в активных, выставляем это
         message['is_participant'] = False
@@ -396,6 +371,38 @@ class IndexConsumer(AsyncWebsocketConsumer):
                 'type': 'events.unlogged',
                 'message': message
             })
+
+
+# Функция дополнения словаря для обновленных розыгрышах на главной странице для авторизованных пользователей
+@sync_to_async
+def ready_up_dict_for_index_logged_in(basic_usr_pk, message):
+
+    # Получаем лотерею по ID
+    lottery = LotteryGame.objects.get(pk=message['lottery_id'])
+
+    # Проверяем участвует ли пользователь в лотерее
+    actual_basic_usr = User.objects.get(pk=basic_usr_pk)
+    steam_usr = actual_basic_usr.steamuser
+    is_participant = lottery.check_if_user_is_in_lottery(steam_usr)
+    message['is_participant'] = is_participant
+
+    if is_participant:
+        message['lottery_ticks_for_user'] = lottery.calculate_ticks_for_user(steam_usr)
+        message['lottery_win_chance_for_user'] = lottery.calculate_win_chance_for_user(steam_usr)
+    else:
+        message['lottery_ticks_for_user'] = None
+        message['lottery_win_chance_for_user'] = None
+
+    # Указываем, авторизован ли данный пользователь
+    message['is_authenticated'] = True
+
+    return json.dumps(message)
+
+
+# Функция получения обычного пользователя через его ID
+@sync_to_async
+def get_basic_user_from_pk(basic_usr_pk):
+    return User.objects.get(pk=basic_usr_pk)
 
 
 # Функция получения steamuser'а через обычного пользователя

@@ -12,6 +12,7 @@
     <script src="{% static 'js/index-slider.js' %}"></script>
     <script src="{% static 'js/index-closed-games-update.js' %}"></script>
     <script src="{% static 'js/index-open-games-update-logged-in.js' %}"></script>
+    <script src="{% static 'js/index-open-games-update-not-logged-in.js' %}"></script>
 {% endblock %}
 
 {% block title %}<title>Pay4Win - Главная</title>{% endblock %}
@@ -188,7 +189,7 @@
                 if(data.is_authenticated){
                     indexUpdateOpenGamesLoggedIn(data, $('#slfSearchCardHolder'), "{% static 'img/lottery-type-gold.png' %}", "{% static 'img/lottery-type-silver.png' %}", "% static 'img/lottery-type-bronze.png' %}");
                 }else{
-                    indexUpdateOpenGamesNotLoggedIn(data, $('#slfSearchCardHolder'));
+                    indexUpdateOpenGamesNotLoggedIn(data, $('#slfSearchCardHolder'), "{% static 'img/lottery-type-gold.png' %}", "{% static 'img/lottery-type-silver.png' %}", "% static 'img/lottery-type-bronze.png' %}", '{% url "steam_login" %}', "{% static 'img/lottery-card-steam-btn.png' %}");
                 }
                 console.log(data);
             }
