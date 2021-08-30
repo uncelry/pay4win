@@ -186,7 +186,7 @@
             }else if(data.message_type === "index_public"){
                 // Обновляем открытые
                 if(data.is_authenticated){
-                    indexUpdateOpenGamesLoggedIn(data, $('#slfSearchCardHolder'));
+                    indexUpdateOpenGamesLoggedIn(data, $('#slfSearchCardHolder'), "{% static 'img/lottery-type-gold.png' %}", "{% static 'img/lottery-type-silver.png' %}", "% static 'img/lottery-type-bronze.png' %}");
                 }else{
                     indexUpdateOpenGamesNotLoggedIn(data, $('#slfSearchCardHolder'));
                 }
