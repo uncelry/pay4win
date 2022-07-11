@@ -149,9 +149,16 @@ git clone https://github.com/uncelry/pay4win.git
 2. Создайте и активируйте виртуальное окружение
 ```
 python3 -m venv
+```
 
-source venv/bin/activate // Linux
-venv\Scripts\activate // Windows
+Linux:
+```
+source venv/bin/activate
+```
+
+Windows:
+```
+venv\Scripts\activate
 ```
 
 3. Установите зависимости
