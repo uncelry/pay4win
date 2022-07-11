@@ -143,34 +143,34 @@
 
 ## Развертывание
 1. Клонируйте репозиторий при помощи команды
-```
-git clone https://github.com/uncelry/pay4win.git
-```
+  ```
+  git clone https://github.com/uncelry/pay4win.git
+  ```
 2. Создайте и активируйте виртуальное окружение
-```
-python3 -m venv
-```
+  ```
+  python3 -m venv
+  ```
 
-Linux:
-```
-source venv/bin/activate
-```
+  Linux:
+  ```
+  source venv/bin/activate
+  ```
 
-Windows:
-```
-venv\Scripts\activate
-```
+  Windows:
+  ```
+  venv\Scripts\activate
+  ```
 
 3. Установите зависимости
-```
-pip3 install -r requirements.txt
-```
+  ```
+  pip3 install -r requirements.txt
+  ```
 
 4. Установите и активируйте сервер Redis
 5. Запустите локальный сервер Django
-```
-manage.py runserver 8000
-```
+  ```
+  manage.py runserver 8000
+  ```
 
 6. Для остановки сервера используйте **ctrl+c** в консоли
 
