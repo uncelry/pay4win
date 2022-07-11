@@ -459,8 +459,8 @@ class LotteryGame(models.Model):
                     create_lottery_from_abstract(self.abstract_lottery)
 
     class Meta:
-        verbose_name = 'Розыгрыш (фактический - не менять)'
-        verbose_name_plural = 'Розыгрыши (фактические - не менять)'
+        verbose_name = 'Розыгрыш фактический'
+        verbose_name_plural = 'Розыгрыши фактические'
         ordering = ['-pk']
 
     def __str__(self):
